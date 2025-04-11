@@ -1,0 +1,41 @@
+<div class="min-h-screen bg-[#f8f9fb]">
+  <!-- Carrusel de eventos destacados -->
+  <section class="w-full">
+    <app-carousel [events]="featuredEvents" (eventSelected)="viewEventDetails($event)"></app-carousel>
+  </section>
+
+  <!-- Sección de búsqueda y filtros -->
+  <section class="container mx-auto px-4 py-16">
+    <app-search-bar 
+      [faculties]="faculties" 
+      (search)="handleSearch($event)" 
+      (reset)="resetFilters()"
+    ></app-search-bar>
+  </section>
+
+  <!-- Listado de eventos -->
+  <section class="container mx-auto px-4 py-8">
+    <h2 class="text-2xl font-bold text-[#a58d65] text-center mb-6">Eventos disponibles</h2>
+    
+    <!-- Mensaje si no hay eventos -->
+    <div *ngIf="filteredEvents.length === 0" class="text-center py-12">
+      <mat-icon class="text-6xl text-gray-400">event_busy</mat-icon>
+      <p class="text-xl text-gray-500 mt-4">No se encontraron eventos con los filtros seleccionados</p>
+      <button 
+        class="mt-4 px-6 py-2 border border-[#a58d65] text-[#a58d65] rounded-full hover:bg-[#a58d65]/10 transition-colors duration-300"
+        (click)="resetFilters()"
+      >
+        Ver todos los eventos
+      </button>
+    </div>
+    
+    <!-- Grid de tarjetas de eventos -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <app-event-card 
+        *ngFor="let event of filteredEvents" 
+        [event]="event"
+        (click)="viewEventDetails(event.id)"
+      ></app-event-card>
+    </div>
+  </section>
+</div>

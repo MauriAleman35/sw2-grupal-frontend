@@ -1,0 +1,72 @@
+<div class="relative w-full h-[75vh] overflow-hidden">
+  <!-- Slides -->
+  <div *ngFor="let event of events; let i = index" 
+       [ngClass]="{'hidden': i !== currentIndex}"
+       class="absolute inset-0 transition-opacity duration-500">
+    <!-- Imagen con efecto parallax -->
+    <div class="absolute inset-0 scale-110 transition-transform duration-10000 ease-linear"
+         [ngClass]="{'scale-100': i === currentIndex}">
+      <img [src]="event.imageUrl" alt="{{event.title}}" class="w-full h-full object-cover">
+      <!-- Overlay con gradiente -->
+      <div class="absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-transparent"></div>
+    </div>
+    
+    <!-- Información del evento -->
+    <div class="absolute inset-0 flex items-center">
+      <div class="container mx-auto px-4">
+        <div class="max-w-xl">
+          <!-- Etiqueta de facultad -->
+          <div class="inline-block px-3 py-1 bg-[#d4a017] text-white text-sm font-medium rounded-full mb-4">
+            {{event.faculty}}
+          </div>
+          
+          <h2 class="text-3xl md:text-5xl font-bold mb-3 text-white">{{event.title}}</h2>
+          <p class="text-base md:text-lg text-white/90 mb-6 line-clamp-3">{{event.description}}</p>
+          
+          <div class="flex flex-wrap gap-6 mb-8">
+            <div class="flex items-center text-white">
+              <div class="bg-white/20 rounded-full p-2 mr-3">
+                <mat-icon class="text-[#d4a017]">event</mat-icon>
+              </div>
+              <div>
+                <div class="text-sm opacity-80">Fecha</div>
+                <div>{{event.date | date:'dd/MM/yyyy - HH:mm'}}</div>
+              </div>
+            </div>
+            
+            <div class="flex items-center text-white">
+              <div class="bg-white/20 rounded-full p-2 mr-3">
+                <mat-icon class="text-[#d4a017]">location_on</mat-icon>
+              </div>
+              <div>
+                <div class="text-sm opacity-80">Lugar</div>
+                <div>{{event.location}}</div>
+              </div>
+            </div>
+          </div>
+          
+          <button class="bg-[#d4a017] hover:bg-[#a58d65] text-white font-medium py-2 px-8 rounded-full transition-colors duration-300" 
+                  (click)="selectEvent(event.id)">
+            Ver detalles
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Controles de navegación (puntos) -->
+  <div class="absolute inset-x-0 bottom-8 flex justify-center space-x-3 z-10">
+    <button *ngFor="let event of events; let i = index" 
+            [ngClass]="{'bg-[#d4a017] w-4 h-4': i === currentIndex, 'bg-white/60 w-3 h-3': i !== currentIndex}"
+            class="rounded-full transition-all duration-300"
+            (click)="select(i)">
+    </button>
+  </div>
+  
+  <!-- Indicador de número de slide
+  <div class="absolute bottom-8 right-8 text-white font-medium">
+    <span class="text-[#d4a017] text-xl">{{currentIndex + 1}}</span>
+    <span class="mx-1">/</span>
+    <span>{{events.length}}</span>
+  </div> -->
+</div>

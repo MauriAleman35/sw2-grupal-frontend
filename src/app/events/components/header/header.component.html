@@ -1,0 +1,54 @@
+<header class="sticky top-0 z-50 w-full border-b border-[#a58d65]/20 bg-[#fff8ec] shadow-sm">
+  <div class="container flex h-16 items-center px-6">
+    <!-- Logo a la izquierda (con un poco más de margen) -->
+    <div class="flex-shrink-0 pr-16">
+      <a routerLink="/" class="flex items-center gap-2 pl-2">
+        <span class="text-2xl font-bold text-[#d4a017]">EventLy</span>
+      </a>
+    </div>
+
+    <!-- Navegación centrada (para desktop) -->
+    <nav class="hidden md:flex flex-grow justify-center">
+      <div class="flex flex-row space-x-8">
+        <a 
+          *ngFor="let tab of tabs" 
+          [routerLink]="tab.route" 
+          routerLinkActive="text-[#d4a017]" 
+          class="text-[#a58d65] font-medium"
+        >
+          {{ tab.label }}
+        </a>
+      </div>
+    </nav>
+
+    <!-- Botones de login a la derecha -->
+    <div class="flex-shrink-3 ml-auto">
+      <button 
+        mat-stroked-button
+        (click)="openLogin()"
+        class="hidden md:flex border-[#a58d65] text-[#a58d65] hover:bg-[#a58d65] hover:text-white px-4 py-1 text-sm"  
+      >
+        Iniciar Sesión
+      </button>
+    </div>
+
+    <!-- Menú móvil (hamburger) -->
+    <div class="md:hidden ml-4" (click)="toggleMobileMenu()">
+      <mat-icon>menu</mat-icon>
+    </div>
+  </div>
+
+  <!-- Menú móvil desplegable -->
+  <div *ngIf="isMobileMenuOpen" class="md:hidden flex flex-col items-center gap-4 bg-[#fff8ec] p-4">
+    <a 
+      *ngFor="let tab of tabs" 
+      [routerLink]="tab.route" 
+      routerLinkActive="text-[#d4a017]" 
+      class="text-[#a58d65] font-medium"
+      (click)="toggleMobileMenu()"
+    >
+      {{ tab.label }}
+    </a>
+  
+  </div>  
+</header>

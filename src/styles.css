@@ -1,1 +1,77 @@
 /* You can add global styles to this file, and also import other style files */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+  background-color: #f8f9fb;
+}
+
+.mat-mdc-form-field-subscript-wrapper {
+  display: none !important;
+}
+
+.mat-mdc-form-field-infix {
+  padding: 0.5em 0 !important;
+}
+
+.mat-mdc-text-field-wrapper {
+  background-color: white !important;
+}
+
+.mat-mdc-form-field-focus-overlay {
+  background-color: transparent !important;
+}
+
+.mat-mdc-form-field-flex {
+  align-items: center !important;
+}
+
+.mat-mdc-form-field-icon-prefix > .mat-icon {
+  color: #a58d65 !important;
+}
+
+.mat-mdc-checkbox .mdc-checkbox .mdc-checkbox__native-control:enabled:checked ~ .mdc-checkbox__background,
+.mat-mdc-checkbox .mdc-checkbox .mdc-checkbox__native-control:enabled:indeterminate ~ .mdc-checkbox__background,
+.mat-mdc-checkbox
+  .mdc-checkbox
+  .mdc-checkbox__native-control[data-indeterminate="true"]:enabled
+  ~ .mdc-checkbox__background {
+  background-color: #d4a017 !important;
+  border-color: #d4a017 !important;
+}
+
+.mat-mdc-radio-button
+  .mdc-radio
+  .mdc-radio__native-control:enabled:checked
+  + .mdc-radio__background
+  .mdc-radio__outer-circle,
+.mat-mdc-radio-button .mdc-radio .mdc-radio__native-control:enabled + .mdc-radio__background .mdc-radio__inner-circle {
+  border-color: #d4a017 !important;
+}
+
+.mat-mdc-button.mat-primary {
+  --mdc-filled-button-container-color: #d4a017;
+  --mdc-filled-button-label-text-color: #ffffff;
+}
+
+.mat-mdc-button.mat-primary:hover {
+  --mdc-filled-button-container-color: #a58d65;
+}
+
+.mat-mdc-outlined-button {
+  --mdc-outlined-button-outline-color: #a58d65;
+  --mdc-outlined-button-label-text-color: #a58d65;
+}
+
+.mat-mdc-outlined-button:hover {
+  --mdc-outlined-button-container-color: #a58d65;
+  --mdc-outlined-button-label-text-color: #ffffff;
+}

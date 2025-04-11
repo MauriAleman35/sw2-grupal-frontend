@@ -1,0 +1,61 @@
+<div class="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300 cursor-pointer border border-[#a58d65]/10" (click)="onViewDetails()">
+    <!-- Imagen del evento -->
+    <div class="relative h-48 overflow-hidden">
+      <img [src]="ticket.imageUrl" [alt]="ticket.eventName" class="w-full h-full object-cover">
+      
+      <!-- Fecha y ubicación superpuestas -->
+      <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-3">
+        <div class="flex items-center text-white">
+          <mat-icon class="text-[#d4a017] mr-2 text-sm">event</mat-icon>
+          <span class="text-sm">{{ticket.date | date:'dd/MM/yyyy - HH:mm'}}</span>
+        </div>
+        <div class="flex items-center text-white mt-1">
+          <mat-icon class="text-[#d4a017] mr-2 text-sm">location_on</mat-icon>
+          <span class="text-sm">{{ticket.location}}</span>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Información del ticket -->
+    <div class="p-4">
+      <h3 class="text-lg font-bold text-gray-800 mb-3 line-clamp-2">{{ticket.eventName}}</h3>
+      
+      <div class="flex flex-wrap gap-2 mb-4">
+        <!-- Fecha -->
+        <div class="flex items-center bg-[#f8f9fb] rounded-full px-3 py-1 border border-[#a58d65]/10">
+          <mat-icon class="text-[#d4a017] mr-1 text-sm">calendar_today</mat-icon>
+          <span class="text-xs text-gray-700">{{formatDate(ticket.date)}}</span>
+        </div>
+        
+        <!-- Cantidad de tickets -->
+        <div class="flex items-center bg-[#f8f9fb] rounded-full px-3 py-1 border border-[#a58d65]/10">
+          <mat-icon class="text-[#d4a017] mr-1 text-sm">confirmation_number</mat-icon>
+          <span class="text-xs text-gray-700">{{ticket.quantity}} Tickets</span>
+        </div>
+        
+        <!-- Estado del pago -->
+        <div class="flex items-center rounded-full px-3 py-1" [ngClass]="getStatusClass()">
+          <span class="text-xs font-medium">{{ticket.status}}</span>
+        </div>
+      </div>
+      
+      <!-- Botones de acción -->
+      <div class="flex justify-between items-center">
+        <button 
+          class="text-[#a58d65] hover:text-[#d4a017] transition-colors duration-300 text-sm font-medium focus:outline-none"
+          (click)="onViewDetails(); $event.stopPropagation();"
+        >
+          Ver detalles
+        </button>
+        
+        <button 
+          class="bg-[#d4a017] hover:bg-[#a58d65] text-white rounded-full px-3 py-1 text-sm font-medium flex items-center transition-colors duration-300 focus:outline-none"
+          (click)="onDownload(); $event.stopPropagation();"
+          *ngIf="ticket.active"
+        >
+          <mat-icon class="mr-1 text-sm">download</mat-icon>
+          Descargar
+        </button>
+      </div>
+    </div>
+  </div>

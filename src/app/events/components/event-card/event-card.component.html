@@ -1,0 +1,43 @@
+<div class="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300 cursor-pointer h-full flex flex-col">
+    <!-- Imagen del evento -->
+    <div class="h-48 overflow-hidden">
+      <img [src]="event.imageUrl" [alt]="event.title" class="w-full h-full object-cover">
+    </div>
+    
+    <div class="p-5 flex-grow flex flex-col">
+      <!-- Facultad como chip -->
+      <div class="mb-3">
+        <span class="inline-block px-3 py-1 text-xs font-medium bg-[#a58d65]/10 text-[#a58d65] rounded-full">
+          {{event.faculty}}
+        </span>
+      </div>
+      
+      <!-- Título del evento -->
+      <h3 class="text-xl font-bold mb-3 line-clamp-2 text-gray-800">{{event.title}}</h3>
+      
+      <!-- Detalles del evento -->
+      <div class="space-y-2 mt-2 text-gray-600 flex-grow">
+        <div class="flex items-center">
+          <mat-icon class="text-[#d4a017] mr-2 text-sm">event</mat-icon>
+          <span class="text-sm">{{event.date | date:'dd/MM/yyyy - HH:mm'}}</span>
+        </div>
+        
+        <div class="flex items-center">
+          <mat-icon class="text-[#d4a017] mr-2 text-sm">location_on</mat-icon>
+          <span class="text-sm line-clamp-1">{{event.location}}</span>
+        </div>
+        
+        <div class="flex items-center">
+          <mat-icon class="text-[#d4a017] mr-2 text-sm">sell</mat-icon>
+          <span class="text-sm font-semibold">{{event.price}}</span>
+        </div>
+      </div>
+      
+      <!-- Botón de acción -->
+      <div class="mt-4">
+        <button class="w-full py-2 px-4 bg-white border border-[#d4a017] text-[#d4a017] rounded-full hover:bg-[#d4a017] hover:text-white transition-colors duration-300">
+          Ver detalles
+        </button>
+      </div>
+    </div>
+  </div>
