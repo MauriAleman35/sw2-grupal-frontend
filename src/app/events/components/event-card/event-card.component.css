@@ -1,17 +1,27 @@
+/* Estilos para asegurar altura uniforme */
 :host {
-    display: block;
-  }
-  
-  .line-clamp-1 {
-    display: -webkit-box;
-    -webkit-line-clamp: 1;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-  
-  .line-clamp-2 {
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
+  display: block;
+  height: 100%;
+}
+
+/* Limitar el número de líneas del título */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Ajustes para iconos de Material */
+mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  line-height: 18px;
+}
+
+/* Efecto de hover mejorado */
+.hover\:-translate-y-1:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 15px -3px rgba(165, 141, 101, 0.1), 0 4px 6px -2px rgba(165, 141, 101, 0.05);
+}

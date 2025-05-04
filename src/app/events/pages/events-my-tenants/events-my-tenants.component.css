@@ -1,0 +1,42 @@
+/* Estilos para las tarjetas de tenant */
+.tenant-card {
+    transition: all 0.3s ease;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .tenant-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Animación de carga */
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+  
+  .animate-spin {
+    animation: spin 1s linear infinite;
+  }
+  
+  /* Estilos para botones */
+  button {
+    transition: all 0.3s ease;
+  }
+  
+  button:hover {
+    transform: translateY(-2px);
+  }
+  
+  /* Efecto de hover para la tarjeta de crear nueva organización */
+  .tenant-card.border-dashed:hover {
+    background-color: rgba(212, 160, 23, 0.05);
+  }
+  
+  /* Estilos para los avatares */
+  .avatar-initials {
+    font-family: 'Arial', sans-serif;
+    font-weight: bold;
+  }

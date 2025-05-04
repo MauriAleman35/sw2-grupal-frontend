@@ -9,6 +9,7 @@ import { Router } from '@angular/router';
 interface Event {
   id: number;
   title: string;
+  slug?: string; // Añadimos slug como opcional para compatibilidad
   date: Date;
   location: string;
   faculty: string;
@@ -22,13 +23,15 @@ interface Event {
   standalone: true,
   imports: [CommonModule, MatCardModule, MatButtonModule, MatIconModule, MatChipsModule],
   templateUrl: './event-card.component.html',
-  styleUrls: ['./event-card.component.css']
+  styleUrl: './event-card.component.css'
 })
 export class EventCardComponent {
   @Input() event!: Event;
   constructor(private router: Router) {}
 
-  navigateToEventDetail(eventId: number): void {
-    this.router.navigate(['/events', eventId]);
+  navigateToEventDetail(): void {
+    // Si el evento tiene slug, usamos eso; de lo contrario, usamos el ID
+    const routeParam = this.event.slug || this.event.id;
+    this.router.navigate(['/events', routeParam]);
   }
 }

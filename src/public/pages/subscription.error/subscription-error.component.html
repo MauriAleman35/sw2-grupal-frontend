@@ -1,0 +1,86 @@
+<div class="min-h-screen bg-[#f8f9fb] flex flex-col items-center justify-center py-12 px-4">
+    <div class="max-w-2xl w-full bg-white rounded-lg shadow-xl overflow-hidden" @fadeIn>
+      <!-- Encabezado con gradiente -->
+      <div class="bg-gradient-to-r from-red-500 to-red-700 p-8 text-white text-center">
+        <div class="error-icon" [@pulse]="pulseState">
+          <mat-icon class="text-6xl">error_outline</mat-icon>
+        </div>
+        
+        <h1 class="text-3xl font-bold mt-4" @slideIn>Pago No Completado</h1>
+        <p class="text-white/90 mt-2" @slideIn>Ha ocurrido un problema con tu pago</p>
+      </div>
+      
+      <!-- Contenido principal -->
+      <div class="p-8">
+        <div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-6 flex items-start" @slideIn>
+          <mat-icon class="text-red-500 mr-3">warning</mat-icon>
+          <div>
+            <p class="text-red-800 font-medium">No se pudo procesar tu pago</p>
+            <p class="text-red-700 text-sm">Tu suscripción no ha sido activada. Por favor, intenta nuevamente o contacta a soporte.</p>
+          </div>
+        </div>
+        
+        <!-- Posibles razones -->
+        <div class="bg-gray-50 rounded-lg p-6 mb-6" @slideIn>
+          <h2 class="text-xl font-semibold text-gray-800 mb-4">Posibles Razones</h2>
+          
+          <ul class="space-y-3 text-gray-700">
+            <li class="flex items-start">
+              <mat-icon class="text-gray-400 mr-2 text-sm">chevron_right</mat-icon>
+              <span>Tu tarjeta fue rechazada por el banco</span>
+            </li>
+            <li class="flex items-start">
+              <mat-icon class="text-gray-400 mr-2 text-sm">chevron_right</mat-icon>
+              <span>Fondos insuficientes en la cuenta</span>
+            </li>
+            <li class="flex items-start">
+              <mat-icon class="text-gray-400 mr-2 text-sm">chevron_right</mat-icon>
+              <span>Información de pago incorrecta</span>
+            </li>
+            <li class="flex items-start">
+              <mat-icon class="text-gray-400 mr-2 text-sm">chevron_right</mat-icon>
+              <span>La conexión se interrumpió durante el proceso</span>
+            </li>
+            <li class="flex items-start">
+              <mat-icon class="text-gray-400 mr-2 text-sm">chevron_right</mat-icon>
+              <span>Cancelaste el proceso de pago</span>
+            </li>
+          </ul>
+        </div>
+        
+        <!-- Mensaje de ayuda -->
+        <div class="text-center text-gray-600 mb-6" @slideIn>
+          <p>Si necesitas ayuda, no dudes en contactar a nuestro equipo de soporte.</p>
+          <p class="font-medium">soporte&#64;uagrm.edu | +591 3 333 3333</p>
+
+        </div>
+        
+        <!-- Botones de acción -->
+        <div class="flex flex-col sm:flex-row justify-center gap-4 mt-8" @slideIn>
+          <button 
+            (click)="tryAgain()"
+            class="bg-[#d4a017] hover:bg-[#a58d65] text-white px-6 py-3 rounded-md font-medium transition-colors duration-300 flex items-center justify-center"
+          >
+            <mat-icon class="mr-2">refresh</mat-icon>
+            Intentar Nuevamente
+          </button>
+          
+          <button 
+            (click)="contactSupport()"
+            class="bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 px-6 py-3 rounded-md font-medium transition-colors duration-300 flex items-center justify-center"
+          >
+            <mat-icon class="mr-2">support_agent</mat-icon>
+            Contactar Soporte
+          </button>
+          
+          <button 
+            (click)="goHome()"
+            class="bg-white border border-[#d4a017] text-[#d4a017] hover:bg-[#d4a017]/10 px-6 py-3 rounded-md font-medium transition-colors duration-300 flex items-center justify-center"
+          >
+            <mat-icon class="mr-2">home</mat-icon>
+            Ir al Inicio
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>

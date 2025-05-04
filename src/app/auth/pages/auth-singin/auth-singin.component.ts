@@ -7,6 +7,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-auth-singin',
@@ -30,7 +31,8 @@ export class AuthSinginComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private router: Router,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private authService: AuthService // Asegúrate de importar el servicio de autenticación
   ) {}
 
   ngOnInit(): void {
@@ -52,19 +54,20 @@ export class AuthSinginComponent implements OnInit {
 
     this.isLoading = true;
 
-    // Simulación de inicio de sesión
-    setTimeout(() => {
-      this.isLoading = false;
-      
-      // Aquí iría la lógica real de autenticación
-      // Por ahora, simulamos un inicio de sesión exitoso
-      this.snackBar.open('¡Inicio de sesión exitoso!', 'Cerrar', {
-        duration: 3000,
-        panelClass: 'success-snackbar'
-      });
-      
-      this.router.navigate(['/home']);
-    }, 1500);
+    const credentiales={
+      email:this.loginForm.value.email,
+      password:this.loginForm.value.password
+    }
+    this.authService.login(credentiales).subscribe(
+      {
+        next:()=>{
+          this.isLoading = false;
+          this.router.navigate(['/']);
+        }
+      }
+    )
+
+  
   }
 
   markFormGroupTouched(formGroup: FormGroup): void {

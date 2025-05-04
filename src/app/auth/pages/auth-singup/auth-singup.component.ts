@@ -10,6 +10,10 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatStepperModule } from '@angular/material/stepper';
 
+import { MatSelectModule } from '@angular/material/select';
+import { AuthService } from '../../services/auth.service';
+
+
 @Component({
   selector: 'app-auth-singup',
   standalone: true,
@@ -22,7 +26,7 @@ import { MatStepperModule } from '@angular/material/stepper';
     MatIconModule,
     MatSnackBarModule,
     MatCheckboxModule,
-    MatStepperModule],
+    MatStepperModule,MatSelectModule],
   templateUrl: './auth-singup.component.html',
   styleUrl: './auth-singup.component.css'
 })
@@ -37,7 +41,9 @@ export class AuthSingupComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private router: Router,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private authService: AuthService,
+
   ) {}
   
   ngOnInit(): void {
@@ -61,7 +67,8 @@ export class AuthSingupComponent implements OnInit {
         this.createPasswordStrengthValidator()
       ]],
       confirmPassword: ['', [Validators.required]],
-      terms: [false, [Validators.requiredTrue]]
+      terms: [false, [Validators.requiredTrue]],
+      gender:['', [Validators.required]],
     }, { validators: this.passwordMatchValidator });
   }
   
@@ -115,18 +122,31 @@ export class AuthSingupComponent implements OnInit {
     
     this.isLoading = true;
     
-    // Simulación de registro
-    setTimeout(() => {
-      this.isLoading = false;
-      
-      // Aquí iría la lógica real de registro
-      this.snackBar.open('¡Registro exitoso! Bienvenido a EventLy', 'Cerrar', {
-        duration: 3000,
-        panelClass: 'success-snackbar'
-      });
-      
-      this.router.navigate(['/home']);
-    }, 1500);
+    const userData = {
+      fullname: this.personalInfoForm.value.firstName,
+      lastname: this.personalInfoForm.value.lastName,
+      phone: this.personalInfoForm.value.phone || '',
+      email: this.accountForm.value.email,
+      password: this.accountForm.value.password,
+      gender: this.accountForm.value.gender
+    };
+    this.authService.createUser(userData).subscribe({
+      next: () => {
+        this.isLoading = false;
+        this.snackBar.open('¡Registro exitoso! Bienvenido a EventLy', 'Cerrar', {
+          duration: 3000,
+          panelClass: 'success-snackbar'
+        });
+        this.router.navigate(['/']);
+      },
+      error: (err) => {
+        this.isLoading = false;
+        this.snackBar.open('Error al registrarse: ' + (err.error?.message || 'Intenta nuevamente'), 'Cerrar', {
+          duration: 3000,
+          panelClass: 'error-snackbar'
+        });
+      }
+    });
   }
   
   markFormGroupTouched(formGroup: FormGroup): void {

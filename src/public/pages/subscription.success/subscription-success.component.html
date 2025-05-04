@@ -1,0 +1,35 @@
+<div class="min-h-screen bg-[#f8f9fb] flex flex-col items-center justify-center py-12 px-4 relative overflow-hidden">
+    <!-- Contenedor de confeti -->
+    <div class="confetti-container absolute inset-0 pointer-events-none"></div>
+    
+    <div class="max-w-md w-full bg-white rounded-lg shadow-xl overflow-hidden relative z-10 text-center" @fadeIn>
+      <!-- Animación de éxito -->
+      <div class="bg-gradient-to-r from-[#d4a017] to-[#a58d65] p-8 text-white">
+        <div class="success-animation" @scaleIn>
+          <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+            <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none"/>
+            <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+          </svg>
+        </div>
+        
+        <h1 class="text-3xl font-bold mt-6" @slideIn>¡Pago Exitoso!</h1>
+        <p class="text-white/90 mt-2 text-lg" @slideIn>Tu suscripción ha sido activada</p>
+      </div>
+      
+      <!-- Botón para navegar -->
+      <div class="p-8">
+        <p class="text-gray-600 mb-6" @slideIn>
+          Gracias por tu compra. Ya puedes comenzar a utilizar todos los servicios de tu plan.
+        </p>
+        
+        <button 
+          (click)="navigateHome()"
+          class="bg-[#d4a017] hover:bg-[#a58d65] text-white px-8 py-3 rounded-full font-medium transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-1"
+          @slideIn
+        >
+          <mat-icon class="mr-2">home</mat-icon>
+          Ir al Inicio
+        </button>
+      </div>
+    </div>
+  </div>

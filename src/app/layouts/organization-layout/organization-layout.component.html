@@ -1,0 +1,182 @@
+<div class="org-layout">
+  <!-- Sidebar para escritorio -->
+  <aside class="sidebar"
+    [ngClass]="{
+      'collapsed': sidebarCollapsed && !isMobile,
+      'mobile': isMobile,
+      'mobile-open': mobileSidebarOpen && isMobile
+    }"
+  >
+    <!-- Logo y toggle -->
+    <div class="sidebar-header">
+      <div class="logo-container">
+        <img *ngIf="!sidebarCollapsed || (isMobile && mobileSidebarOpen)" src="/assets/logo.png" alt="Logo" class="logo">
+        <img *ngIf="sidebarCollapsed && !isMobile" src="/assets/logo-small.png" alt="Logo" class="logo-small">
+      </div>
+      <button *ngIf="!isMobile" class="toggle-btn" (click)="toggleSidebar()" [matTooltip]="sidebarCollapsed ? 'Expandir' : 'Colapsar'" matTooltipPosition="right">
+        <mat-icon>{{ sidebarCollapsed ? 'chevron_right' : 'chevron_left' }}</mat-icon>
+      </button>
+      <button *ngIf="isMobile && mobileSidebarOpen" class="close-btn" (click)="closeMobileSidebar()">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+
+    <!-- Info tenant -->
+    <div class="tenant-info" *ngIf="!sidebarCollapsed || (isMobile && mobileSidebarOpen)">
+      <div class="tenant-avatar" [style.background-color]="getAvatarColor(currentTenant?.displayName || '')">
+        {{ getInitials(currentTenant?.displayName || '') }}
+      </div>
+      <div class="tenant-details">
+        <h3 class="tenant-name">{{ currentTenant?.displayName }}</h3>
+        <p class="tenant-domain">{{ currentTenant?.name }}</p>
+      </div>
+    </div>
+
+    <!-- Navegación -->
+    <nav class="sidebar-nav">
+      <ul>
+        <li *ngFor="let item of menuItems">
+          <a
+            [routerLink]="item.route"
+            routerLinkActive="active"
+            class="nav-item"
+            [matTooltip]="sidebarCollapsed && !isMobile ? item.label : ''"
+            matTooltipPosition="right"
+            (click)="isMobile ? closeMobileSidebar() : null"
+          >
+            <mat-icon class="nav-icon">{{ item.icon }}</mat-icon>
+            <span class="nav-label" *ngIf="!sidebarCollapsed || (isMobile && mobileSidebarOpen)">
+              {{ item.label }}
+            </span>
+            <span *ngIf="item.badge && (!sidebarCollapsed || (isMobile && mobileSidebarOpen))" class="nav-badge">
+              {{ item.badge }}
+            </span>
+            <span *ngIf="item.badge && sidebarCollapsed && !isMobile" class="nav-badge-collapsed">
+              {{ item.badge }}
+            </span>
+          </a>
+        </li>
+      </ul>
+    </nav>
+
+    <!-- Footer -->
+    <div class="sidebar-footer">
+      <button class="footer-btn" (click)="switchTenant()" [matTooltip]="sidebarCollapsed && !isMobile ? 'Cambiar organización' : ''" matTooltipPosition="right">
+        <mat-icon>swap_horiz</mat-icon>
+        <span *ngIf="!sidebarCollapsed || (isMobile && mobileSidebarOpen)">Cambiar organización</span>
+      </button>
+
+      <button class="footer-btn logout" (click)="logout()" [matTooltip]="sidebarCollapsed && !isMobile ? 'Cerrar sesión' : ''" matTooltipPosition="right">
+        <mat-icon>logout</mat-icon>
+        <span *ngIf="!sidebarCollapsed || (isMobile && mobileSidebarOpen)">Cerrar sesión</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- Overlay -->
+  <div *ngIf="isMobile && mobileSidebarOpen" class="sidebar-overlay" (click)="closeMobileSidebar()"></div>
+
+  <!-- Contenido principal -->
+  <main class="main-content" [ngClass]="{'sidebar-collapsed': sidebarCollapsed && !isMobile}">
+    <!-- Navbar -->
+    <header class="top-navbar">
+      <div class="navbar-left">
+        <button class="menu-toggle" (click)="toggleSidebar()">
+          <mat-icon>menu</mat-icon>
+        </button>
+        <h1 class="page-title">{{ currentTenant?.displayName }}</h1>
+      </div>
+
+      <div class="navbar-right">
+        <!-- Notificaciones -->
+        <button class="navbar-btn" [matMenuTriggerFor]="notificationsMenu">
+          <mat-icon [matBadge]="3" matBadgeColor="warn">notifications</mat-icon>
+        </button>
+        <mat-menu #notificationsMenu="matMenu" class="notifications-menu">
+          <div class="notifications-header">
+            <h3>Notificaciones</h3>
+            <button mat-button color="primary">Marcar todas como leídas</button>
+          </div>
+          <mat-divider></mat-divider>
+          <div class="notifications-list">
+            <a class="notification-item unread">
+              <div class="notification-icon new-event">
+                <mat-icon>event</mat-icon>
+              </div>
+              <div class="notification-content">
+                <p class="notification-title">Nuevo evento creado</p>
+                <p class="notification-text">Se ha creado el evento "Conferencia de Ingeniería"</p>
+                <p class="notification-time">Hace 5 minutos</p>
+              </div>
+            </a>
+            <a class="notification-item unread">
+              <div class="notification-icon user-joined">
+                <mat-icon>person_add</mat-icon>
+              </div>
+              <div class="notification-content">
+                <p class="notification-title">Nuevo usuario</p>
+                <p class="notification-text">Juan Pérez se ha unido a tu organización</p>
+                <p class="notification-time">Hace 2 horas</p>
+              </div>
+            </a>
+            <a class="notification-item">
+              <div class="notification-icon system">
+                <mat-icon>system_update</mat-icon>
+              </div>
+              <div class="notification-content">
+                <p class="notification-title">Actualización del sistema</p>
+                <p class="notification-text">Se ha actualizado el sistema a la versión 2.1.0</p>
+                <p class="notification-time">Ayer</p>
+              </div>
+            </a>
+          </div>
+          <mat-divider></mat-divider>
+          <div class="notifications-footer">
+            <button mat-button color="primary">Ver todas</button>
+          </div>
+        </mat-menu>
+
+        <!-- Perfil -->
+        <button class="navbar-btn profile-btn" [matMenuTriggerFor]="profileMenu">
+          <div class="profile-avatar" [style.background-color]="getAvatarColor(currentTenant?.displayName || '')">
+            {{ getInitials(currentTenant?.displayName || '') }}
+          </div>
+        </button>
+        <mat-menu #profileMenu="matMenu">
+          <div class="profile-header">
+            <div class="profile-avatar-large" [style.background-color]="getAvatarColor(currentTenant?.displayName || '')">
+              {{ getInitials(currentTenant?.displayName || '') }}
+            </div>
+            <div class="profile-info">
+              <h3>{{ currentTenant?.displayName }}</h3>
+              <p>{{ currentTenant?.role }}</p>
+            </div>
+          </div>
+          <mat-divider></mat-divider>
+          <button mat-menu-item>
+            <mat-icon>person</mat-icon>
+            <span>Mi perfil</span>
+          </button>
+          <button mat-menu-item>
+            <mat-icon>settings</mat-icon>
+            <span>Configuración</span>
+          </button>
+          <button mat-menu-item (click)="switchTenant()">
+            <mat-icon>swap_horiz</mat-icon>
+            <span>Cambiar organización</span>
+          </button>
+          <mat-divider></mat-divider>
+          <button mat-menu-item (click)="logout()">
+            <mat-icon>logout</mat-icon>
+            <span>Cerrar sesión</span>
+          </button>
+        </mat-menu>
+      </div>
+    </header>
+
+    <!-- Router outlet -->
+    <div class="page-content">
+      <router-outlet></router-outlet>
+    </div>
+  </main>
+</div>

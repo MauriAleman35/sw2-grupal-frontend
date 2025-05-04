@@ -1,0 +1,153 @@
+<div class="sections-container">
+    <!-- Encabezado -->
+    <div class="sections-header">
+      <div>
+        <h1 class="page-title">Secciones</h1>
+        <p class="page-subtitle">Personaliza las secciones de tu sitio web</p>
+      </div>
+    </div>
+    
+    <!-- Contenido principal -->
+    <div class="sections-content">
+      <!-- Secciones activas -->
+      <div class="sections-active">
+        <div class="section-list-header">
+          <h2 class="section-list-title">Secciones Activas</h2>
+          <p class="section-list-subtitle">Arrastra para reordenar las secciones</p>
+        </div>
+        
+        <div 
+          cdkDropList 
+          (cdkDropListDropped)="drop($event)"
+          class="section-list"
+        >
+          <mat-card 
+            *ngFor="let section of sections" 
+            class="section-card"
+            cdkDrag
+          >
+            <div class="section-drag-handle" cdkDragHandle>
+              <mat-icon>drag_indicator</mat-icon>
+            </div>
+            
+            <div class="section-icon" [matTooltip]="section.type">
+              <mat-icon>{{ section.icon }}</mat-icon>
+            </div>
+            
+            <div class="section-content">
+              <h3 class="section-title">{{ section.title }}</h3>
+              <p class="section-description">{{ section.description }}</p>
+            </div>
+            
+            <div class="section-status">
+              <span [ngClass]="getActiveStatusClass(section.active)" class="status-badge">
+                {{ getActiveStatusText(section.active) }}
+              </span>
+            </div>
+            
+            <div class="section-actions">
+              <button 
+                mat-icon-button 
+                [matTooltip]="section.active ? 'Desactivar' : 'Activar'"
+                (click)="toggleSectionActive(section)"
+              >
+                <mat-icon>{{ section.active ? 'visibility' : 'visibility_off' }}</mat-icon>
+              </button>
+              
+              <button 
+                mat-icon-button 
+                matTooltip="Editar"
+              >
+                <mat-icon>edit</mat-icon>
+              </button>
+              
+              <button 
+                mat-icon-button 
+                matTooltip="Eliminar"
+                (click)="removeSection(section)"
+              >
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+          </mat-card>
+        </div>
+      </div>
+      
+      <!-- Secciones disponibles -->
+      <div class="sections-available">
+        <div class="section-list-header">
+          <h2 class="section-list-title">Secciones Disponibles</h2>
+          <p class="section-list-subtitle">Haz clic en añadir para incluir una sección</p>
+        </div>
+        
+        <div class="section-list">
+          <mat-card *ngFor="let section of availableSections" class="section-card">
+            <div class="section-icon" [matTooltip]="section.type">
+              <mat-icon>{{ section.icon }}</mat-icon>
+            </div>
+            
+            <div class="section-content">
+              <h3 class="section-title">{{ section.title }}</h3>
+              <p class="section-description">{{ section.description }}</p>
+            </div>
+            
+            <div class="section-actions">
+              <button 
+                mat-icon-button 
+                matTooltip="Añadir"
+                (click)="addSection(section)"
+              >
+                <mat-icon>add_circle</mat-icon>
+              </button>
+            </div>
+          </mat-card>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Vista previa -->
+    <div class="preview-container">
+      <div class="preview-header">
+        <h2 class="preview-title">Vista Previa</h2>
+        <button mat-button color="primary">
+          <mat-icon>open_in_new</mat-icon>
+          Ver sitio completo
+        </button>
+      </div>
+      
+      <div class="preview-content">
+        <div class="preview-device">
+          <div class="preview-device-header">
+            <div class="preview-device-controls">
+              <span class="control red"></span>
+              <span class="control yellow"></span>
+              <span class="control green"></span>
+            </div>
+            <div class="preview-device-url">
+              <span>https://{{ 'monos.corp.uagrm.edu' }}</span>
+            </div>
+          </div>
+          
+          <div class="preview-device-content">
+            <!-- Simulación de las secciones -->
+            <div *ngFor="let section of sections" class="preview-section" [ngClass]="{'inactive': !section.active}">
+              <div class="preview-section-header">
+                <mat-icon>{{ section.icon }}</mat-icon>
+                <span>{{ section.title }}</span>
+              </div>
+              
+              <div class="preview-section-content" [ngSwitch]="section.type">
+                <div *ngSwitchCase="'banner'" class="preview-banner"></div>
+                <div *ngSwitchCase="'featured'" class="preview-featured"></div>
+                <div *ngSwitchCase="'categories'" class="preview-categories"></div>
+                <div *ngSwitchCase="'events'" class="preview-events"></div>
+                <div *ngSwitchCase="'about'" class="preview-about"></div>
+                <div *ngSwitchCase="'contact'" class="preview-contact"></div>
+                <div *ngSwitchDefault class="preview-default"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>

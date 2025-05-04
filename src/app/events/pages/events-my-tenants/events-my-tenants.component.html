@@ -1,0 +1,128 @@
+<div class="min-h-screen bg-[#f8f9fb] py-12">
+    <div class="container mx-auto px-4">
+      <!-- Encabezado -->
+      <div class="flex justify-between items-center mb-8">
+        <div>
+          <h1 class="text-3xl font-bold text-gray-800">Mis Organizaciones</h1>
+          <p class="text-gray-600 mt-1">Selecciona una organización para acceder a su panel</p>
+        </div>
+        
+        <button 
+          (click)="createNewTenant()"
+          class="bg-[#d4a017] hover:bg-[#a58d65] text-white px-4 py-2 rounded-md font-medium transition-colors duration-300 flex items-center"
+        >
+          <mat-icon class="mr-2">add</mat-icon>
+          Nueva Organización
+        </button>
+      </div>
+      
+      <!-- Mensaje de carga -->
+      <div *ngIf="loading" class="flex justify-center items-center py-20">
+        <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#d4a017]"></div>
+      </div>
+      
+      <!-- Mensaje de error -->
+      <div *ngIf="error" class="flex flex-col items-center justify-center py-20">
+        <mat-icon class="text-red-500 text-5xl mb-4">error</mat-icon>
+        <p class="text-xl text-center">No se pudieron cargar tus organizaciones</p>
+        <button 
+          class="mt-6 bg-[#d4a017] hover:bg-[#a58d65] text-white px-6 py-2 rounded-full transition-colors duration-300"
+          (click)="loadTenants()"
+        >
+          Intentar nuevamente
+        </button>
+      </div>
+      
+      <!-- Lista de tenants -->
+      <div *ngIf="!loading && !error" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div *ngFor="let tenant of tenants" class="tenant-card bg-white rounded-lg shadow-md overflow-hidden transition-all duration-300 hover:shadow-lg hover:translate-y-[-4px]">
+          <!-- Encabezado de la tarjeta -->
+          <div class="p-6 border-b border-gray-100">
+            <div class="flex items-center">
+              <!-- Avatar con iniciales -->
+              <div 
+                class="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-lg mr-4"
+                [style.background-color]="getAvatarColor(tenant.displayName)"
+              >
+                {{ getInitials(tenant.displayName) }}
+              </div>
+              
+              <div class="flex-1">
+                <h2 class="text-xl font-semibold text-gray-800 truncate" [matTooltip]="tenant.displayName">
+                  {{ tenant.displayName }}
+                </h2>
+                <p class="text-gray-500 text-sm truncate" [matTooltip]="tenant.tenantName">
+                  {{ tenant.tenantName }}
+                </p>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Contenido de la tarjeta -->
+          <div class="p-6">
+            <!-- Rol -->
+            <div class="flex items-center mb-4">
+              <mat-icon class="text-gray-400 mr-2">badge</mat-icon>
+              <div>
+                <p class="text-sm text-gray-600">Tu rol</p>
+                <div class="flex items-center mt-1">
+                  <span 
+                    [ngClass]="getRoleBadgeClass(tenant.role.name)"
+                    class="px-2 py-1 rounded text-xs font-medium"
+                  >
+                    {{ tenant.role.name }}
+                  </span>
+                  <span class="text-xs text-gray-500 ml-2">{{ tenant.role.description }}</span>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Fecha de creación (simulada) -->
+            <div class="flex items-center mb-6">
+              <mat-icon class="text-gray-400 mr-2">calendar_today</mat-icon>
+              <div>
+                <p class="text-sm text-gray-600">Miembro desde</p>
+                <p class="text-sm font-medium">{{ tenant.role.created_at | date:'dd/MM/yyyy' }}</p>
+              </div>
+            </div>
+            
+            <!-- Botón de acceso -->
+            <button 
+              (click)="accessTenant(tenant)"
+              class="w-full bg-white border border-[#d4a017] text-[#d4a017] hover:bg-[#d4a017] hover:text-white px-4 py-3 rounded-md font-medium transition-colors duration-300 flex items-center justify-center"
+            >
+              <mat-icon class="mr-2">login</mat-icon>
+              Acceder
+            </button>
+          </div>
+        </div>
+        
+        <!-- Tarjeta para crear nueva organización -->
+        <div class="tenant-card bg-white rounded-lg border-2 border-dashed border-gray-300 overflow-hidden transition-all duration-300 hover:border-[#d4a017] flex flex-col items-center justify-center p-8 cursor-pointer" (click)="createNewTenant()">
+          <div class="w-16 h-16 rounded-full bg-[#d4a017]/10 flex items-center justify-center mb-4">
+            <mat-icon class="text-[#d4a017] text-3xl">add</mat-icon>
+          </div>
+          <h3 class="text-xl font-semibold text-gray-800 mb-2">Crear Nueva Organización</h3>
+          <p class="text-gray-500 text-center">Configura un nuevo tenant para tu facultad o unidad administrativa</p>
+        </div>
+      </div>
+      
+      <!-- Mensaje cuando no hay tenants -->
+      <div *ngIf="!loading && !error && tenants.length === 0" class="flex flex-col items-center justify-center py-20">
+        <div class="w-20 h-20 rounded-full bg-[#d4a017]/10 flex items-center justify-center mb-4">
+          <mat-icon class="text-[#d4a017] text-3xl">business</mat-icon>
+        </div>
+        <h2 class="text-2xl font-bold text-gray-800 mb-2">No tienes organizaciones</h2>
+        <p class="text-gray-600 mb-6 text-center max-w-md">
+          Aún no perteneces a ninguna organización. Crea una nueva o solicita acceso a una existente.
+        </p>
+        <button 
+          (click)="createNewTenant()"
+          class="bg-[#d4a017] hover:bg-[#a58d65] text-white px-6 py-3 rounded-md font-medium transition-colors duration-300 flex items-center"
+        >
+          <mat-icon class="mr-2">add</mat-icon>
+          Crear Mi Primera Organización
+        </button>
+      </div>
+    </div>
+  </div>

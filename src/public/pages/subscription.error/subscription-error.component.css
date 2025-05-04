@@ -1,0 +1,71 @@
+/* Animación de error */
+.error-icon {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.2);
+  }
+  
+  .error-icon mat-icon {
+    font-size: 48px;
+    height: 48px;
+    width: 48px;
+  }
+  
+  /* Animación de ondas */
+  .error-icon::before,
+  .error-icon::after {
+    content: '';
+    position: absolute;
+    border: 2px solid rgba(255, 255, 255, 0.5);
+    border-radius: 50%;
+    width: 80px;
+    height: 80px;
+    animation: ripple 2s linear infinite;
+  }
+  
+  .error-icon::after {
+    animation-delay: 1s;
+  }
+  
+  @keyframes ripple {
+    0% {
+      transform: scale(1);
+      opacity: 1;
+    }
+    100% {
+      transform: scale(1.5);
+      opacity: 0;
+    }
+  }
+  
+  /* Estilos para botones */
+  button {
+    transition: all 0.3s ease;
+  }
+  
+  button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Animación de sacudida para el icono de error */
+  @keyframes shake {
+    0%, 100% {
+      transform: translateX(0);
+    }
+    10%, 30%, 50%, 70%, 90% {
+      transform: translateX(-5px);
+    }
+    20%, 40%, 60%, 80% {
+      transform: translateX(5px);
+    }
+  }
+  
+  .shake {
+    animation: shake 0.8s cubic-bezier(.36,.07,.19,.97) both;
+  }

@@ -1,1 +1,183 @@
-<p>events-create works!</p>
+<div class="min-h-screen bg-[#f8f9fb] py-12">
+  <div class="container mx-auto px-4">
+    <!-- Encabezado -->
+    <div class="text-center mb-12">
+      <h1 class="text-3xl font-bold text-gray-800 mb-2">Crea tu Tenant</h1>
+      <p class="text-gray-600 max-w-2xl mx-auto">Selecciona un plan, configura tu tenant y comienza a gestionar eventos para tu facultad o unidad administrativa.</p>
+    </div>
+    
+    <!-- Mensaje de carga -->
+    <div *ngIf="loading" class="flex justify-center items-center py-20">
+      <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#d4a017]"></div>
+    </div>
+    
+    <!-- Mensaje de error -->
+    <div *ngIf="error" class="flex flex-col items-center justify-center py-20">
+      <mat-icon class="text-red-500 text-5xl mb-4">error</mat-icon>
+      <p class="text-xl text-center">No se pudieron cargar los planes disponibles</p>
+      <button 
+        class="mt-6 bg-[#d4a017] hover:bg-[#a58d65] text-white px-6 py-2 rounded-full transition-colors duration-300"
+        (click)="loadSubscriptions()"
+      >
+        Intentar nuevamente
+      </button>
+    </div>
+    
+    <!-- Contenido principal -->
+    <div *ngIf="!loading && !error">
+      <!-- Pasos -->
+      <div class="flex justify-center mb-12">
+        <div class="flex items-center">
+          <div [ngClass]="{'bg-[#d4a017] text-white': currentStep >= 1, 'bg-gray-200 text-gray-600': currentStep < 1}"
+               class="w-10 h-10 rounded-full flex items-center justify-center font-semibold">
+            1
+          </div>
+          <div class="w-16 h-1" [ngClass]="{'bg-[#d4a017]': currentStep >= 2, 'bg-gray-200': currentStep < 2}"></div>
+          <div [ngClass]="{'bg-[#d4a017] text-white': currentStep >= 2, 'bg-gray-200 text-gray-600': currentStep < 2}"
+               class="w-10 h-10 rounded-full flex items-center justify-center font-semibold">
+            2
+          </div>
+        </div>
+      </div>
+      
+      <!-- Paso 1: Selección de Plan -->
+      <div *ngIf="currentStep === 1" class="max-w-6xl mx-auto">
+        <h2 class="text-2xl font-bold text-center mb-8 text-gray-800">Elige tu Plan</h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div *ngFor="let plan of pricingPlans" 
+               class="bg-white rounded-lg shadow-md overflow-hidden transition-transform duration-300 hover:-translate-y-1 hover:shadow-lg relative"
+               [ngClass]="{'border-2 border-[#d4a017]': plan.recommended}">
+            
+            <!-- Badge para plan recomendado -->
+            <div *ngIf="plan.recommended" class="absolute top-0 right-0 bg-[#d4a017] text-white px-3 py-1 text-sm font-semibold">
+              Recomendado
+            </div>
+            
+            <!-- Encabezado del plan -->
+            <div class="p-6 bg-gray-50 border-b">
+              <h3 class="text-xl font-bold text-gray-800 mb-1">{{ plan.name }}</h3>
+              <div class="flex items-baseline">
+                <span class="text-3xl font-bold text-[#d4a017]">Bs. {{ plan.price }}</span>
+                <span class="text-gray-500 ml-1">/mes</span>
+              </div>
+              <p class="mt-2 text-gray-600">{{ plan.description }}</p>
+            </div>
+            
+            <!-- Características -->
+            <div class="p-6">
+              <ul class="space-y-3">
+                <li *ngFor="let feature of plan.features" class="flex items-start">
+                  <mat-icon class="text-[#d4a017] mr-2 text-sm">check_circle</mat-icon>
+                  <span class="text-gray-700">{{ feature }}</span>
+                </li>
+              </ul>
+              
+              <!-- Botón de selección -->
+              <button 
+                (click)="selectPlan(plan)"
+                class="w-full mt-6 py-3 px-4 rounded-md font-medium transition-colors duration-300"
+                [ngClass]="{'bg-[#d4a017] hover:bg-[#a58d65] text-white': plan.recommended, 'bg-white border border-[#d4a017] text-[#d4a017] hover:bg-[#d4a017]/10': !plan.recommended}"
+              >
+                Seleccionar Plan
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Paso 2: Formulario de Tenant -->
+      <div *ngIf="currentStep === 2" class="max-w-3xl mx-auto">
+        <div class="flex items-center justify-between mb-8">
+          <button (click)="goBack()" class="flex items-center text-gray-600 hover:text-[#d4a017]">
+            <mat-icon>arrow_back</mat-icon>
+            <span class="ml-1">Volver a planes</span>
+          </button>
+          
+          <div class="bg-[#d4a017]/10 px-4 py-2 rounded-full">
+            <span class="text-[#d4a017] font-medium">Plan {{ selectedPlan?.name }} - Bs. {{ selectedPlan?.price }}/mes</span>
+          </div>
+        </div>
+        
+        <div class="bg-white rounded-lg shadow-md p-8">
+          <h2 class="text-2xl font-bold mb-6 text-gray-800">Configura tu Tenant</h2>
+          
+          <form [formGroup]="tenantForm" (ngSubmit)="submitForm()">
+            <div class="space-y-6">
+              <!-- Nombre técnico del tenant -->
+              <div>
+                <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Identificador del Tenant *</label>
+                <div class="flex">
+                  <input 
+                    type="text" 
+                    id="name" 
+                    formControlName="name"
+                    placeholder="mi-facultad"
+                    class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#d4a017]"
+                    [ngClass]="{'border-red-500': tenantForm.get('name')?.invalid && tenantForm.get('name')?.touched}"
+                  >
+                  <span class="bg-gray-100 px-3 py-2 border border-l-0 rounded-r-md text-gray-500">.uagrm.edu</span>
+                </div>
+                <div *ngIf="tenantForm.get('name')?.invalid && tenantForm.get('name')?.touched" class="text-red-500 text-sm mt-1">
+                  <div *ngIf="tenantForm.get('name')?.errors?.['required']">El identificador es requerido</div>
+                  <div *ngIf="tenantForm.get('name')?.errors?.['pattern']">Solo se permiten letras minúsculas, números, puntos y guiones</div>
+                  <div *ngIf="tenantForm.get('name')?.errors?.['minlength']">Debe tener al menos 3 caracteres</div>
+                </div>
+                <p class="text-xs text-gray-500 mt-1">Este será el identificador técnico de tu tenant (ej: ingenieria-sistemas)</p>
+              </div>
+              
+              <!-- Descripción del tenant -->
+              <div>
+                <label for="displayName" class="block text-sm font-medium text-gray-700 mb-1">Descripción *</label>
+                <textarea 
+                  id="displayName" 
+                  formControlName="displayName"
+                  rows="4"
+                  placeholder="Describe brevemente el propósito de este tenant"
+                  class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#d4a017]"
+                  [ngClass]="{'border-red-500': tenantForm.get('displayName')?.invalid && tenantForm.get('displayName')?.touched}"
+                ></textarea>
+                <div *ngIf="tenantForm.get('displayName')?.invalid && tenantForm.get('displayName')?.touched" class="text-red-500 text-sm mt-1">
+                  <div *ngIf="tenantForm.get('displayName')?.errors?.['required']">La descripción es requerida</div>
+                  <div *ngIf="tenantForm.get('displayName')?.errors?.['minlength']">Debe tener al menos 10 caracteres</div>
+                </div>
+                <p class="text-xs text-gray-500 mt-1">Esta descripción ayudará a identificar el propósito de este tenant</p>
+              </div>
+              
+              <!-- Resumen del plan seleccionado -->
+              <div class="bg-gray-50 p-4 rounded-md mt-6">
+                <h3 class="font-semibold text-gray-800 mb-2">Resumen del Plan Seleccionado</h3>
+                <div class="flex justify-between py-2 border-b border-gray-200">
+                  <span class="text-gray-600">Plan:</span>
+                  <span class="font-medium">{{ selectedPlan?.name }}</span>
+                </div>
+                <div class="flex justify-between py-2 border-b border-gray-200">
+                  <span class="text-gray-600">Precio mensual:</span>
+                  <span class="font-medium">Bs. {{ selectedPlan?.price }}</span>
+                </div>
+                <div class="flex justify-between py-2 font-semibold text-lg mt-2">
+                  <span>Total a pagar ahora:</span>
+                  <span class="text-[#d4a017]">Bs. {{ selectedPlan?.price }}</span>
+                </div>
+              </div>
+              
+              <div class="text-sm text-gray-500 flex items-center">
+                <mat-icon class="text-gray-400 mr-1 text-sm">info</mat-icon>
+                <span>Al continuar, serás redirigido a nuestra plataforma de pagos segura.</span>
+              </div>
+            </div>
+            
+            <div class="mt-8 flex justify-end">
+              <button 
+                type="submit"
+                class="bg-[#d4a017] hover:bg-[#a58d65] text-white px-6 py-3 rounded-md font-medium transition-colors duration-300"
+              >
+                Continuar al Pago
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

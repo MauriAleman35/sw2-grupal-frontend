@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -12,6 +12,7 @@ import { EventCardComponent } from '../../components/event-card/event-card.compo
 interface Event {
   id: number;
   title: string;
+  slug: string; // Añadimos slug como campo obligatorio
   date: Date;
   location: string;
   faculty: string;
@@ -54,7 +55,7 @@ export class HomeComponent implements OnInit {
   filteredEvents: Event[] = [];
   faculties: Faculty[] = [];
 
-  constructor() { }
+  constructor(private router: Router) { }
 
   ngOnInit(): void {
     // Datos de ejemplo
@@ -70,6 +71,7 @@ export class HomeComponent implements OnInit {
       {
         id: 1,
         title: 'Conferencia de Innovación Tecnológica',
+        slug: 'conferencia-innovacion-tecnologica',
         date: new Date('2025-05-15T18:00:00'),
         location: 'Auditorio Central',
         faculty: 'Ingeniería',
@@ -81,6 +83,7 @@ export class HomeComponent implements OnInit {
       {
         id: 2,
         title: 'Feria de Emprendimientos',
+        slug: 'feria-emprendimientos',
         date: new Date('2025-05-20T10:00:00'),
         location: 'Plaza Principal',
         faculty: 'Ciencias Económicas',
@@ -92,6 +95,7 @@ export class HomeComponent implements OnInit {
       {
         id: 3,
         title: 'Seminario de Derecho Constitucional',
+        slug: 'seminario-derecho-constitucional',
         date: new Date('2025-05-25T14:00:00'),
         location: 'Sala de Conferencias',
         faculty: 'Derecho',
@@ -103,6 +107,7 @@ export class HomeComponent implements OnInit {
       {
         id: 4,
         title: 'Jornada de Salud Preventiva',
+        slug: 'jornada-salud-preventiva',
         date: new Date('2025-06-05T09:00:00'),
         location: 'Campus Universitario',
         faculty: 'Medicina',
@@ -113,6 +118,7 @@ export class HomeComponent implements OnInit {
       {
         id: 5,
         title: 'Festival Cultural Universitario',
+        slug: 'festival-cultural-universitario',
         date: new Date('2025-06-10T16:00:00'),
         location: 'Teatro Municipal',
         faculty: 'Humanidades',
@@ -123,6 +129,7 @@ export class HomeComponent implements OnInit {
       {
         id: 6,
         title: 'Hackathon Universitario',
+        slug: 'hackathon-universitario',
         date: new Date('2025-06-15T08:00:00'),
         location: 'Laboratorio de Computación',
         faculty: 'Ingeniería',
@@ -163,9 +170,26 @@ export class HomeComponent implements OnInit {
     this.filteredEvents = [...this.events];
   }
 
-  viewEventDetails(eventId: number): void {
-    // Aquí iría la navegación a la página de detalles del evento
-    console.log(`Navegando a detalles del evento ${eventId}`);
-    // this.router.navigate(['/events', eventId]);
+  viewEventDetails(eventParam: number | string): void {
+    // Si recibimos un ID (número), buscamos el slug correspondiente
+    if (typeof eventParam === 'number') {
+      const event = this.events.find(e => e.id === eventParam);
+      if (event) {
+        this.router.navigate(['/events', event.slug]);
+      }
+    } else {
+      // Si ya recibimos un slug (string), lo usamos directamente
+      this.router.navigate(['/events', eventParam]);
+    }
+  }
+  
+  // Método auxiliar para generar slugs (por si necesitas generar más)
+  private generateSlug(title: string): string {
+    return title
+      .toLowerCase()
+      .replace(/[^\w\s-]/g, '') // Elimina caracteres especiales
+      .replace(/\s+/g, '-') // Reemplaza espacios con guiones
+      .replace(/--+/g, '-') // Elimina guiones múltiples
+      .trim(); // Elimina espacios al inicio y final
   }
 }

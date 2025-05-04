@@ -6,23 +6,30 @@ import { AppComponent } from './app.component';
 
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
-import { HttpClient, HttpClientModule, provideHttpClient } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, HttpClient, HttpClientModule, provideHttpClient } from '@angular/common/http';
 import { BehaviorSubject } from 'rxjs';
 import { MaterialModule } from './material.module';
 import { FooterComponent } from './events/components/footer/footer.component';
 import { HeaderComponent } from './events/components/header/header.component';
+import { AuthTenantInterceptor } from './interceptors/auth-tenant.interceptors';
+import { SubscriptionErrorComponent } from '../public/pages/subscription.error/subscription-error.component';
+import { SubscriptionSuccessComponent } from '../public/pages/subscription.success/subscription-success.component';
 @NgModule({
   declarations: [
-    AppComponent,FooterComponent,HeaderComponent
+    AppComponent,FooterComponent,HeaderComponent,SubscriptionErrorComponent,SubscriptionSuccessComponent
   ],
   imports: [
     BrowserModule,
-
+    
     BrowserModule,
     BrowserAnimationsModule,
     MaterialModule,BehaviorSubject,HttpClient // Asegúrate de importar el módulo de marketing
   ],
-  providers: [provideHttpClient()],
+  providers: [provideHttpClient(),{
+    provide: HTTP_INTERCEPTORS,
+    useClass: AuthTenantInterceptor,
+    multi: true,
+  }],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

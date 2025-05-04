@@ -1,0 +1,252 @@
+/* Contenedor principal */
+.dashboard-container {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+  
+  /* Encabezado del dashboard */
+  .dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  
+  .page-title {
+    font-size: 24px;
+    font-weight: 600;
+    color: #111827;
+    margin: 0;
+  }
+  
+  .header-actions {
+    display: flex;
+    gap: 8px;
+  }
+  
+  .refresh-btn {
+    display: flex;
+    align-items: center;
+  }
+  
+  /* Tarjetas de estadísticas */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+  }
+  
+  .stat-card {
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+  
+  .stat-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+  
+  .stat-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .stat-icon mat-icon {
+    font-size: 24px;
+    width: 24px;
+    height: 24px;
+  }
+  
+  .stat-menu-btn {
+    color: #9ca3af;
+  }
+  
+  .stat-content {
+    margin-bottom: 16px;
+  }
+  
+  .stat-value {
+    font-size: 28px;
+    font-weight: 700;
+    color: #111827;
+    margin: 0 0 4px;
+  }
+  
+  .stat-title {
+    font-size: 14px;
+    color: #6b7280;
+    margin: 0;
+  }
+  
+  .stat-footer {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .stat-change {
+    display: flex;
+    align-items: center;
+    font-weight: 600;
+    font-size: 14px;
+  }
+  
+  .change-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    margin-right: 2px;
+  }
+  
+  .change-period {
+    font-size: 14px;
+    color: #6b7280;
+  }
+  
+  /* Secciones */
+  .section-container {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    padding: 24px;
+  }
+  
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  
+  .section-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #111827;
+    margin: 0;
+  }
+  
+  /* Tarjetas de eventos */
+  .events-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+  
+  .event-card {
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  
+  .event-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+  }
+  
+  .event-image-container {
+    position: relative;
+    height: 160px;
+    overflow: hidden;
+  }
+  
+  .event-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  
+  .event-status {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+  }
+  
+  .status-badge {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  
+  .event-content {
+    padding: 16px;
+  }
+  
+  .event-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #111827;
+    margin: 0 0 12px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  .event-details {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .event-detail {
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    color: #6b7280;
+  }
+  
+  .detail-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    margin-right: 8px;
+    color: #9ca3af;
+  }
+  
+  .event-actions {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 16px;
+  }
+  
+  /* Responsive */
+  @media (max-width: 1200px) {
+    .stats-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .events-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  
+  @media (max-width: 767px) {
+    .stats-grid {
+      grid-template-columns: 1fr;
+    }
+    
+    .events-grid {
+      grid-template-columns: 1fr;
+    }
+    
+    .dashboard-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 12px;
+    }
+    
+    .section-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
+    }
+  }

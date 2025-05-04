@@ -34,7 +34,6 @@
       <app-event-card 
         *ngFor="let event of filteredEvents" 
         [event]="event"
-        (click)="viewEventDetails(event.id)"
       ></app-event-card>
     </div>
   </section>
