@@ -1,0 +1,272 @@
+/* organization/components/event-media/event-media.component.css */
+.step-container {
+  padding: 16px 0;
+}
+
+.step-title {
+  display: flex;
+  align-items: center;
+  font-size: 20px;
+  font-weight: 500;
+  color: #333;
+  margin: 0 0 8px 0;
+}
+
+.step-title mat-icon {
+  margin-right: 8px;
+  color: #3f51b5;
+}
+
+.step-description {
+  color: #666;
+  margin: 0 0 24px 0;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.media-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Zona de arrastrar y soltar */
+.drop-zone {
+  position: relative;
+  height: 300px;
+  border: 2px dashed #ccc;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s;
+  overflow: hidden;
+}
+
+.drop-zone.active {
+  border-color: #3f51b5;
+  background-color: rgba(63, 81, 181, 0.05);
+}
+
+.drop-zone.has-image {
+  border-style: solid;
+  border-color: #e0e0e0;
+}
+
+.drop-zone-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 24px;
+}
+
+.upload-icon {
+  font-size: 48px;
+  height: 48px;
+  width: 48px;
+  color: #757575;
+  margin-bottom: 16px;
+}
+
+.upload-title {
+  font-size: 18px;
+  font-weight: 500;
+  color: #333;
+  margin: 0 0 8px 0;
+}
+
+.upload-subtitle {
+  font-size: 14px;
+  color: #666;
+  margin: 0 0 16px 0;
+}
+
+.upload-formats {
+  font-size: 12px;
+  color: #757575;
+  margin: 0 0 24px 0;
+}
+
+.select-file-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+}
+
+/* Vista previa de imagen */
+.image-preview-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.image-preview {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.image-preview-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.image-preview-container:hover .image-preview-overlay {
+  opacity: 1;
+}
+
+.remove-image-button,
+.change-image-button {
+  transform: scale(0.9);
+  transition: transform 0.2s;
+}
+
+.remove-image-button:hover,
+.change-image-button:hover {
+  transform: scale(1);
+}
+
+/* Barra de progreso */
+.upload-progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+}
+
+/* Mensaje de error */
+.error-message {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background-color: #ffebee;
+  border-radius: 8px;
+  color: #c62828;
+  font-size: 14px;
+}
+
+.error-message mat-icon {
+  color: #f44336;
+}
+
+/* Sugerencias de imágenes */
+.image-suggestions {
+  margin-top: 32px;
+}
+
+.suggestions-title {
+  font-size: 16px;
+  font-weight: 500;
+  color: #333;
+  margin: 0 0 8px 0;
+}
+
+.suggestions-description {
+  font-size: 14px;
+  color: #666;
+  margin: 0 0 16px 0;
+}
+
+.suggestions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 16px;
+}
+
+.suggestion-image {
+  position: relative;
+  height: 100px;
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.suggestion-image:hover {
+  transform: translateY(-4px);
+}
+
+.suggestion-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.suggestion-label {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: 8px;
+  background-color: rgba(0, 0, 0, 0.6);
+  color: white;
+  font-size: 12px;
+  text-align: center;
+}
+
+/* Estilos para los consejos */
+.form-tips {
+  margin-top: 24px;
+  padding: 16px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  border-left: 4px solid #3f51b5;
+}
+
+.tip {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+
+.tip:last-child {
+  margin-bottom: 0;
+}
+
+.tip mat-icon {
+  color: #ffc107;
+  margin-right: 8px;
+  font-size: 20px;
+}
+
+.tip span {
+  font-size: 14px;
+  color: #555;
+  line-height: 1.5;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .drop-zone {
+    height: 200px;
+  }
+  
+  .upload-icon {
+    font-size: 36px;
+    height: 36px;
+    width: 36px;
+  }
+  
+  .upload-title {
+    font-size: 16px;
+  }
+  
+  .suggestions-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

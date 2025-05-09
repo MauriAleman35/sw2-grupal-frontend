@@ -1,0 +1,125 @@
+<!-- organization/components/event-media/event-media.component.html -->
+<div class="step-container">
+  <h2 class="step-title">
+    <mat-icon>image</mat-icon>
+    Multimedia del Evento
+  </h2>
+  <p class="step-description">
+    Añade una imagen representativa para tu evento. Esta imagen se mostrará en la lista de eventos y en la página de detalles.
+  </p>
+
+  <form [formGroup]="mediaForm" class="media-form">
+    <!-- Área de arrastrar y soltar para la imagen -->
+    <div 
+      class="drop-zone" 
+      [class.active]="isDragging"
+      [class.has-image]="imagePreview"
+      (dragover)="onDragOver($event)"
+      (dragleave)="onDragLeave($event)"
+      (drop)="onDrop($event)"
+      (click)="!imagePreview && triggerFileInput()"
+    >
+      <input 
+        type="file" 
+        #fileInput
+        hidden 
+        accept="image/*" 
+        (change)="onFileSelected($event)"
+      >
+      
+      <ng-container *ngIf="!imagePreview; else previewTemplate">
+        <div class="drop-zone-content">
+          <mat-icon class="upload-icon">cloud_upload</mat-icon>
+          <h3 class="upload-title">Arrastra y suelta una imagen aquí</h3>
+          <p class="upload-subtitle">o haz clic para seleccionar un archivo</p>
+          <p class="upload-formats">Formatos permitidos: JPEG, PNG, GIF, WEBP (máx. 5MB)</p>
+          
+          <button 
+            mat-stroked-button 
+            type="button" 
+            class="select-file-button"
+            (click)="triggerFileInput(); $event.stopPropagation()"
+          >
+            <mat-icon>file_upload</mat-icon>
+            Seleccionar archivo
+          </button>
+        </div>
+      </ng-container>
+      
+      <ng-template #previewTemplate>
+        <div class="image-preview-container">
+          <img [src]="imagePreview" alt="Vista previa de la imagen" class="image-preview">
+          <div class="image-preview-overlay">
+            <button 
+              mat-mini-fab 
+              color="warn" 
+              class="remove-image-button"
+              (click)="removeImage(); $event.stopPropagation()"
+              matTooltip="Eliminar imagen"
+            >
+              <mat-icon>delete</mat-icon>
+            </button>
+            <button 
+              mat-mini-fab 
+              color="primary" 
+              class="change-image-button"
+              (click)="triggerFileInput(); $event.stopPropagation()"
+              matTooltip="Cambiar imagen"
+            >
+              <mat-icon>edit</mat-icon>
+            </button>
+          </div>
+        </div>
+      </ng-template>
+      
+      <!-- Barra de progreso de carga -->
+      <mat-progress-bar 
+        *ngIf="isUploading" 
+        mode="determinate" 
+        [value]="uploadProgress"
+        class="upload-progress"
+      ></mat-progress-bar>
+    </div>
+    
+    <!-- Mensaje de error -->
+    <div class="error-message" *ngIf="errorMessage">
+      <mat-icon>error</mat-icon>
+      <span>{{ errorMessage }}</span>
+    </div>
+  </form>
+
+  <div class="image-suggestions">
+    <h3 class="suggestions-title">Imágenes sugeridas</h3>
+    <p class="suggestions-description">Haz clic en una imagen para usarla como imagen del evento</p>
+    
+    <!-- <div class="suggestions-grid">
+      <div class="suggestion-image" (click)="processFile(null); imagePreview = '/assets/images/event-templates/conference.jpg'">
+        <img src="/assets/images/event-templates/conference.jpg" alt="Conferencia">
+        <div class="suggestion-label">Conferencia</div>
+      </div>
+      <div class="suggestion-image" (click)="processFile(null); imagePreview = '/assets/images/event-templates/workshop.jpg'">
+        <img src="/assets/images/event-templates/workshop.jpg" alt="Taller">
+        <div class="suggestion-label">Taller</div>
+      </div>
+      <div class="suggestion-image" (click)="processFile(null); imagePreview = '/assets/images/event-templates/seminar.jpg'">
+        <img src="/assets/images/event-templates/seminar.jpg" alt="Seminario">
+        <div class="suggestion-label">Seminario</div>
+      </div>
+      <div class="suggestion-image" (click)="processFile(null); imagePreview = '/assets/images/event-templates/cultural.jpg'">
+        <img src="/assets/images/event-templates/cultural.jpg" alt="Evento Cultural">
+        <div class="suggestion-label">Evento Cultural</div>
+      </div>
+    </div> -->
+  </div>
+
+  <div class="form-tips">
+    <div class="tip">
+      <mat-icon>lightbulb</mat-icon>
+      <span>Usa imágenes de alta calidad y relevantes para el tema del evento.</span>
+    </div>
+    <div class="tip">
+      <mat-icon>lightbulb</mat-icon>
+      <span>Las imágenes horizontales suelen verse mejor en la mayoría de los dispositivos.</span>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,264 @@
+/* organization/components/event-review/event-review.component.css */
+.step-container {
+  padding: 16px 0;
+}
+
+.step-title {
+  display: flex;
+  align-items: center;
+  font-size: 20px;
+  font-weight: 500;
+  color: #333;
+  margin: 0 0 8px 0;
+}
+
+.step-title mat-icon {
+  margin-right: 8px;
+  color: #3f51b5;
+}
+
+.step-description {
+  color: #666;
+  margin: 0 0 24px 0;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.review-container {
+  display: flex;
+  gap: 24px;
+}
+
+.review-preview {
+  flex: 1;
+  max-width: 350px;
+}
+
+.review-details {
+  flex: 2;
+}
+
+/* Estilos para la tarjeta de vista previa */
+.event-preview-card {
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.event-image-container {
+  position: relative;
+  height: 180px;
+  overflow: hidden;
+}
+
+.event-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.event-status {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 1;
+}
+
+.status-badge {
+  padding: 4px 12px;
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: 500;
+  display: inline-block;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.event-date-badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background-color: #2196f3;
+  color: white;
+  border-radius: 8px;
+  overflow: hidden;
+  width: 60px;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.date-month {
+  background-color: rgba(0, 0, 0, 0.2);
+  padding: 2px 0;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.date-day {
+  padding: 4px 0;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.event-content {
+  padding: 16px;
+}
+
+.event-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+  margin: 0 0 12px 0;
+  line-height: 1.3;
+}
+
+.event-details {
+  margin-bottom: 12px;
+}
+
+.event-detail {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+  color: #555;
+}
+
+.detail-icon {
+  font-size: 18px;
+  margin-right: 8px;
+  color: #666;
+}
+
+.event-description {
+  color: #666;
+  font-size: 14px;
+  line-height: 1.5;
+  margin-bottom: 16px;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.event-faculty {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.faculty-chip {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: 500;
+  border: 1px solid;
+}
+
+/* Clases de colores para estados */
+.bg-blue-100 {
+  background-color: #e3f2fd;
+}
+
+.text-blue-800 {
+  color: #1565c0;
+}
+
+/* Estilos para las secciones de revisión */
+.review-section {
+  padding: 16px 0;
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  font-size: 16px;
+  font-weight: 500;
+  color: #333;
+  margin: 0 0 16px 0;
+}
+
+.section-title mat-icon {
+  margin-right: 8px;
+  color: #3f51b5;
+}
+
+.section-content {
+  padding-left: 32px;
+}
+
+.review-item {
+  display: flex;
+  margin-bottom: 12px;
+}
+
+.review-item:last-child {
+  margin-bottom: 0;
+}
+
+.item-label {
+  font-weight: 500;
+  color: #555;
+  width: 120px;
+  flex-shrink: 0;
+}
+
+.item-value {
+  color: #333;
+  flex: 1;
+}
+
+.item-value.description {
+  white-space: pre-line;
+  line-height: 1.5;
+}
+
+/* Mensaje de revisión */
+.review-message {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-top: 24px;
+  padding: 16px;
+  background-color: #fff9c4;
+  border-radius: 8px;
+  border-left: 4px solid #fbc02d;
+}
+
+.review-message mat-icon {
+  color: #fbc02d;
+  margin-top: 2px;
+}
+
+.review-message p {
+  margin: 0;
+  font-size: 14px;
+  color: #5d4037;
+  line-height: 1.5;
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+  .review-container {
+    flex-direction: column;
+  }
+  
+  .review-preview {
+    max-width: 100%;
+  }
+  
+  .event-preview-card {
+    max-width: 400px;
+    margin: 0 auto;
+  }
+}
+
+@media (max-width: 768px) {
+  .review-item {
+    flex-direction: column;
+  }
+  
+  .item-label {
+    width: 100%;
+    margin-bottom: 4px;
+  }
+}

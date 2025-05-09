@@ -8,7 +8,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatProgressSpinnerModule, MatSpinner } from '@angular/material/progress-spinner';
 import { MatTabsModule } from '@angular/material/tabs'; // Si usas tabs
 import { MatCardModule } from '@angular/material/card'; // Si usas cards
 import { MatMenuModule } from '@angular/material/menu';
@@ -17,6 +17,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatStepperModule } from '@angular/material/stepper';
 // Añade aquí todos los módulos de Material que necesites
 
 const MaterialComponents = [
@@ -27,8 +28,8 @@ const MaterialComponents = [
   MatCheckboxModule,
   MatProgressSpinnerModule,
   MatTabsModule,
-  MatCardModule,    MatMenuModule,   
-   
+  MatCardModule,    MatMenuModule,       MatStepperModule,
+    MatProgressSpinnerModule,
       MatSelectModule,
       MatSlideToggleModule,
       MatTabsModule,

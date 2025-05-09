@@ -1,0 +1,270 @@
+<div class="faculty-container">
+  <!-- Encabezado -->
+  <div class="faculty-header">
+    <div>
+      <h1 class="page-title">Facultades</h1>
+      <p class="page-subtitle">Gestiona las facultades de tu universidad</p>
+    </div>
+    
+    <button mat-raised-button color="primary" class="create-btn" (click)="openCreateDialog()">
+      <mat-icon>add</mat-icon>
+      Nueva Facultad
+    </button>
+  </div>
+  
+  <!-- Filtros y controles -->
+  <div class="filters-container">
+    <div class="search-container">
+      <mat-form-field appearance="outline" class="search-field">
+        <mat-label>Buscar facultad</mat-label>
+        <input matInput [(ngModel)]="searchTerm" (keyup)="applyFilters()" placeholder="Nombre, ubicación...">
+        <mat-icon matPrefix>search</mat-icon>
+        <button 
+          *ngIf="searchTerm" 
+          matSuffix 
+          mat-icon-button 
+          aria-label="Clear" 
+          (click)="searchTerm=''; applyFilters()"
+        >
+          <mat-icon>close</mat-icon>
+        </button>
+      </mat-form-field>
+      
+      <!-- <mat-form-field appearance="outline" class="status-filter">
+        <mat-label>Estado</mat-label>
+        <mat-select [(ngModel)]="statusFilter" (selectionChange)="applyFilters()">
+          <mat-option value="all">Todos</mat-option>
+          <mat-option value="active">Activos</mat-option>
+          <mat-option value="inactive">Inactivos</mat-option>
+        </mat-select>
+      </mat-form-field> -->
+      
+      <button 
+        mat-icon-button 
+        class="view-toggle" 
+        [matTooltip]="viewMode === 'table' ? 'Ver como cuadrícula' : 'Ver como tabla'"
+        (click)="toggleViewMode()"
+      >
+        <mat-icon>{{ viewMode === 'table' ? 'grid_view' : 'view_list' }}</mat-icon>
+      </button>
+    </div>
+    
+    <div class="results-info">
+      {{ filteredFaculties.length }} resultado{{ filteredFaculties.length !== 1 ? 's' : '' }}
+    </div>
+  </div>
+  
+  <!-- Indicador de carga -->
+  <div *ngIf="isLoading" class="loading-container">
+    <mat-spinner diameter="40"></mat-spinner>
+    <p>Cargando facultades...</p>
+  </div>
+  
+  <!-- Vista de tabla -->
+  <div class="table-container" *ngIf="viewMode === 'table' && !isLoading">
+    <table mat-table [dataSource]="filteredFaculties" matSort class="faculty-table">
+      <!-- Columna de Nombre -->
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Nombre</th>
+        <td mat-cell *matCellDef="let faculty; let i = index">
+          <div class="faculty-name-cell">
+            <div 
+              class="faculty-avatar" 
+              [style.background-color]="getFacultyColor(i)"
+            >
+              {{ getInitials(faculty.name) }}
+            </div>
+            <div class="faculty-name-info">
+              <span class="faculty-name">{{ faculty.name }}</span>
+              <span class="faculty-location">{{ faculty.tenant.display_name }}</span>
+            </div>
+          </div>
+        </td>
+      </ng-container>
+      
+      <!-- Columna de Ubicación -->
+      <ng-container matColumnDef="location">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Ubicación</th>
+        <td mat-cell *matCellDef="let faculty">{{ faculty.location }}</td>
+      </ng-container>
+      
+      <!-- Columna de Tenant -->
+      <ng-container matColumnDef="tenant">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Tenant</th>
+        <td mat-cell *matCellDef="let faculty">{{ faculty.tenant.display_name }}</td>
+      </ng-container>
+      
+      <!-- Columna de Fecha de Creación -->
+      <ng-container matColumnDef="created_at">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Fecha de Creación</th>
+        <td mat-cell *matCellDef="let faculty">{{ faculty.created_at | date:'dd/MM/yyyy' }}</td>
+      </ng-container>
+      
+      <!-- Columna de Estado -->
+      <ng-container matColumnDef="status">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Estado</th>
+        <td mat-cell *matCellDef="let faculty">
+          <span [ngClass]="getStatusClass(faculty.is_active)" class="status-badge">
+            {{ faculty.is_active ? 'Activo' : 'Inactivo' }}
+          </span>
+        </td>
+      </ng-container>
+      
+      <!-- Columna de Acciones -->
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef>Acciones</th>
+        <td mat-cell *matCellDef="let faculty">
+          <div class="action-buttons">
+            <button 
+              mat-icon-button 
+              color="primary" 
+              matTooltip="Editar"
+              (click)="openEditDialog(faculty)"
+            >
+              <mat-icon>edit</mat-icon>
+            </button>
+            
+            <button 
+              mat-icon-button 
+              [color]="faculty.is_active ? 'warn' : 'primary'"
+              [matTooltip]="faculty.is_active ? 'Desactivar' : 'Activar'"
+              (click)="toggleStatus(faculty)"
+            >
+              <mat-icon>{{ faculty.is_active ? 'block' : 'check_circle' }}</mat-icon>
+            </button>
+            
+            <button 
+              mat-icon-button 
+              color="warn" 
+              matTooltip="Eliminar"
+              (click)="openDeleteDialog(faculty)"
+            >
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+        </td>
+      </ng-container>
+      
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      
+      <!-- Fila para cuando no hay resultados -->
+      <tr class="mat-row" *matNoDataRow>
+        <td class="mat-cell no-data-cell" [attr.colspan]="displayedColumns.length">
+          No se encontraron facultades con los filtros aplicados
+        </td>
+      </tr>
+    </table>
+    
+    <mat-paginator 
+      [pageSizeOptions]="[5, 10, 25, 100]" 
+      showFirstLastButtons 
+      aria-label="Seleccionar página de facultades">
+    </mat-paginator>
+  </div>
+  
+  <!-- Vista de cuadrícula -->
+  <div class="grid-container" *ngIf="viewMode === 'grid' && !isLoading">
+    <div class="faculty-grid">
+      <mat-card *ngFor="let faculty of filteredFaculties; let i = index" class="faculty-card">
+        <div class="faculty-card-header" [style.background-color]="getFacultyColor(i)">
+          <div class="faculty-logo">
+            <div class="faculty-initials">{{ getInitials(faculty.name) }}</div>
+          </div>
+          <div class="faculty-status">
+            <span [ngClass]="getStatusClass(faculty.is_active)" class="status-badge">
+              {{ faculty.is_active ? 'Activo' : 'Inactivo' }}
+            </span>
+          </div>
+        </div>
+        
+        <mat-card-content class="faculty-card-content">
+          <h2 class="faculty-card-title">{{ faculty.name }}</h2>
+          <p class="faculty-card-code">{{ faculty.tenant.display_name }}</p>
+          <p class="faculty-card-location">{{ faculty.location }}</p>
+          
+          <div class="faculty-card-details">
+            <div class="detail-item">
+              <mat-icon class="detail-icon">location_on</mat-icon>
+              <div class="detail-content">
+                <span class="detail-label">Ubicación</span>
+                <span class="detail-value">{{ faculty.location }}</span>
+              </div>
+            </div>
+            
+            <div class="detail-item">
+              <mat-icon class="detail-icon">domain</mat-icon>
+              <div class="detail-content">
+                <span class="detail-label">Tenant</span>
+                <span class="detail-value">{{ faculty.tenant.display_name }}</span>
+              </div>
+            </div>
+            
+            <div class="detail-item">
+              <mat-icon class="detail-icon">event</mat-icon>
+              <div class="detail-content">
+                <span class="detail-label">Creado</span>
+                <span class="detail-value">{{ faculty.created_at | date:'dd/MM/yyyy' }}</span>
+              </div>
+            </div>
+            
+            <div class="detail-item">
+              <mat-icon class="detail-icon">update</mat-icon>
+              <div class="detail-content">
+                <span class="detail-label">Actualizado</span>
+                <span class="detail-value">{{ faculty.updated_at | date:'dd/MM/yyyy' }}</span>
+              </div>
+            </div>
+            
+            <!-- <div class="detail-item">
+              <mat-icon class="detail-icon">verified_user</mat-icon>
+              <div class="detail-content">
+                <span class="detail-label">ID</span>
+                <span class="detail-value">{{ faculty.id.substring(0, 8) }}...</span>
+              </div>
+            </div> -->
+          </div>
+        </mat-card-content>
+        
+        <mat-card-actions class="faculty-card-actions">
+          <button 
+            mat-button 
+            color="primary"
+            (click)="openEditDialog(faculty)"
+          >
+            <mat-icon>edit</mat-icon>
+            Editar
+          </button>
+<!--           
+          <button 
+            mat-button 
+            [color]="faculty.is_active ? 'warn' : 'primary'"
+            (click)="toggleStatus(faculty)"
+          >
+            <mat-icon>{{ faculty.is_active ? 'block' : 'check_circle' }}</mat-icon>
+            {{ faculty.is_active ? 'Desactivar' : 'Activar' }}
+          </button> -->
+          
+          <button 
+            mat-icon-button 
+            color="warn"
+            matTooltip="Eliminar"
+            (click)="openDeleteDialog(faculty)"
+          >
+            <mat-icon>delete</mat-icon>
+          </button>
+        </mat-card-actions>
+      </mat-card>
+    </div>
+    
+    <!-- Mensaje cuando no hay resultados -->
+    <div *ngIf="filteredFaculties.length === 0" class="no-results">
+      <mat-icon class="no-results-icon">search_off</mat-icon>
+      <h3>No se encontraron resultados</h3>
+      <p>Intenta con otros términos de búsqueda o filtros</p>
+      <button mat-button color="primary" (click)="searchTerm=''; statusFilter='all'; applyFilters()">
+        Limpiar filtros
+      </button>
+    </div>
+  </div>
+</div>

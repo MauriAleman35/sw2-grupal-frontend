@@ -1,0 +1,79 @@
+<!-- organization/components/event-basic-info/event-basic-info.component.html -->
+<div class="step-container">
+  <h2 class="step-title">
+    <mat-icon>info</mat-icon>
+    Información Básica del Evento
+  </h2>
+  <p class="step-description">
+    Proporciona los detalles esenciales para tu evento. Esta información será visible para todos los asistentes.
+  </p>
+
+  <form [formGroup]="basicInfoForm" class="basic-info-form">
+    <!-- Título del evento -->
+    <mat-form-field appearance="outline" class="form-field">
+      <mat-label>Título del Evento</mat-label>
+      <input 
+        matInput 
+        formControlName="title" 
+        placeholder="Ej. Conferencia de Ingeniería 2025"
+        maxlength="100"
+      >
+      <mat-icon matPrefix>title</mat-icon>
+      <mat-hint align="end">{{ getTitleRemainingChars() }} caracteres restantes</mat-hint>
+      <mat-error *ngIf="basicInfoForm.get('title')?.hasError('required')">
+        El título es obligatorio
+      </mat-error>
+      <mat-error *ngIf="basicInfoForm.get('title')?.hasError('maxlength')">
+        El título no puede exceder los 100 caracteres
+      </mat-error>
+    </mat-form-field>
+
+    <!-- Descripción del evento -->
+    <mat-form-field appearance="outline" class="form-field">
+      <mat-label>Descripción</mat-label>
+      <textarea 
+        matInput 
+        formControlName="description" 
+        placeholder="Describe brevemente el evento y sus objetivos"
+        rows="5"
+        maxlength="500"
+      ></textarea>
+      <mat-icon matPrefix>description</mat-icon>
+      <mat-hint align="end">{{ getDescriptionRemainingChars() }} caracteres restantes</mat-hint>
+      <mat-error *ngIf="basicInfoForm.get('description')?.hasError('required')">
+        La descripción es obligatoria
+      </mat-error>
+      <mat-error *ngIf="basicInfoForm.get('description')?.hasError('maxlength')">
+        La descripción no puede exceder los 500 caracteres
+      </mat-error>
+    </mat-form-field>
+
+    <!-- Selector de facultad -->
+    <mat-form-field appearance="outline" class="form-field">
+      <mat-label>Facultad</mat-label>
+      <mat-select formControlName="facultyId">
+        <mat-option *ngFor="let faculty of faculties; let i = index" [value]="faculty.id">
+          <div class="faculty-option">
+            <div class="faculty-color" [style.background-color]="getFacultyColor(i)"></div>
+            <span>{{ faculty.name }}</span>
+          </div>
+        </mat-option>
+      </mat-select>
+      <mat-icon matPrefix>school</mat-icon>
+      <mat-error *ngIf="basicInfoForm.get('facultyId')?.hasError('required')">
+        Debes seleccionar una facultad
+      </mat-error>
+    </mat-form-field>
+  </form>
+
+  <div class="form-tips">
+    <div class="tip">
+      <mat-icon>lightbulb</mat-icon>
+      <span>Usa un título claro y descriptivo para que los asistentes entiendan rápidamente de qué trata el evento.</span>
+    </div>
+    <div class="tip">
+      <mat-icon>lightbulb</mat-icon>
+      <span>En la descripción, incluye información sobre los temas a tratar, ponentes o cualquier requisito especial.</span>
+    </div>
+  </div>
+</div>

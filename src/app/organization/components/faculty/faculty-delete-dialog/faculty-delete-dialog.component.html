@@ -1,0 +1,23 @@
+<div class="delete-dialog-container">
+    <div class="delete-icon">
+      <mat-icon>warning</mat-icon>
+    </div>
+    
+    <h2 mat-dialog-title>Eliminar Facultad</h2>
+    
+    <div mat-dialog-content>
+      <p class="delete-message">
+        ¿Estás seguro de que deseas eliminar la facultad <strong>{{ data.faculty.name }}</strong>?
+      </p>
+      <p class="delete-warning">
+        Esta acción no se puede deshacer. Se eliminarán todos los datos asociados a esta facultad.
+      </p>
+    </div>
+    
+    <div mat-dialog-actions align="end">
+      <button mat-button (click)="onCancel()">Cancelar</button>
+      <button mat-raised-button color="warn" (click)="onConfirm()">
+        Eliminar
+      </button>
+    </div>
+  </div>

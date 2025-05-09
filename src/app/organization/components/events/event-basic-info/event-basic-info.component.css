@@ -1,0 +1,94 @@
+/* organization/components/event-basic-info/event-basic-info.component.css */
+.step-container {
+  padding: 16px 0;
+}
+
+.step-title {
+  display: flex;
+  align-items: center;
+  font-size: 20px;
+  font-weight: 500;
+  color: #333;
+  margin: 0 0 8px 0;
+}
+
+.step-title mat-icon {
+  margin-right: 8px;
+  color: #3f51b5;
+}
+
+.step-description {
+  color: #666;
+  margin: 0 0 24px 0;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.basic-info-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-field {
+  width: 100%;
+}
+
+/* Estilos para el selector de facultad */
+.faculty-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.faculty-color {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+/* Estilos para los consejos */
+.form-tips {
+  margin-top: 24px;
+  padding: 16px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  border-left: 4px solid #3f51b5;
+}
+
+.tip {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+
+.tip:last-child {
+  margin-bottom: 0;
+}
+
+.tip mat-icon {
+  color: #ffc107;
+  margin-right: 8px;
+  font-size: 20px;
+}
+
+.tip span {
+  font-size: 14px;
+  color: #555;
+  line-height: 1.5;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .step-title {
+    font-size: 18px;
+  }
+  
+  .step-description {
+    font-size: 13px;
+  }
+  
+  .form-tips {
+    padding: 12px;
+  }
+}

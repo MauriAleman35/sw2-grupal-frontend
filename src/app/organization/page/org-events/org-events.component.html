@@ -1,375 +1,387 @@
 <div class="events-container">
-    <!-- Encabezado -->
-    <div class="events-header">
-      <div>
+  <!-- Encabezado con estadísticas -->
+  <div class="events-header">
+    <div class="header-content">
+      <div class="header-title">
         <h1 class="page-title">Eventos</h1>
         <p class="page-subtitle">Gestiona todos los eventos de tu organización</p>
       </div>
       
-      <button mat-raised-button color="primary" class="create-btn">
-        <mat-icon>add</mat-icon>
-        Crear Evento
-      </button>
+      <div class="event-stats">
+        <div class="stat-card upcoming">
+          <div class="stat-icon">
+            <mat-icon>event</mat-icon>
+          </div>
+          <div class="stat-content">
+            <span class="stat-value">{{ filterEventsByStatus('upcoming').length }}</span>
+            <span class="stat-label">Próximos</span>
+          </div>
+        </div>
+        
+        <div class="stat-card active">
+          <div class="stat-icon">
+            <mat-icon>event_available</mat-icon>
+          </div>
+          <div class="stat-content">
+            <span class="stat-value">{{ filterEventsByStatus('active').length }}</span>
+            <span class="stat-label">Activos</span>
+          </div>
+        </div>
+        
+        <div class="stat-card completed">
+          <div class="stat-icon">
+            <mat-icon>event_note</mat-icon>
+          </div>
+          <div class="stat-content">
+            <span class="stat-value">{{ filterEventsByStatus('completed').length }}</span>
+            <span class="stat-label">Completados</span>
+          </div>
+        </div>
+        
+        <div class="stat-card cancelled">
+          <div class="stat-icon">
+            <mat-icon>event_busy</mat-icon>
+          </div>
+          <div class="stat-content">
+            <span class="stat-value">{{ filterEventsByStatus('cancelled').length }}</span>
+            <span class="stat-label">Cancelados</span>
+          </div>
+        </div>
+      </div>
     </div>
     
-    <!-- Tabs de filtrado -->
-    <mat-tab-group animationDuration="0ms" class="events-tabs">
-      <mat-tab label="Todos">
-        <div class="events-grid">
-          <mat-card *ngFor="let event of events" class="event-card">
-            <div class="event-image-container">
-              <img [src]="event.imageUrl" [alt]="event.title" class="event-image">
-              <div class="event-status">
-                <span [ngClass]="getStatusClass(event.status)" class="status-badge">
-                  {{ getStatusText(event.status) }}
-                </span>
-              </div>
-            </div>
-            
-            <mat-card-content class="event-content">
-              <div class="event-header">
-                <h3 class="event-title" [matTooltip]="event.title">{{ event.title }}</h3>
-                <button mat-icon-button [matMenuTriggerFor]="eventMenu" class="event-menu-btn">
-                  <mat-icon>more_vert</mat-icon>
-                </button>
-                <mat-menu #eventMenu="matMenu">
-                  <button mat-menu-item>
-                    <mat-icon>edit</mat-icon>
-                    <span>Editar</span>
-                  </button>
-                  <button mat-menu-item>
-                    <mat-icon>content_copy</mat-icon>
-                    <span>Duplicar</span>
-                  </button>
-                  <button mat-menu-item>
-                    <mat-icon>delete</mat-icon>
-                    <span>Eliminar</span>
-                  </button>
-                </mat-menu>
-              </div>
-              
-              <div class="event-details">
-                <div class="event-detail">
-                  <mat-icon class="detail-icon">calendar_today</mat-icon>
-                  <span>{{ event.date | date:'dd/MM/yyyy, HH:mm' }}</span>
-                </div>
-                
-                <div class="event-detail">
-                  <mat-icon class="detail-icon">location_on</mat-icon>
-                  <span>{{ event.location }}</span>
-                </div>
-                
-                <div class="event-detail">
-                  <mat-icon class="detail-icon">payments</mat-icon>
-                  <span>{{ event.price }}</span>
-                </div>
-              </div>
-              
-              <div class="event-categories">
-                <mat-chip-set>
-                  <mat-chip *ngFor="let category of event.categories" class="category-chip">
-                    {{ category }}
-                  </mat-chip>
-                </mat-chip-set>
-              </div>
-              
-              <div class="attendance-container">
-                <div class="attendance-info">
-                  <span class="attendance-label">Asistencia</span>
-                  <span class="attendance-value">
-                    {{ event.attendees }}/{{ event.capacity }}
-                    ({{ getAttendancePercentage(event.attendees, event.capacity) }}%)
-                  </span>
-                </div>
-                <div class="attendance-bar-container">
-                  <div 
-                    class="attendance-bar" 
-                    [ngClass]="getAttendanceClass(event.attendees, event.capacity)"
-                    [style.width.%]="getAttendancePercentage(event.attendees, event.capacity)"
-                  ></div>
-                </div>
-              </div>
-            </mat-card-content>
-            
-            <mat-divider></mat-divider>
-            
-            <mat-card-actions class="event-actions">
-              <button mat-button color="primary">
-                <mat-icon>visibility</mat-icon>
-                Ver detalles
-              </button>
-              <button mat-button color="accent">
-                <mat-icon>edit</mat-icon>
-                Editar
-              </button>
-            </mat-card-actions>
-          </mat-card>
-        </div>
-      </mat-tab>
-      
-      <mat-tab label="Próximos">
-        <div class="events-grid">
-          <mat-card *ngFor="let event of filterEvents('upcoming')" class="event-card">
-            <!-- Mismo contenido que arriba -->
-            <div class="event-image-container">
-              <img [src]="event.imageUrl" [alt]="event.title" class="event-image">
-              <div class="event-status">
-                <span [ngClass]="getStatusClass(event.status)" class="status-badge">
-                  {{ getStatusText(event.status) }}
-                </span>
-              </div>
-            </div>
-            
-            <mat-card-content class="event-content">
-              <div class="event-header">
-                <h3 class="event-title" [matTooltip]="event.title">{{ event.title }}</h3>
-                <button mat-icon-button [matMenuTriggerFor]="eventMenu" class="event-menu-btn">
-                  <mat-icon>more_vert</mat-icon>
-                </button>
-                <mat-menu #eventMenu="matMenu">
-                  <button mat-menu-item>
-                    <mat-icon>edit</mat-icon>
-                    <span>Editar</span>
-                  </button>
-                  <button mat-menu-item>
-                    <mat-icon>content_copy</mat-icon>
-                    <span>Duplicar</span>
-                  </button>
-                  <button mat-menu-item>
-                    <mat-icon>delete</mat-icon>
-                    <span>Eliminar</span>
-                  </button>
-                </mat-menu>
-              </div>
-              
-              <div class="event-details">
-                <div class="event-detail">
-                  <mat-icon class="detail-icon">calendar_today</mat-icon>
-                  <span>{{ event.date | date:'dd/MM/yyyy, HH:mm' }}</span>
-                </div>
-                
-                <div class="event-detail">
-                  <mat-icon class="detail-icon">location_on</mat-icon>
-                  <span>{{ event.location }}</span>
-                </div>
-                
-                <div class="event-detail">
-                  <mat-icon class="detail-icon">payments</mat-icon>
-                  <span>{{ event.price }}</span>
-                </div>
-              </div>
-              
-              <div class="event-categories">
-                <mat-chip-set>
-                  <mat-chip *ngFor="let category of event.categories" class="category-chip">
-                    {{ category }}
-                  </mat-chip>
-                </mat-chip-set>
-              </div>
-              
-              <div class="attendance-container">
-                <div class="attendance-info">
-                  <span class="attendance-label">Asistencia</span>
-                  <span class="attendance-value">
-                    {{ event.attendees }}/{{ event.capacity }}
-                    ({{ getAttendancePercentage(event.attendees, event.capacity) }}%)
-                  </span>
-                </div>
-                <div class="attendance-bar-container">
-                  <div 
-                    class="attendance-bar" 
-                    [ngClass]="getAttendanceClass(event.attendees, event.capacity)"
-                    [style.width.%]="getAttendancePercentage(event.attendees, event.capacity)"
-                  ></div>
-                </div>
-              </div>
-            </mat-card-content>
-            
-            <mat-divider></mat-divider>
-            
-            <mat-card-actions class="event-actions">
-              <button mat-button color="primary">
-                <mat-icon>visibility</mat-icon>
-                Ver detalles
-              </button>
-              <button mat-button color="accent">
-                <mat-icon>edit</mat-icon>
-                Editar
-              </button>
-            </mat-card-actions>
-          </mat-card>
-        </div>
-      </mat-tab>
-      
-      <mat-tab label="Completados">
-        <div class="events-grid">
-          <mat-card *ngFor="let event of filterEvents('completed')" class="event-card">
-            <!-- Mismo contenido que arriba -->
-            <div class="event-image-container">
-              <img [src]="event.imageUrl" [alt]="event.title" class="event-image">
-              <div class="event-status">
-                <span [ngClass]="getStatusClass(event.status)" class="status-badge">
-                  {{ getStatusText(event.status) }}
-                </span>
-              </div>
-            </div>
-            
-            <mat-card-content class="event-content">
-              <div class="event-header">
-                <h3 class="event-title" [matTooltip]="event.title">{{ event.title }}</h3>
-                <button mat-icon-button [matMenuTriggerFor]="eventMenu" class="event-menu-btn">
-                  <mat-icon>more_vert</mat-icon>
-                </button>
-                <mat-menu #eventMenu="matMenu">
-                  <button mat-menu-item>
-                    <mat-icon>assessment</mat-icon>
-                    <span>Ver estadísticas</span>
-                  </button>
-                  <button mat-menu-item>
-                    <mat-icon>content_copy</mat-icon>
-                    <span>Duplicar</span>
-                  </button>
-                  <button mat-menu-item>
-                    <mat-icon>archive</mat-icon>
-                    <span>Archivar</span>
-                  </button>
-                </mat-menu>
-              </div>
-              
-              <div class="event-details">
-                <div class="event-detail">
-                  <mat-icon class="detail-icon">calendar_today</mat-icon>
-                  <span>{{ event.date | date:'dd/MM/yyyy, HH:mm' }}</span>
-                </div>
-                
-                <div class="event-detail">
-                  <mat-icon class="detail-icon">location_on</mat-icon>
-                  <span>{{ event.location }}</span>
-                </div>
-                
-                <div class="event-detail">
-                  <mat-icon class="detail-icon">payments</mat-icon>
-                  <span>{{ event.price }}</span>
-                </div>
-              </div>
-              
-              <div class="event-categories">
-                <mat-chip-set>
-                  <mat-chip *ngFor="let category of event.categories" class="category-chip">
-                    {{ category }}
-                  </mat-chip>
-                </mat-chip-set>
-              </div>
-              
-              <div class="attendance-container">
-                <div class="attendance-info">
-                  <span class="attendance-label">Asistencia final</span>
-                  <span class="attendance-value">
-                    {{ event.attendees }}/{{ event.capacity }}
-                    ({{ getAttendancePercentage(event.attendees, event.capacity) }}%)
-                  </span>
-                </div>
-                <div class="attendance-bar-container">
-                  <div 
-                    class="attendance-bar" 
-                    [ngClass]="getAttendanceClass(event.attendees, event.capacity)"
-                    [style.width.%]="getAttendancePercentage(event.attendees, event.capacity)"
-                  ></div>
-                </div>
-              </div>
-            </mat-card-content>
-            
-            <mat-divider></mat-divider>
-            
-            <mat-card-actions class="event-actions">
-              <button mat-button color="primary">
-                <mat-icon>assessment</mat-icon>
-                Ver estadísticas
-              </button>
-              <button mat-button color="accent">
-                <mat-icon>content_copy</mat-icon>
-                Duplicar
-              </button>
-            </mat-card-actions>
-          </mat-card>
-        </div>
-      </mat-tab>
-      
-      <mat-tab label="Borradores">
-        <div class="events-grid">
-          <mat-card *ngFor="let event of filterEvents('draft')" class="event-card">
-            <!-- Mismo contenido que arriba -->
-            <div class="event-image-container">
-              <img [src]="event.imageUrl" [alt]="event.title" class="event-image">
-              <div class="event-status">
-                <span [ngClass]="getStatusClass(event.status)" class="status-badge">
-                  {{ getStatusText(event.status) }}
-                </span>
-              </div>
-            </div>
-            
-            <mat-card-content class="event-content">
-              <div class="event-header">
-                <h3 class="event-title" [matTooltip]="event.title">{{ event.title }}</h3>
-                <button mat-icon-button [matMenuTriggerFor]="eventMenu" class="event-menu-btn">
-                  <mat-icon>more_vert</mat-icon>
-                </button>
-                <mat-menu #eventMenu="matMenu">
-                  <button mat-menu-item>
-                    <mat-icon>edit</mat-icon>
-                    <span>Editar</span>
-                  </button>
-                  <button mat-menu-item>
-                    <mat-icon>publish</mat-icon>
-                    <span>Publicar</span>
-                  </button>
-                  <button mat-menu-item>
-                    <mat-icon>delete</mat-icon>
-                    <span>Eliminar</span>
-                  </button>
-                </mat-menu>
-              </div>
-              
-              <div class="event-details">
-                <div class="event-detail">
-                  <mat-icon class="detail-icon">calendar_today</mat-icon>
-                  <span>{{ event.date | date:'dd/MM/yyyy, HH:mm' }}</span>
-                </div>
-                
-                <div class="event-detail">
-                  <mat-icon class="detail-icon">location_on</mat-icon>
-                  <span>{{ event.location }}</span>
-                </div>
-                
-                <div class="event-detail">
-                  <mat-icon class="detail-icon">payments</mat-icon>
-                  <span>{{ event.price }}</span>
-                </div>
-              </div>
-              
-              <div class="event-categories">
-                <mat-chip-set>
-                  <mat-chip *ngFor="let category of event.categories" class="category-chip">
-                    {{ category }}
-                  </mat-chip>
-                </mat-chip-set>
-              </div>
-            </mat-card-content>
-            
-            <mat-divider></mat-divider>
-            
-            <mat-card-actions class="event-actions">
-              <button mat-button color="primary">
-                <mat-icon>edit</mat-icon>
-                Continuar editando
-              </button>
-              <button mat-button color="accent">
-                <mat-icon>publish</mat-icon>
-                Publicar
-              </button>
-            </mat-card-actions>
-          </mat-card>
-        </div>
-      </mat-tab>
-    </mat-tab-group>
+  <button mat-raised-button color="primary" class="create-btn" [routerLink]="['/tenant', tenantName, 'events', 'create']">
+  <mat-icon>add</mat-icon>
+  Crear Evento
+</button>
   </div>
+  
+  <!-- Indicador de carga -->
+  <div *ngIf="isLoading" class="loading-container">
+    <mat-spinner diameter="40"></mat-spinner>
+    <p>Cargando eventos...</p>
+  </div>
+  
+  <!-- Tabs de filtrado -->
+  <mat-tab-group animationDuration="0ms" class="events-tabs" *ngIf="!isLoading">
+    <mat-tab label="Próximos">
+      <div class="events-grid">
+        <mat-card *ngFor="let event of filterEventsByStatus('upcoming')" class="event-card">
+          <div class="event-image-container">
+            <img [src]="event.image_url" [alt]="event.title" class="event-image">
+            <div class="event-status">
+              <span [ngClass]="getStatusClass('upcoming')" class="status-badge">
+                {{ getStatusText('upcoming') }}
+              </span>
+            </div>
+            <div class="event-date-badge">
+              <div class="date-month">{{ event.start_date | date:'MMM' | uppercase }}</div>
+              <div class="date-day">{{ event.start_date | date:'dd' }}</div>
+            </div>
+          </div>
+          
+          <mat-card-content class="event-content">
+            <div class="event-header">
+              <h3 class="event-title" [matTooltip]="event.title">{{ event.title }}</h3>
+              <button mat-icon-button [matMenuTriggerFor]="eventMenu" class="event-menu-btn">
+                <mat-icon>more_vert</mat-icon>
+              </button>
+              <mat-menu #eventMenu="matMenu">
+                <button mat-menu-item (click)="openEditDialog(event)">
+                  <mat-icon>edit</mat-icon>
+                  <span>Editar</span>
+                </button>
+                <button mat-menu-item (click)="toggleEventStatus(event)">
+                  <mat-icon>{{ event.is_active ? 'block' : 'check_circle' }}</mat-icon>
+                  <span>{{ event.is_active ? 'Cancelar' : 'Activar' }}</span>
+                </button>
+                <button mat-menu-item (click)="openDeleteDialog(event)">
+                  <mat-icon>delete</mat-icon>
+                  <span>Eliminar</span>
+                </button>
+              </mat-menu>
+            </div>
+            
+            <div class="event-details">
+              <div class="event-detail">
+                <mat-icon class="detail-icon">calendar_today</mat-icon>
+                <span>{{ event.start_date | date:'dd/MM/yyyy' }} - {{ event.end_date | date:'dd/MM/yyyy' }}</span>
+              </div>
+              
+              <div class="event-detail">
+                <mat-icon class="detail-icon">location_on</mat-icon>
+                <span>{{ event.address }}</span>
+              </div>
+              
+              <div class="event-detail">
+                <mat-icon class="detail-icon">school</mat-icon>
+                <span>{{ event.faculty.name }}</span>
+              </div>
+            </div>
+            
+            <p class="event-description">{{ event.description }}</p>
+          </mat-card-content>
+          
+          <mat-divider></mat-divider>
+          
+          <mat-card-actions class="event-actions">
+            <button mat-button color="primary" (click)="navigateToEventDetails(event.id)">
+              <mat-icon>visibility</mat-icon>
+              Ver detalles
+            </button>
+            <button mat-button color="accent" (click)="openEditDialog(event)">
+              <mat-icon>edit</mat-icon>
+              Editar
+            </button>
+          </mat-card-actions>
+        </mat-card>
+        
+        <!-- Mensaje cuando no hay eventos próximos -->
+        <div *ngIf="filterEventsByStatus('upcoming').length === 0" class="no-events">
+          <mat-icon class="no-events-icon">event_busy</mat-icon>
+          <h3>No hay eventos próximos</h3>
+          <p>Crea un nuevo evento haciendo clic en el botón "Crear Evento"</p>
+        </div>
+      </div>
+    </mat-tab>
+    
+    <mat-tab label="Activos">
+      <div class="events-grid">
+        <mat-card *ngFor="let event of filterEventsByStatus('active')" class="event-card">
+          <div class="event-image-container">
+            <img [src]="event.image_url" [alt]="event.title" class="event-image">
+            <div class="event-status">
+              <span [ngClass]="getStatusClass('active')" class="status-badge">
+                {{ getStatusText('active') }}
+              </span>
+            </div>
+            <div class="event-date-badge active">
+              <div class="date-month">{{ event.start_date | date:'MMM' | uppercase }}</div>
+              <div class="date-day">{{ event.start_date | date:'dd' }}</div>
+            </div>
+          </div>
+          
+          <mat-card-content class="event-content">
+            <div class="event-header">
+              <h3 class="event-title" [matTooltip]="event.title">{{ event.title }}</h3>
+              <button mat-icon-button [matMenuTriggerFor]="eventMenu" class="event-menu-btn">
+                <mat-icon>more_vert</mat-icon>
+              </button>
+              <mat-menu #eventMenu="matMenu">
+                <button mat-menu-item (click)="openEditDialog(event)">
+                  <mat-icon>edit</mat-icon>
+                  <span>Editar</span>
+                </button>
+                <button mat-menu-item (click)="toggleEventStatus(event)">
+                  <mat-icon>block</mat-icon>
+                  <span>Cancelar</span>
+                </button>
+                <button mat-menu-item (click)="openDeleteDialog(event)">
+                  <mat-icon>delete</mat-icon>
+                  <span>Eliminar</span>
+                </button>
+              </mat-menu>
+            </div>
+            
+            <div class="event-details">
+              <div class="event-detail">
+                <mat-icon class="detail-icon">calendar_today</mat-icon>
+                <span>{{ event.start_date | date:'dd/MM/yyyy' }} - {{ event.end_date | date:'dd/MM/yyyy' }}</span>
+              </div>
+              
+              <div class="event-detail">
+                <mat-icon class="detail-icon">location_on</mat-icon>
+                <span>{{ event.address }}</span>
+              </div>
+              
+              <div class="event-detail">
+                <mat-icon class="detail-icon">school</mat-icon>
+                <span>{{ event.faculty.name }}</span>
+              </div>
+            </div>
+            
+            <p class="event-description">{{ event.description }}</p>
+          </mat-card-content>
+          
+          <mat-divider></mat-divider>
+          
+          <mat-card-actions class="event-actions">
+            <button mat-button color="primary" (click)="navigateToEventDetails(event.id)">
+              <mat-icon>visibility</mat-icon>
+              Ver detalles
+            </button>
+            <button mat-button color="accent" (click)="openEditDialog(event)">
+              <mat-icon>edit</mat-icon>
+              Editar
+            </button>
+          </mat-card-actions>
+        </mat-card>
+        
+        <!-- Mensaje cuando no hay eventos activos -->
+        <div *ngIf="filterEventsByStatus('active').length === 0" class="no-events">
+          <mat-icon class="no-events-icon">event_busy</mat-icon>
+          <h3>No hay eventos activos</h3>
+          <p>Los eventos aparecerán aquí cuando estén en curso</p>
+        </div>
+      </div>
+    </mat-tab>
+    
+    <mat-tab label="Completados">
+      <div class="events-grid">
+        <mat-card *ngFor="let event of filterEventsByStatus('completed')" class="event-card">
+          <div class="event-image-container">
+            <img [src]="event.image_url" [alt]="event.title" class="event-image">
+            <div class="event-status">
+              <span [ngClass]="getStatusClass('completed')" class="status-badge">
+                {{ getStatusText('completed') }}
+              </span>
+            </div>
+            <div class="event-date-badge completed">
+              <div class="date-month">{{ event.start_date | date:'MMM' | uppercase }}</div>
+              <div class="date-day">{{ event.start_date | date:'dd' }}</div>
+            </div>
+          </div>
+          
+          <mat-card-content class="event-content">
+            <div class="event-header">
+              <h3 class="event-title" [matTooltip]="event.title">{{ event.title }}</h3>
+              <button mat-icon-button [matMenuTriggerFor]="eventMenu" class="event-menu-btn">
+                <mat-icon>more_vert</mat-icon>
+              </button>
+              <mat-menu #eventMenu="matMenu">
+                <button mat-menu-item (click)="openEditDialog(event)">
+                  <mat-icon>edit</mat-icon>
+                  <span>Editar</span>
+                </button>
+                <button mat-menu-item (click)="openDeleteDialog(event)">
+                  <mat-icon>delete</mat-icon>
+                  <span>Eliminar</span>
+                </button>
+              </mat-menu>
+            </div>
+            
+            <div class="event-details">
+              <div class="event-detail">
+                <mat-icon class="detail-icon">calendar_today</mat-icon>
+                <span>{{ event.start_date | date:'dd/MM/yyyy' }} - {{ event.end_date | date:'dd/MM/yyyy' }}</span>
+              </div>
+              
+              <div class="event-detail">
+                <mat-icon class="detail-icon">location_on</mat-icon>
+                <span>{{ event.address }}</span>
+              </div>
+              
+              <div class="event-detail">
+                <mat-icon class="detail-icon">school</mat-icon>
+                <span>{{ event.faculty.name }}</span>
+              </div>
+            </div>
+            
+            <p class="event-description">{{ event.description }}</p>
+          </mat-card-content>
+          
+          <mat-divider></mat-divider>
+          
+          <mat-card-actions class="event-actions">
+            <button mat-button color="primary" (click)="navigateToEventDetails(event.id)">
+              <mat-icon>visibility</mat-icon>
+              Ver detalles
+            </button>
+            <button mat-button color="accent" (click)="openEditDialog(event)">
+              <mat-icon>edit</mat-icon>
+              Editar
+            </button>
+          </mat-card-actions>
+        </mat-card>
+        
+        <!-- Mensaje cuando no hay eventos completados -->
+        <div *ngIf="filterEventsByStatus('completed').length === 0" class="no-events">
+          <mat-icon class="no-events-icon">event_busy</mat-icon>
+          <h3>No hay eventos completados</h3>
+          <p>Los eventos aparecerán aquí cuando hayan finalizado</p>
+        </div>
+      </div>
+    </mat-tab>
+    
+    <mat-tab label="Cancelados">
+      <div class="events-grid">
+        <mat-card *ngFor="let event of filterEventsByStatus('cancelled')" class="event-card">
+          <div class="event-image-container">
+            <img [src]="event.image_url" [alt]="event.title" class="event-image">
+            <div class="event-status">
+              <span [ngClass]="getStatusClass('cancelled')" class="status-badge">
+                {{ getStatusText('cancelled') }}
+              </span>
+            </div>
+            <div class="event-date-badge cancelled">
+              <div class="date-month">{{ event.start_date | date:'MMM' | uppercase }}</div>
+              <div class="date-day">{{ event.start_date | date:'dd' }}</div>
+            </div>
+          </div>
+          
+          <mat-card-content class="event-content">
+            <div class="event-header">
+              <h3 class="event-title" [matTooltip]="event.title">{{ event.title }}</h3>
+              <button mat-icon-button [matMenuTriggerFor]="eventMenu" class="event-menu-btn">
+                <mat-icon>more_vert</mat-icon>
+              </button>
+              <mat-menu #eventMenu="matMenu">
+                <button mat-menu-item (click)="openEditDialog(event)">
+                  <mat-icon>edit</mat-icon>
+                  <span>Editar</span>
+                </button>
+                <button mat-menu-item (click)="toggleEventStatus(event)">
+                  <mat-icon>check_circle</mat-icon>
+                  <span>Activar</span>
+                </button>
+                <button mat-menu-item (click)="openDeleteDialog(event)">
+                  <mat-icon>delete</mat-icon>
+                  <span>Eliminar</span>
+                </button>
+              </mat-menu>
+            </div>
+            
+            <div class="event-details">
+              <div class="event-detail">
+                <mat-icon class="detail-icon">calendar_today</mat-icon>
+                <span>{{ event.start_date | date:'dd/MM/yyyy' }} - {{ event.end_date | date:'dd/MM/yyyy' }}</span>
+              </div>
+              
+              <div class="event-detail">
+                <mat-icon class="detail-icon">location_on</mat-icon>
+                <span>{{ event.address }}</span>
+              </div>
+              
+              <div class="event-detail">
+                <mat-icon class="detail-icon">school</mat-icon>
+                <span>{{ event.faculty.name }}</span>
+              </div>
+            </div>
+            
+            <p class="event-description">{{ event.description }}</p>
+          </mat-card-content>
+          
+          <mat-divider></mat-divider>
+          
+          <mat-card-actions class="event-actions">
+            <button mat-button color="primary" (click)="navigateToEventDetails(event.id)">
+              <mat-icon>visibility</mat-icon>
+              Ver detalles
+            </button>
+            <button mat-button color="accent" (click)="openEditDialog(event)">
+              <mat-icon>edit</mat-icon>
+              Editar
+            </button>
+          </mat-card-actions>
+        </mat-card>
+        
+        <!-- Mensaje cuando no hay eventos cancelados -->
+        <div *ngIf="filterEventsByStatus('cancelled').length === 0" class="no-events">
+          <mat-icon class="no-events-icon">event_busy</mat-icon>
+          <h3>No hay eventos cancelados</h3>
+          <p>Los eventos cancelados aparecerán aquí</p>
+        </div>
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+</div>

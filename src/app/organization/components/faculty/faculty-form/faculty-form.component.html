@@ -1,0 +1,95 @@
+<div class="faculty-form-container">
+    <h2 mat-dialog-title>{{ dialogTitle }}</h2>
+    
+    <form [formGroup]="facultyForm" (ngSubmit)="onSubmit()">
+      <div mat-dialog-content>
+        <div class="form-section">
+          <h3 class="section-title">Información Básica</h3>
+          
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Nombre de la Facultad</mat-label>
+              <input matInput formControlName="name" placeholder="Ej. Facultad de Ingeniería">
+              <mat-error *ngIf="facultyForm.get('name')?.hasError('required')">
+                El nombre es obligatorio
+              </mat-error>
+              <mat-error *ngIf="facultyForm.get('name')?.hasError('maxlength')">
+                El nombre no puede exceder los 100 caracteres
+              </mat-error>
+            </mat-form-field>
+          </div>
+          
+         
+          
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Ubicacion</mat-label>
+              <textarea 
+                matInput 
+                formControlName="location" 
+                placeholder="Breve descripción de la ubicacion de la facultad"
+                rows="3"
+              ></textarea>
+              <mat-error *ngIf="facultyForm.get('location')?.hasError('required')">
+                La descripción es obligatoria
+              </mat-error>
+              <mat-error *ngIf="facultyForm.get('location')?.hasError('maxlength')">
+                La descripción no puede exceder los 250 caracteres
+              </mat-error>
+            </mat-form-field>
+          </div>
+        </div>
+        
+        
+          
+          
+          
+         
+        
+        <div class="form-section">
+          <h3 class="section-title">Apariencia</h3>
+          
+          <div class="form-row">
+            <label class="color-label">Color de la Facultad</label>
+            <div class="color-options">
+              <div 
+                *ngFor="let color of colorOptions" 
+                class="color-option" 
+                [style.background-color]="color"
+                [class.selected]="selectedColor === color"
+                (click)="selectColor(color)"
+                [matTooltip]="color"
+              ></div>
+            </div>
+            <input type="hidden" formControlName="color">
+          </div>
+          
+          <div class="color-preview">
+            <div class="preview-card" [style.background-color]="selectedColor">
+              <div class="preview-content">
+                <div class="preview-avatar">
+                  {{ getFacultyInitials() }}
+                </div>
+                <div class="preview-text">
+                  <span class="preview-title">{{ getFacultyName() }}</span>
+                  <span class="preview-subtitle">{{ getFacultyCode() }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div mat-dialog-actions align="end">
+        <button mat-button type="button" (click)="onCancel()">Cancelar</button>
+        <button 
+          mat-raised-button 
+          color="primary" 
+          type="submit"
+          [disabled]="facultyForm.invalid"
+        >
+          {{ submitButtonText }}
+        </button>
+      </div>
+    </form>
+  </div>

@@ -1,0 +1,355 @@
+/* Contenedor principal */
+.faculty-container {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+  
+  /* Encabezado */
+  .faculty-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  
+  .page-title {
+    font-size: 24px;
+    font-weight: 600;
+    color: #111827;
+    margin: 0;
+  }
+  
+  .page-subtitle {
+    font-size: 14px;
+    color: #6b7280;
+    margin: 4px 0 0;
+  }
+  
+  .create-btn {
+    background-color: #d4a017;
+    color: white;
+  }
+  
+  .create-btn:hover {
+    background-color: #b58a13;
+  }
+  
+  /* Filtros */
+  .filters-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: white;
+    border-radius: 8px;
+    padding: 16px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+  
+  .search-container {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex: 1;
+  }
+  
+  .search-field {
+    flex: 1;
+    max-width: 500px;
+  }
+  
+  .status-filter {
+    width: 150px;
+  }
+  
+  .view-toggle {
+    color: #6b7280;
+  }
+  
+  .results-info {
+    font-size: 14px;
+    color: #6b7280;
+  }
+  
+  /* Tabla */
+  .table-container {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+  }
+  
+  .faculty-table {
+    width: 100%;
+  }
+  
+  .faculty-name-cell {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  
+  .faculty-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 600;
+    font-size: 16px;
+  }
+  
+  .faculty-name-info {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .faculty-name {
+    font-weight: 500;
+    color: #111827;
+  }
+  
+  .faculty-description {
+    font-size: 12px;
+    color: #6b7280;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 300px;
+  }
+  
+  .faculty-code {
+    font-weight: 500;
+    background-color: #f3f4f6;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+  }
+  
+  .status-badge {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  
+  .status-active {
+    background-color: #d1fae5;
+    color: #065f46;
+  }
+  
+  .status-inactive {
+    background-color: #fee2e2;
+    color: #b91c1c;
+  }
+  
+  .action-buttons {
+    display: flex;
+    gap: 4px;
+  }
+  
+  .no-data-cell {
+    padding: 16px;
+    text-align: center;
+    color: #6b7280;
+  }
+  
+  /* Vista de cuadrícula */
+  .grid-container {
+    margin-bottom: 24px;
+  }
+  
+  .faculty-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 24px;
+  }
+  
+  .faculty-card {
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+  
+  .faculty-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+  }
+  
+  .faculty-card-header {
+    height: 100px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .faculty-logo {
+    width: 80px;
+    height: 80px;
+    border-radius: 16px;
+    background-color: rgba(255, 255, 255, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 40px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .faculty-initials {
+    font-size: 32px;
+    font-weight: 700;
+    color: white;
+  }
+  
+  .faculty-status {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+  }
+  
+  .faculty-card-content {
+    padding: 24px 16px 16px;
+    flex: 1;
+  }
+  
+  .faculty-card-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #111827;
+    margin: 0 0 4px;
+    text-align: center;
+  }
+  
+  .faculty-card-code {
+    font-size: 14px;
+    color: #6b7280;
+    margin: 0 0 8px;
+    text-align: center;
+  }
+  
+  .faculty-card-description {
+    font-size: 14px;
+    color: #4b5563;
+    margin: 0 0 16px;
+    text-align: center;
+  }
+  
+  .faculty-card-details {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  
+  .detail-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  
+  .detail-icon {
+    color: #d4a017;
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+  }
+  
+  .detail-content {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .detail-label {
+    font-size: 12px;
+    color: #6b7280;
+  }
+  
+  .detail-value {
+    font-size: 14px;
+    font-weight: 500;
+    color: #111827;
+  }
+  
+  .faculty-card-actions {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 16px 16px;
+    border-top: 1px solid #e5e7eb;
+    margin-top: auto;
+  }
+  
+  /* Mensaje de no resultados */
+  .no-results {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 48px 0;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+  
+  .no-results-icon {
+    font-size: 48px;
+    color: #d1d5db;
+    margin-bottom: 16px;
+  }
+  
+  .no-results h3 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #111827;
+    margin: 0 0 8px;
+  }
+  
+  .no-results p {
+    font-size: 14px;
+    color: #6b7280;
+    margin: 0 0 16px;
+  }
+  
+  /* Responsive */
+  @media (max-width: 767px) {
+    .faculty-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 16px;
+    }
+    
+    .filters-container {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 16px;
+    }
+    
+    .search-container {
+      width: 100%;
+      flex-direction: column;
+      align-items: stretch;
+    }
+    
+    .search-field, .status-filter {
+      width: 100%;
+      max-width: none;
+    }
+    
+    .results-info {
+      width: 100%;
+      text-align: left;
+    }
+    
+    .faculty-grid {
+      grid-template-columns: 1fr;
+    }
+    
+    .faculty-card-details {
+      grid-template-columns: 1fr;
+    }
+  }

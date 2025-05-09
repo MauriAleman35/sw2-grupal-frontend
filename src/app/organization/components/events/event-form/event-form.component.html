@@ -1,0 +1,137 @@
+<!-- organization/components/event-form/event-form.component.html -->
+<div class="event-form-container">
+  <div class="event-form-header">
+    <h1 class="event-form-title">{{ isEditMode ? 'Editar Evento' : 'Crear Nuevo Evento' }}</h1>
+    <p class="event-form-subtitle">{{ isEditMode ? 'Actualiza la información del evento' : 'Completa los siguientes pasos para crear un nuevo evento' }}</p>
+  </div>
+
+  <div class="event-form-content" *ngIf="!isLoading; else loadingTemplate">
+    <mat-stepper linear #stepper class="event-form-stepper">
+      <!-- Paso 1: Información Básica -->
+      <mat-step [completed]="stepsCompleted.basicInfo" [editable]="true">
+        <ng-template matStepLabel>
+          <div class="step-label">
+            <mat-icon>info</mat-icon>
+            <span>Detalles Básicos</span>
+          </div>
+        </ng-template>
+        <app-event-basic-info [isEditMode]="isEditMode"></app-event-basic-info>
+        <div class="step-actions">
+          <button mat-button matStepperNext [disabled]="!stepsCompleted.basicInfo" class="next-button">
+            <span>Siguiente</span>
+            <mat-icon>arrow_forward</mat-icon>
+          </button>
+        </div>
+      </mat-step>
+
+      <!-- Paso 2: Programación -->
+      <mat-step [completed]="stepsCompleted.scheduling" [editable]="true">
+        <ng-template matStepLabel>
+          <div class="step-label">
+            <mat-icon>event</mat-icon>
+            <span>Programación</span>
+          </div>
+        </ng-template>
+        <app-event-scheduling [isEditMode]="isEditMode"></app-event-scheduling>
+        <div class="step-actions">
+          <button mat-button matStepperPrevious class="back-button">
+            <mat-icon>arrow_back</mat-icon>
+            <span>Atrás</span>
+          </button>
+          <button mat-button matStepperNext [disabled]="!stepsCompleted.scheduling" class="next-button">
+            <span>Siguiente</span>
+            <mat-icon>arrow_forward</mat-icon>
+          </button>
+        </div>
+      </mat-step>
+
+      <!-- Paso 3: Ubicación -->
+      <mat-step [completed]="stepsCompleted.location" [editable]="true">
+        <ng-template matStepLabel>
+          <div class="step-label">
+            <mat-icon>location_on</mat-icon>
+            <span>Ubicación</span>
+          </div>
+        </ng-template>
+        <app-event-location [isEditMode]="isEditMode"></app-event-location>
+        <div class="step-actions">
+          <button mat-button matStepperPrevious class="back-button">
+            <mat-icon>arrow_back</mat-icon>
+            <span>Atrás</span>
+          </button>
+          <button mat-button matStepperNext [disabled]="!stepsCompleted.location" class="next-button">
+            <span>Siguiente</span>
+            <mat-icon>arrow_forward</mat-icon>
+          </button>
+        </div>
+      </mat-step>
+
+      <!-- Paso 4: Multimedia -->
+      <mat-step [completed]="stepsCompleted.media" [editable]="true">
+        <ng-template matStepLabel>
+          <div class="step-label">
+            <mat-icon>image</mat-icon>
+            <span>Multimedia</span>
+          </div>
+        </ng-template>
+        <app-event-media [isEditMode]="isEditMode"></app-event-media>
+        <div class="step-actions">
+          <button mat-button matStepperPrevious class="back-button">
+            <mat-icon>arrow_back</mat-icon>
+            <span>Atrás</span>
+          </button>
+          <button mat-button matStepperNext [disabled]="!stepsCompleted.media" class="next-button">
+            <span>Siguiente</span>
+            <mat-icon>arrow_forward</mat-icon>
+          </button>
+        </div>
+      </mat-step>
+
+      <!-- Paso 5: Revisión -->
+      <mat-step>
+        <ng-template matStepLabel>
+          <div class="step-label">
+            <mat-icon>check_circle</mat-icon>
+            <span>Revisión</span>
+          </div>
+        </ng-template>
+        <app-event-review 
+          [basicInfoForm]="basicInfoForm" 
+          [schedulingForm]="schedulingForm" 
+          [locationForm]="locationForm" 
+          [mediaForm]="mediaForm"
+          [imageFile]="imageFile"
+          [isEditMode]="isEditMode">
+        </app-event-review>
+        <div class="step-actions">
+          <button mat-button matStepperPrevious class="back-button">
+            <mat-icon>arrow_back</mat-icon>
+            <span>Atrás</span>
+          </button>
+          <button mat-button (click)="stepper.reset()" class="reset-button">
+            <mat-icon>refresh</mat-icon>
+            <span>Reiniciar</span>
+          </button>
+          <button mat-raised-button color="primary" (click)="onSubmit()" [disabled]="isLoading" class="submit-button">
+            <mat-icon>{{ isEditMode ? 'save' : 'add_circle' }}</mat-icon>
+            <span>{{ isEditMode ? 'Actualizar Evento' : 'Crear Evento' }}</span>
+          </button>
+        </div>
+      </mat-step>
+    </mat-stepper>
+  </div>
+
+  <ng-template #loadingTemplate>
+    <div class="loading-container">
+      <mat-spinner diameter="40"></mat-spinner>
+      <p>{{ isEditMode ? 'Cargando datos del evento...' : 'Preparando formulario...' }}</p>
+    </div>
+  </ng-template>
+
+  <div class="form-actions">
+    <button mat-button (click)="cancel()" class="cancel-button">
+      <mat-icon>close</mat-icon>
+      <span>Cancelar</span>
+    </button>
+  </div>
+</div>

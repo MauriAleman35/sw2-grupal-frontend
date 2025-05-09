@@ -1,0 +1,75 @@
+<!-- organization/components/event-location/event-location.component.html -->
+<div class="step-container">
+  <h2 class="step-title">
+    <mat-icon>location_on</mat-icon>
+    Ubicación del Evento
+  </h2>
+  <p class="step-description">
+    Indica dónde se llevará a cabo el evento. Puedes especificar un edificio, aula o dirección completa.
+  </p>
+
+  <form [formGroup]="locationForm" class="location-form">
+    <!-- Dirección del evento -->
+    <mat-form-field appearance="outline" class="form-field">
+      <mat-label>Ubicación</mat-label>
+      <input 
+        matInput 
+        formControlName="address" 
+        placeholder="Ej. Auditorio Principal, Campus Central"
+        [matAutocomplete]="auto"
+      >
+      <mat-icon matPrefix>place</mat-icon>
+      <button 
+        mat-icon-button 
+        matSuffix 
+        type="button"
+        (click)="useCurrentLocation()"
+        matTooltip="Usar ubicación predeterminada"
+      >
+        <mat-icon>my_location</mat-icon>
+      </button>
+      <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selectLocation($event)">
+        <mat-option *ngFor="let location of filteredLocations" [value]="location">
+          {{ location }}
+        </mat-option>
+      </mat-autocomplete>
+      <mat-error *ngIf="locationForm.get('address')?.hasError('required')">
+        La ubicación es obligatoria
+      </mat-error>
+    </mat-form-field>
+    
+    <!-- Aquí podríamos añadir un mapa interactivo en una implementación más avanzada -->
+    <div class="map-placeholder">
+      <div class="map-content">
+        <mat-icon class="map-icon">map</mat-icon>
+        <p>Mapa interactivo (próximamente)</p>
+      </div>
+    </div>
+  </form>
+
+  <div class="location-suggestions">
+    <h3 class="suggestions-title">Ubicaciones populares</h3>
+    <div class="suggestions-grid">
+      <button 
+        *ngFor="let location of suggestedLocations.slice(0, 4)" 
+        mat-stroked-button 
+        class="suggestion-button"
+        (click)="locationForm.patchValue({address: location})"
+      >
+        <mat-icon>place</mat-icon>
+        {{ location }}
+      </button>
+    </div>
+  </div>
+
+  <div class="form-tips">
+    <div class="tip">
+      <mat-icon>lightbulb</mat-icon>
+      <span>Sé específico con la ubicación para que los asistentes puedan encontrar fácilmente el evento.</span>
+    </div>
+    <div class="tip">
+      <mat-icon>lightbulb</mat-icon>
+      <span>Considera incluir puntos de referencia cercanos o instrucciones adicionales si la ubicación es difícil de encontrar.</span>
+    </div>
+  </div>
+</div>

@@ -1,5 +1,7 @@
+// organization/pages/org-events/org-events.component.ts
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -9,25 +11,24 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatDialogModule, MatDialog } from '@angular/material/dialog';
+import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
-interface Event {
-  id: string;
-  title: string;
-  date: Date;
-  location: string;
-  attendees: number;
-  capacity: number;
-  status: 'upcoming' | 'active' | 'completed' | 'cancelled' | 'draft';
-  imageUrl: string;
-  price: string;
-  categories: string[];
-}
+import { EventFormComponent } from '../../components/events/event-form/event-form.component';
+import { EventDeleteDialogComponent } from '../../components/events/event-delete-dialog/event-delete-dialog.component';
+import { EventsService } from '../../../events/services/events.service';
+import { DatumEvent } from '../../interfaces/events';
+import { OrganizationService } from '../../services/organization.service';
+
+type EventStatus = 'upcoming' | 'active' | 'completed' | 'cancelled' | 'draft';
 
 @Component({
   selector: 'app-org-events',
   standalone: true,
   imports: [
     CommonModule,
+    RouterModule,
     MatCardModule,
     MatIconModule,
     MatButtonModule,
@@ -36,91 +37,179 @@ interface Event {
     MatDividerModule,
     MatChipsModule,
     MatBadgeModule,
-    MatTooltipModule
+    MatTooltipModule,
+    MatDialogModule,
+    MatSnackBarModule,
+    MatProgressSpinnerModule
   ],
   templateUrl: './org-events.component.html',
   styleUrls: ['./org-events.component.css']
 })
 export class OrgEventsComponent implements OnInit {
-  events: Event[] = [
-    {
-      id: '1',
-      title: 'Conferencia de Ingeniería',
-      date: new Date('2025-05-15T14:00:00'),
-      location: 'Auditorio Principal',
-      attendees: 120,
-      capacity: 200,
-      status: 'upcoming',
-      imageUrl: '/assets/events/conference.jpg',
-      price: 'Bs. 50',
-      categories: ['Ingeniería', 'Educación']
-    },
-    {
-      id: '2',
-      title: 'Taller de Programación',
-      date: new Date('2025-05-18T10:00:00'),
-      location: 'Laboratorio 3',
-      attendees: 45,
-      capacity: 50,
-      status: 'upcoming',
-      imageUrl: '/assets/events/workshop.jpg',
-      price: 'Bs. 30',
-      categories: ['Tecnología', 'Educación']
-    },
-    {
-      id: '3',
-      title: 'Seminario de Investigación',
-      date: new Date('2025-05-20T16:30:00'),
-      location: 'Sala de Conferencias',
-      attendees: 80,
-      capacity: 100,
-      status: 'upcoming',
-      imageUrl: '/assets/events/seminar.jpg',
-      price: 'Bs. 25',
-      categories: ['Investigación', 'Ciencia']
-    },
-    {
-      id: '4',
-      title: 'Feria de Ciencias',
-      date: new Date('2025-05-01T09:00:00'),
-      location: 'Campus Central',
-      attendees: 350,
-      capacity: 500,
-      status: 'completed',
-      imageUrl: '/assets/events/fair.jpg',
-      price: 'Entrada Libre',
-      categories: ['Ciencia', 'Feria']
-    },
-    {
-      id: '5',
-      title: 'Charla de Innovación',
-      date: new Date('2025-05-03T15:00:00'),
-      location: 'Auditorio Secundario',
-      attendees: 95,
-      capacity: 100,
-      status: 'completed',
-      imageUrl: '/assets/events/talk.jpg',
-      price: 'Bs. 15',
-      categories: ['Innovación', 'Tecnología']
-    },
-    {
-      id: '6',
-      title: 'Congreso Anual de Estudiantes',
-      date: new Date('2025-06-10T08:00:00'),
-      location: 'Centro de Convenciones',
-      attendees: 0,
-      capacity: 300,
-      status: 'draft',
-      imageUrl: '/assets/events/congress.jpg',
-      price: 'Bs. 100',
-      categories: ['Educación', 'Networking']
+  events: (DatumEvent & { status: EventStatus })[] = [];
+  filteredEvents: DatumEvent[] = [];
+  isLoading: boolean = false;
+  tenantName: string = '';
+
+  constructor(
+    private eventService: OrganizationService,
+    private dialog: MatDialog,
+    private snackBar: MatSnackBar, 
+    private router:Router,
+      private route: ActivatedRoute
+  ) {}
+
+  ngOnInit(): void {
+      // Obtener el nombre del tenant
+  this.route.parent?.paramMap.subscribe(params => {
+    const tenantParam = params.get('tenantName');
+    if (tenantParam) {
+      this.tenantName = tenantParam;
     }
-  ];
-  
-  constructor() {}
-  
-  ngOnInit(): void {}
-  
+  });
+    this.loadEvents();
+  }
+
+  getEventStatus(event: DatumEvent): EventStatus {
+    if (!event.is_active) return 'cancelled';
+
+    const now = new Date();
+    const startDate = new Date(event.start_date);
+    const endDate = new Date(event.end_date);
+
+    if (now < startDate) return 'upcoming';
+    if (now >= startDate && now <= endDate) return 'active';
+    if (now > endDate) return 'completed';
+
+    return 'draft';
+  }
+
+  loadEvents(): void {
+    this.isLoading = true;
+    this.eventService.getAllEvents().subscribe({
+      next: (response) => {
+        this.events = response.data.map(event => ({
+          ...event,
+          status: this.getEventStatus(event)
+        }));
+        this.filteredEvents = [...this.events];
+        this.isLoading = false;
+      },
+      error: (error) => {
+        console.error('Error al cargar eventos', error);
+        this.isLoading = false;
+        this.snackBar.open('Error al cargar eventos', 'Cerrar', {
+          duration: 3000,
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+          panelClass: ['error-snackbar']
+        });
+      }
+    });
+  }
+
+  openCreateDialog(): void {
+    // const dialogRef = this.dialog.open(EventFormComponent, {
+    //   width: '800px',
+    //   data: { mode: 'create' }
+    // });
+
+    // dialogRef.afterClosed().subscribe(result => {
+    //   if (result) {
+    //     this.eventService.createEvent(result).subscribe({
+    //       next: () => {
+    //         this.loadEvents();
+    //         this.snackBar.open('Evento creado con éxito', 'Cerrar', {
+    //           duration: 3000,
+    //           horizontalPosition: 'end',
+    //           verticalPosition: 'top',
+    //           panelClass: ['success-snackbar']
+    //         });
+    //       },
+    //       error: (error) => {
+    //         console.error('Error al crear evento', error);
+    //         this.snackBar.open('Error al crear el evento', 'Cerrar', {
+    //           duration: 3000,
+    //           horizontalPosition: 'end',
+    //           verticalPosition: 'top',
+    //           panelClass: ['error-snackbar']
+    //         });
+    //       }
+    //     });
+    //   }
+    // });
+     this.router.navigate(['/tenant', this.tenantName, 'events', 'create']);
+  }
+
+  openEditDialog(event: DatumEvent): void {
+    const dialogRef = this.dialog.open(EventFormComponent, {
+      width: '800px',
+      data: { mode: 'edit', event: { ...event } }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.eventService.updateEvent(event.id, result).subscribe({
+          next: () => {
+            this.loadEvents();
+            this.snackBar.open('Evento actualizado con éxito', 'Cerrar', {
+              duration: 3000,
+              horizontalPosition: 'end',
+              verticalPosition: 'top',
+              panelClass: ['success-snackbar']
+            });
+          },
+          error: (error) => {
+            console.error('Error al actualizar evento', error);
+            this.snackBar.open('Error al actualizar el evento', 'Cerrar', {
+              duration: 3000,
+              horizontalPosition: 'end',
+              verticalPosition: 'top',
+              panelClass: ['error-snackbar']
+            });
+          }
+        });
+      }
+    });
+  }
+
+  openDeleteDialog(event: DatumEvent): void {
+    const dialogRef = this.dialog.open(EventDeleteDialogComponent, {
+      width: '400px',
+      data: { event }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.eventService.deleteEvent(event.id).subscribe({
+          next: () => {
+            this.loadEvents();
+            this.snackBar.open('Evento eliminado con éxito', 'Cerrar', {
+              duration: 3000,
+              horizontalPosition: 'end',
+              verticalPosition: 'top',
+              panelClass: ['success-snackbar']
+            });
+          },
+          error: (error) => {
+            console.error('Error al eliminar evento', error);
+            this.snackBar.open('Error al eliminar el evento', 'Cerrar', {
+              duration: 3000,
+              horizontalPosition: 'end',
+              verticalPosition: 'top',
+              panelClass: ['error-snackbar']
+            });
+          }
+        });
+      }
+    });
+  }
+
+  toggleEventStatus(event: DatumEvent): void {
+    console.log('Toggling event status:', event);
+    // Aquí podrías implementar la lógica para activar/desactivar el evento
+  }
+
   getStatusClass(status: string): string {
     switch (status) {
       case 'upcoming':
@@ -137,8 +226,8 @@ export class OrgEventsComponent implements OnInit {
         return 'bg-gray-100 text-gray-800';
     }
   }
-  
-  getStatusText(status: string): string {
+
+  getStatusText(status: EventStatus): string {
     switch (status) {
       case 'upcoming':
         return 'Próximo';
@@ -154,20 +243,12 @@ export class OrgEventsComponent implements OnInit {
         return status;
     }
   }
-  
-  getAttendancePercentage(attendees: number, capacity: number): number {
-    return Math.round((attendees / capacity) * 100);
-  }
-  
-  getAttendanceClass(attendees: number, capacity: number): string {
-    const percentage = this.getAttendancePercentage(attendees, capacity);
-    if (percentage >= 90) return 'attendance-high';
-    if (percentage >= 50) return 'attendance-medium';
-    return 'attendance-low';
-  }
-  
-  filterEvents(status: string): Event[] {
-    if (status === 'all') return this.events;
+
+  filterEventsByStatus(status: EventStatus): DatumEvent[] {
     return this.events.filter(event => event.status === status);
+  }
+
+  navigateToEventDetails(eventId: string): void {
+    console.log('Navigate to event:', eventId);
   }
 }
