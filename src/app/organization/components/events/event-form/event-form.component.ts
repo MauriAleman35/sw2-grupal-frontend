@@ -1,5 +1,5 @@
 // organization/components/event-form/event-form.component.ts
-import { Component, OnInit, Inject, Optional } from '@angular/core';
+import { Component, OnInit, Inject, Optional, NgZone } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatStepperModule } from '@angular/material/stepper';
@@ -20,6 +20,8 @@ import { EventReviewComponent } from '../event-review/event-review.component';
 import { OrganizationService } from '../../../services/organization.service';
 import { DatumEvent, Event, Faculty } from '../../../interfaces/events';
 import { EventFormService } from '../../../services/event-form.service';
+import { GeocodingService } from '../../../services/geocoding.service';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-event-form',
@@ -55,7 +57,7 @@ export class EventFormComponent implements OnInit {
   event: Partial<DatumEvent> = {};
   imageFile: File | null = null;
   tenantName: string = '';
-  
+  isSubmitting = false;
   // Formularios para cada paso
   basicInfoForm!: FormGroup;
   schedulingForm!: FormGroup;
@@ -74,8 +76,11 @@ export class EventFormComponent implements OnInit {
     private fb: FormBuilder,
     private eventFormService: EventFormService,
     private organizationService: OrganizationService,
+    private httpClient: HttpClient,
+    private geocodgingService: GeocodingService,
     private snackBar: MatSnackBar,
     private router: Router,
+      private ngZone: NgZone,
     private route: ActivatedRoute,
     @Optional() private dialogRef: MatDialogRef<EventFormComponent>,
     @Optional() @Inject(MAT_DIALOG_DATA) public data: any
@@ -90,7 +95,7 @@ export class EventFormComponent implements OnInit {
       this.populateFormsWithEventData();
     }
   }
-
+  
   ngOnInit(): void {
     // Obtener el nombre del tenant de la ruta
     this.route.paramMap.subscribe(params => {
@@ -151,34 +156,38 @@ export class EventFormComponent implements OnInit {
   }
 
   private initForms(): void {
-    this.basicInfoForm = this.fb.group({
-      title: ['', [Validators.required, Validators.maxLength(100)]],
-      description: ['', [Validators.required, Validators.maxLength(500)]],
-      facultyId: ['', Validators.required]
-    });
-    
-    this.schedulingForm = this.fb.group({
-      start_date: ['', Validators.required],
-      start_time: ['', Validators.required],
-      end_date: ['', Validators.required],
-      end_time: ['', Validators.required]
-    });
-    
-    this.locationForm = this.fb.group({
-      address: ['', Validators.required]
-    });
-    
-    this.mediaForm = this.fb.group({
-      imageUrl: [''],
-      hasImage: [false]
-    });
-    
-    // Inicializar los formularios en el servicio
-    this.eventFormService.setBasicInfoForm(this.basicInfoForm);
-    this.eventFormService.setSchedulingForm(this.schedulingForm);
-    this.eventFormService.setLocationForm(this.locationForm);
-    this.eventFormService.setMediaForm(this.mediaForm);
-  }
+  this.basicInfoForm = this.fb.group({
+    title: ['', [Validators.required, Validators.maxLength(100)]],
+    description: ['', [Validators.required, Validators.maxLength(500)]],
+    facultyId: ['', Validators.required]
+  });
+  
+  this.schedulingForm = this.fb.group({
+    // Usa nombres consistentes: startDate en lugar de start_date
+    startDate: ['', Validators.required],
+    startTime: ['', Validators.required],
+    endDate: ['', Validators.required],
+    endTime: ['', Validators.required],
+    status: ['upcoming'] // Añade este campo si lo necesitas
+  });
+  
+  this.locationForm = this.fb.group({
+    address: ['', Validators.required],
+    latitude: [0, Validators.required], // Añade campos para coordenadas
+    longitude: [0, Validators.required]
+  });
+  
+  this.mediaForm = this.fb.group({
+    imageUrl: [''],
+    hasImage: [false]
+  });
+  
+  // Inicializar los formularios en el servicio
+  this.eventFormService.setBasicInfoForm(this.basicInfoForm);
+  this.eventFormService.setSchedulingForm(this.schedulingForm);
+  this.eventFormService.setLocationForm(this.locationForm);
+  this.eventFormService.setMediaForm(this.mediaForm);
+}
 
   private loadEventData(): void {
     if (!this.eventId) return;
@@ -201,73 +210,210 @@ export class EventFormComponent implements OnInit {
       }
     });
   }
-
-  private populateFormsWithEventData(): void {
-    if (!this.event) return;
-    
-    // Información básica
-    this.basicInfoForm.patchValue({
-      title: this.event.title || '',
-      description: this.event.description || '',
-      facultyId: this.event.faculty?.id || ''
-    });
-    
-    // Programación
-    if (this.event.start_date && this.event.end_date) {
-      const startDate = new Date(this.event.start_date);
-      const endDate = new Date(this.event.end_date);
+// Añade este método para obtener coordenadas a partir de una dirección
+private getCoordinatesForAddress(address: string): void {
+  // Implementación simplificada - Reemplaza esto con una llamada a un servicio real
+  const geocodingService = new GeocodingService(this.httpClient);
+  
+  geocodingService.geocodeAddress(address).subscribe({
+    next: (coords) => {
+      if (coords) {
+        console.log('Coordenadas obtenidas para la dirección:', coords);
+        
+        // Actualiza el formulario con las coordenadas
+        this.locationForm.patchValue({
+          latitude: coords.lat,
+          longitude: coords.lng
+        });
+        
+        // Actualiza el servicio
+        this.eventFormService.setLocationForm(this.locationForm);
+      } else {
+        console.warn('No se pudieron obtener coordenadas para:', address);
+        
+        // Establece coordenadas por defecto (p.ej. centro de tu ciudad)
+        this.locationForm.patchValue({
+          latitude: -17.78629, // Coordenadas por defecto (Santa Cruz)
+          longitude: -63.18117
+        });
+        
+        this.eventFormService.setLocationForm(this.locationForm);
+      }
+    },
+    error: (error) => {
+      console.error('Error al geocodificar la dirección:', error);
       
-      this.schedulingForm.patchValue({
-        start_date: startDate,
-        start_time: this.formatTimeForInput(startDate),
-        end_date: endDate,
-        end_time: this.formatTimeForInput(endDate)
+      // Establece coordenadas por defecto en caso de error
+      this.locationForm.patchValue({
+        latitude: -17.78629,
+        longitude: -63.18117
       });
+      
+      this.eventFormService.setLocationForm(this.locationForm);
     }
+  });
+}
+  private populateFormsWithEventData(): void {
+  if (!this.event) return;
+  
+  console.log('Poblando formularios con datos del evento:', this.event);
+  
+  // Información básica
+  this.basicInfoForm.patchValue({
+    title: this.event.title || '',
+    description: this.event.description || '',
+    facultyId: this.event.faculty?.id || ''
+  });
+  
+  // Programación - Maneja las fechas correctamente
+  if (this.event.start_date && this.event.end_date) {
+    const startDate = new Date(this.event.start_date);
+    const endDate = new Date(this.event.end_date);
     
-    // Ubicación
-    this.locationForm.patchValue({
-      address: this.event.address || ''
+    this.schedulingForm.patchValue({
+      startDate: startDate, // Usa el mismo nombre que en initForms
+      startTime: this.formatTimeForInput(startDate),
+      endDate: endDate,
+      endTime: this.formatTimeForInput(endDate),
+      status: this.event.is_active || 'upcoming'
     });
     
-    // Multimedia
-    if (this.event.image_url) {
-      this.mediaForm.patchValue({
-        imageUrl: this.event.image_url,
-        hasImage: true
-      });
-    }
+    console.log('Fechas cargadas:', {
+      startDate,
+      endDate,
+      startTime: this.formatTimeForInput(startDate),
+      endTime: this.formatTimeForInput(endDate)
+    });
+  }
+  
+  // Ubicación - Añade geocodificación para obtener coordenadas
+  if (this.event.address) {
+    // Primero actualiza el campo de dirección
+    this.locationForm.patchValue({
+      address: this.event.address
+    });
     
-    // Actualizar los formularios en el servicio
+    // Usa un servicio de geocodificación para obtener coordenadas
+    // (Esta parte requiere implementar el servicio de geocodificación que sugerí anteriormente)
+    this.getCoordinatesForAddress(this.event.address);
+  }
+  
+  // Multimedia
+  if (this.event.image_url) {
+    this.mediaForm.patchValue({
+      imageUrl: this.event.image_url,
+      hasImage: true
+    });
+    
+    console.log('Imagen cargada:', this.event.image_url);
+  }
+  
+  // Actualizar los formularios en el servicio DESPUÉS de poblados
+  setTimeout(() => {
     this.eventFormService.setBasicInfoForm(this.basicInfoForm);
     this.eventFormService.setSchedulingForm(this.schedulingForm);
     this.eventFormService.setLocationForm(this.locationForm);
     this.eventFormService.setMediaForm(this.mediaForm);
-  }
-
+    
+    // Notificar la validez de los formularios
+    this.eventFormService.notifyFormValidityChange('basicInfo', this.basicInfoForm.valid);
+    this.eventFormService.notifyFormValidityChange('scheduling', this.schedulingForm.valid);
+    this.eventFormService.notifyFormValidityChange('location', this.locationForm.valid);
+    this.eventFormService.notifyFormValidityChange('media', this.mediaForm.valid);
+  }, 0);
+}
   private formatTimeForInput(date: Date): string {
     return date.toTimeString().substring(0, 5); // Formato HH:MM
   }
 
   onSubmit(): void {
-    if (!this.isFormsValid()) {
-      this.snackBar.open('Por favor complete todos los campos requeridos', 'Cerrar', {
-        duration: 3000,
-        horizontalPosition: 'end',
-        verticalPosition: 'top'
-      });
-      return;
-    }
-    
-    const eventData = this.prepareEventData();
-    this.isLoading = true;
-    
-    if (this.isEditMode && this.eventId) {
-      this.updateEvent(eventData);
-    } else {
-      this.createEvent(eventData);
-    }
+
+  
+  // Registrar datos para depuración
+  console.log('Enviando formulario en modo:', this.isEditMode ? 'edición' : 'creación');
+  
+
+  
+  // Crear el objeto de datos del evento
+  const eventData: any = {
+    title: this.basicInfoForm!.get('title')?.value,
+    description: this.basicInfoForm!.get('description')?.value,
+    start_date: this.schedulingForm!.get('startDate')?.value.toISOString(),
+    end_date: this.schedulingForm!.get('endDate')?.value.toISOString(),
+    address: this.locationForm!.get('address')?.value,
+    facultyId: this.basicInfoForm!.get('facultyId')?.value,
+
+  };
+  // this.isSubmitting = true;
+  // Manejar la imagen
+  if (this.imageFile) {
+    console.log('Enviando nueva imagen:', this.imageFile.name);
+    eventData.image = this.imageFile;
   }
+  
+  // Si estamos en modo edición, actualizar el evento
+  if (this.isEditMode && this.eventId) {
+    // Eliminar el ":" si está presente en el ID
+    const cleanEventId = this.eventId.replace(':', '');
+      const formData = new FormData();
+  formData.append('title', eventData.title);
+  formData.append('description', eventData.description);
+  formData.append('start_date', eventData.start_date);
+  formData.append('end_date', eventData.end_date);
+  formData.append('address', eventData.address);
+  formData.append('facultyId', eventData.facultyId);
+    this.isSubmitting = true;
+  // Manejar la imagen
+  if (this.imageFile) {
+    console.log('Enviando nueva imagen:', this.imageFile.name);
+    formData.append('file', this.imageFile);
+  }
+    this.organizationService.updateEvent(cleanEventId, formData).subscribe({
+      next: (response) => {
+        this.snackBar.open('Evento actualizado con éxito', 'Cerrar', {
+          duration: 5000,
+          panelClass: ['success-snackbar']
+        });
+        
+        // Limpiar el formulario antes de navegar
+        this.eventFormService.resetAllForms();
+        this.isSubmitting = false;
+        
+        this.router.navigate([`/tenant/${this.tenantName}/events`]);
+      },
+      error: (error) => {
+        console.error('Error al actualizar el evento', error);
+        this.snackBar.open('Error al actualizar el evento', 'Cerrar', {
+          duration: 5000,
+          panelClass: ['error-snackbar']
+        });
+        this.isSubmitting = false;
+      }
+    });
+  } else {
+    // Crear nuevo evento
+    this.organizationService.createEvent(eventData).subscribe({
+      next: (response) => {
+        this.snackBar.open('Evento creado con éxito', 'Cerrar', {
+          duration: 5000,
+          panelClass: ['success-snackbar']
+        });
+        this.eventFormService.resetAllForms();
+        this.isSubmitting = false;
+        this.router.navigate([`/tenant/${this.tenantName}/events`]);
+      },
+      error: (error) => {
+        console.error('Error al crear el evento', error);
+        this.snackBar.open('Error al crear el evento', 'Cerrar', {
+          duration: 5000,
+          panelClass: ['error-snackbar']
+        });
+        this.isSubmitting = false;
+      }
+    });
+  }
+}
+  
 
   private isFormsValid(): boolean {
     return this.basicInfoForm.valid && 
@@ -330,30 +476,6 @@ export class EventFormComponent implements OnInit {
     });
   }
 
-  private updateEvent(eventData: Event): void {
-    if (!this.eventId) return;
-    
-    this.organizationService.updateEvent(this.eventId, eventData).subscribe({
-      next: (response) => {
-        this.isLoading = false;
-        this.snackBar.open('Evento actualizado con éxito', 'Cerrar', {
-          duration: 3000,
-          horizontalPosition: 'end',
-          verticalPosition: 'top'
-        });
-        this.closeOrNavigate();
-      },
-      error: (error) => {
-        console.error('Error al actualizar el evento', error);
-        this.isLoading = false;
-        this.snackBar.open('Error al actualizar el evento', 'Cerrar', {
-          duration: 3000,
-          horizontalPosition: 'end',
-          verticalPosition: 'top'
-        });
-      }
-    });
-  }
 
   private closeOrNavigate(): void {
     if (this.dialogRef) {

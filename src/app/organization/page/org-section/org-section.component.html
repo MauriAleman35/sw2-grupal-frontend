@@ -1,153 +1,165 @@
-<div class="sections-container">
-    <!-- Encabezado -->
-    <div class="sections-header">
-      <div>
-        <h1 class="page-title">Secciones</h1>
-        <p class="page-subtitle">Personaliza las secciones de tu sitio web</p>
-      </div>
+<!-- section-list.component.html -->
+<div class="container mx-auto p-4">
+  <div class="flex justify-between items-center mb-6">
+    <div>
+      <h1 class="text-2xl font-bold text-gray-800">
+        Secciones del Evento
+      </h1>
+      <p class="text-gray-600" *ngIf="event">
+        {{ event.title }}
+      </p>
     </div>
     
-    <!-- Contenido principal -->
-    <div class="sections-content">
-      <!-- Secciones activas -->
-      <div class="sections-active">
-        <div class="section-list-header">
-          <h2 class="section-list-title">Secciones Activas</h2>
-          <p class="section-list-subtitle">Arrastra para reordenar las secciones</p>
-        </div>
-        
-        <div 
-          cdkDropList 
-          (cdkDropListDropped)="drop($event)"
-          class="section-list"
-        >
-          <mat-card 
-            *ngFor="let section of sections" 
-            class="section-card"
-            cdkDrag
-          >
-            <div class="section-drag-handle" cdkDragHandle>
-              <mat-icon>drag_indicator</mat-icon>
-            </div>
-            
-            <div class="section-icon" [matTooltip]="section.type">
-              <mat-icon>{{ section.icon }}</mat-icon>
-            </div>
-            
-            <div class="section-content">
-              <h3 class="section-title">{{ section.title }}</h3>
-              <p class="section-description">{{ section.description }}</p>
-            </div>
-            
-            <div class="section-status">
-              <span [ngClass]="getActiveStatusClass(section.active)" class="status-badge">
-                {{ getActiveStatusText(section.active) }}
-              </span>
-            </div>
-            
-            <div class="section-actions">
-              <button 
-                mat-icon-button 
-                [matTooltip]="section.active ? 'Desactivar' : 'Activar'"
-                (click)="toggleSectionActive(section)"
-              >
-                <mat-icon>{{ section.active ? 'visibility' : 'visibility_off' }}</mat-icon>
-              </button>
-              
-              <button 
-                mat-icon-button 
-                matTooltip="Editar"
-              >
-                <mat-icon>edit</mat-icon>
-              </button>
-              
-              <button 
-                mat-icon-button 
-                matTooltip="Eliminar"
-                (click)="removeSection(section)"
-              >
-                <mat-icon>delete</mat-icon>
-              </button>
-            </div>
-          </mat-card>
-        </div>
+    <button 
+      mat-raised-button 
+      color="primary" 
+      (click)="createSection()"
+      class="flex items-center"
+    >
+      <mat-icon>add</mat-icon>
+      <span class="ml-1">Nueva Sección</span>
+    </button>
+  </div>
+  
+  <!-- Filtros -->
+  <div class="bg-white rounded-lg shadow-sm p-4 mb-6">
+    <div class="flex flex-wrap gap-4 items-center">
+      <div class="flex-grow">
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Buscar secciones</mat-label>
+          <input matInput placeholder="Nombre, descripción...">
+          <mat-icon matSuffix>search</mat-icon>
+        </mat-form-field>
       </div>
       
-      <!-- Secciones disponibles -->
-      <div class="sections-available">
-        <div class="section-list-header">
-          <h2 class="section-list-title">Secciones Disponibles</h2>
-          <p class="section-list-subtitle">Haz clic en añadir para incluir una sección</p>
-        </div>
-        
-        <div class="section-list">
-          <mat-card *ngFor="let section of availableSections" class="section-card">
-            <div class="section-icon" [matTooltip]="section.type">
-              <mat-icon>{{ section.icon }}</mat-icon>
-            </div>
-            
-            <div class="section-content">
-              <h3 class="section-title">{{ section.title }}</h3>
-              <p class="section-description">{{ section.description }}</p>
-            </div>
-            
-            <div class="section-actions">
-              <button 
-                mat-icon-button 
-                matTooltip="Añadir"
-                (click)="addSection(section)"
-              >
-                <mat-icon>add_circle</mat-icon>
-              </button>
-            </div>
-          </mat-card>
-        </div>
-      </div>
-    </div>
-    
-    <!-- Vista previa -->
-    <div class="preview-container">
-      <div class="preview-header">
-        <h2 class="preview-title">Vista Previa</h2>
-        <button mat-button color="primary">
-          <mat-icon>open_in_new</mat-icon>
-          Ver sitio completo
+      <div class="flex gap-2">
+        <button mat-stroked-button color="primary">
+          <mat-icon>filter_list</mat-icon>
+          Filtros
         </button>
-      </div>
-      
-      <div class="preview-content">
-        <div class="preview-device">
-          <div class="preview-device-header">
-            <div class="preview-device-controls">
-              <span class="control red"></span>
-              <span class="control yellow"></span>
-              <span class="control green"></span>
-            </div>
-            <div class="preview-device-url">
-              <span>https://{{ 'monos.corp.uagrm.edu' }}</span>
-            </div>
-          </div>
-          
-          <div class="preview-device-content">
-            <!-- Simulación de las secciones -->
-            <div *ngFor="let section of sections" class="preview-section" [ngClass]="{'inactive': !section.active}">
-              <div class="preview-section-header">
-                <mat-icon>{{ section.icon }}</mat-icon>
-                <span>{{ section.title }}</span>
-              </div>
-              
-              <div class="preview-section-content" [ngSwitch]="section.type">
-                <div *ngSwitchCase="'banner'" class="preview-banner"></div>
-                <div *ngSwitchCase="'featured'" class="preview-featured"></div>
-                <div *ngSwitchCase="'categories'" class="preview-categories"></div>
-                <div *ngSwitchCase="'events'" class="preview-events"></div>
-                <div *ngSwitchCase="'about'" class="preview-about"></div>
-                <div *ngSwitchCase="'contact'" class="preview-contact"></div>
-                <div *ngSwitchDefault class="preview-default"></div>
-              </div>
-            </div>
-          </div>
-        </div>
+        
+        <button mat-stroked-button color="accent">
+          <mat-icon>sort</mat-icon>
+          Ordenar
+        </button>
       </div>
     </div>
   </div>
+  
+  <!-- Mensaje de carga -->
+  <div *ngIf="isLoading" class="flex justify-center my-8">
+    <mat-spinner diameter="40"></mat-spinner>
+    <span class="ml-3 text-gray-600">Cargando secciones...</span>
+  </div>
+  
+  <!-- Mensaje de error -->
+  <div *ngIf="error" class="bg-red-100 text-red-700 p-4 rounded-lg mb-6">
+    <mat-icon class="align-middle mr-2">error</mat-icon>
+    {{ error }}
+  </div>
+  
+  <!-- Lista de secciones -->
+  <div *ngIf="!isLoading && !error && sections.length === 0" class="text-center my-12">
+    <mat-icon class="text-gray-400 text-6xl">category</mat-icon>
+    <p class="text-gray-500 mt-4 text-lg">No hay secciones creadas para este evento</p>
+    <button mat-raised-button color="primary" class="mt-4" (click)="createSection()">
+      Crear primera sección
+    </button>
+  </div>
+  
+  <div *ngIf="!isLoading && sections.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <mat-card *ngFor="let section of sections; let i = index" class="section-card">
+      <div class="section-header" [ngClass]="{'inactive': !section.is_active}">
+        <div class="section-color-indicator" [style.backgroundColor]="section.color || '#2196f3'"></div>
+        <div class="section-status">
+          <mat-chip-option 
+            [selected]="section.is_active" 
+            [color]="section.is_active ? 'primary' : 'warn'"
+            [disabled]="true"
+          >
+            {{ section.is_active ? 'Activa' : 'Inactiva' }}
+          </mat-chip-option>
+        </div>
+      </div>
+      
+      <mat-card-content>
+        <h2 class="section-name">{{ section.name }}</h2>
+        <p class="section-description">{{ section.description }}</p>
+        
+        <div class="section-details">
+          <div class="detail-item">
+            <mat-icon class="detail-icon">attach_money</mat-icon>
+            <span class="detail-value">{{ formatPrice(section.price) }}</span>
+          </div>
+          
+          <div class="detail-item">
+            <mat-icon class="detail-icon">people</mat-icon>
+            <span class="detail-value">{{ section.capacity }} asientos</span>
+          </div>
+          
+          <!-- Barra de ocupación -->
+          <div class="occupancy-container">
+            <div class="flex justify-between mb-1">
+              <span class="text-xs text-gray-600">Ocupación</span>
+              <span class="text-xs font-medium">{{ getOccupancyPercentage(section) }}%</span>
+            </div>
+            <div class="w-full bg-gray-200 rounded-full h-2">
+              <div 
+                class="h-2 rounded-full" 
+                [ngClass]="getOccupancyColor(getOccupancyPercentage(section))"
+                [style.width.%]="getOccupancyPercentage(section)"
+              ></div>
+            </div>
+          </div>
+        </div>
+      </mat-card-content>
+      
+      <mat-card-actions class="section-actions">
+        <button 
+          mat-icon-button 
+          color="primary" 
+          matTooltip="Ver detalles"
+          (click)="viewSectionDetails(section.id!)"
+        >
+          <mat-icon>visibility</mat-icon>
+        </button>
+        
+        <button 
+          mat-icon-button 
+          color="accent" 
+          matTooltip="Editar sección"
+          (click)="editSection(section.id!)"
+        >
+          <mat-icon>edit</mat-icon>
+        </button>
+        
+        <button 
+          mat-icon-button 
+          [color]="section.is_active ? 'warn' : 'primary'" 
+          [matTooltip]="section.is_active ? 'Desactivar sección' : 'Activar sección'"
+          (click)="toggleSectionStatus(section)"
+        >
+          <mat-icon>{{ section.is_active ? 'toggle_off' : 'toggle_on' }}</mat-icon>
+        </button>
+        
+        <button 
+          mat-icon-button 
+          [matMenuTriggerFor]="sectionMenu"
+        >
+          <mat-icon>more_vert</mat-icon>
+        </button>
+        
+        <mat-menu #sectionMenu="matMenu">
+          <button mat-menu-item>
+            <mat-icon>content_copy</mat-icon>
+            <span>Duplicar</span>
+          </button>
+          <button mat-menu-item>
+            <mat-icon>delete</mat-icon>
+            <span>Eliminar</span>
+          </button>
+        </mat-menu>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+</div>

@@ -5,6 +5,7 @@ import { Observable } from 'rxjs';
 import { FacultyDeleteResponse, FacultyParams, FacultyPostResponse, FacultyResponse, FacultyUpdateResponse} from '../interfaces/faculty';
 import { USE_TENANT_TOKEN } from '../../context/tenant-token.context';
 import { Event, EventsResponse, GetByIDResponse } from '../interfaces/events';
+import { Section } from '../interfaces/section';
 
 @Injectable({
   providedIn: 'root'
@@ -64,19 +65,21 @@ export class OrganizationService {
     formData.append('end_date', event.end_date);
     formData.append('address', event.address);
     formData.append('facultyId', event.facultyId);
-
+      console.log(event.image);
     if (event.image) {
-       formData.append('image', event.image);
+    
+       formData.append('file', event.image);
     }
 
-    return this.Http.post<FacultyPostResponse>(`${this.ApiUrl}/event`,event, {
+    return this.Http.post<FacultyPostResponse>(`${this.ApiUrl}/event`,formData, {
             context: new HttpContext().set(USE_TENANT_TOKEN, true) 
           }
     )
   }
   //Mejorar con el type de la respuesta
-   updateEvent(id:string,Event:Partial<any>):Observable<any>{
-    return this.Http.patch<any>(`${this.ApiUrl}/faculty/${id}`,Event, {
+   updateEvent(id:string,formData: FormData):Observable<any>{
+      
+    return this.Http.patch<any>(`${this.ApiUrl}/event/${id}`,formData, {
             context: new HttpContext().set(USE_TENANT_TOKEN, true) 
           }
     )
@@ -86,5 +89,28 @@ export class OrganizationService {
             context: new HttpContext().set(USE_TENANT_TOKEN, true) 
           }
     )
+  }
+
+
+  // Consumo de Secciones 
+
+  getSectionsByEventId(eventId: string): Observable<any> {
+    return this.Http.get(`${this.ApiUrl}/event/${eventId}`);
+  }
+
+  getSectionById(sectionId: string): Observable<any> {
+    return this.Http.get(`${this.ApiUrl}/${sectionId}`);
+  }
+
+  createSection(section: Section): Observable<any> {
+    return this.Http.post(this.ApiUrl, section);
+  }
+
+  updateSection(sectionId: string, section: Section): Observable<any> {
+    return this.Http.put(`${this.ApiUrl}/${sectionId}`, section);
+  }
+
+  deleteSection(sectionId: string): Observable<any> {
+    return this.Http.delete(`${this.ApiUrl}/${sectionId}`);
   }
 }

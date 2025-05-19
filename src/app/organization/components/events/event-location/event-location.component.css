@@ -1,27 +1,117 @@
-/* organization/components/event-location/event-location.component.css */
-.step-container {
-  padding: 16px 0;
+/* organization/components/events/event-location/event-location.component.css
+.location-container {
+  padding: 16px;
 }
 
-.step-title {
-  display: flex;
-  align-items: center;
-  font-size: 20px;
+.section-title {
+  font-size: 1.25rem;
   font-weight: 500;
+  margin-bottom: 16px;
   color: #333;
-  margin: 0 0 8px 0;
+  border-bottom: 2px solid #f0f0f0;
+  padding-bottom: 8px;
 }
 
-.step-title mat-icon {
-  margin-right: 8px;
-  color: #3f51b5;
+.location-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
-.step-description {
-  color: #666;
-  margin: 0 0 24px 0;
-  font-size: 14px;
-  line-height: 1.5;
+.form-row {
+  display: flex;
+  gap: 16px;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.address-row {
+  align-items: center;
+}
+
+.address-field {
+  flex: 3;
+}
+
+.city-field {
+  flex: 2;
+}
+
+.coordinates-row {
+  display: flex;
+  gap: 16px;
+}
+
+.coordinate-field {
+  flex: 1;
+}
+
+.map-container {
+  position: relative;
+  width: 100%;
+  height: 400px;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 16px;
+  border: 1px solid #e0e0e0;
+}
+
+.map {
+  width: 100%;
+  height: 100%;
+}
+
+.map-controls {
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
+  z-index: 1000;
+}
+
+.info-section {
+  margin-top: 24px;
+}
+
+.info-card {
+  display: flex;
+  background-color: #e3f2fd;
+  border-radius: 8px;
+  padding: 16px;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.info-card mat-icon {
+  color: #2196f3;
+}
+
+.info-content h4 {
+  margin-top: 0;
+  margin-bottom: 8px;
+  color: #0d47a1;
+}
+
+.info-content ul {
+  margin: 0;
+  padding-left: 16px;
+}
+
+.info-content li {
+  margin-bottom: 4px;
+}
+
+/* Estilos responsivos */
+.location-container {
+  padding: 20px 0;
+  max-width: 100%;
+}
+
+.section-title {
+  margin-bottom: 20px;
+  color: #333;
+  font-weight: 500;
 }
 
 .location-form {
@@ -30,114 +120,33 @@
   gap: 20px;
 }
 
-.form-field {
+.form-row {
   width: 100%;
 }
 
-/* Placeholder para el mapa */
-.map-placeholder {
-  height: 200px;
-  background-color: #f5f5f5;
+.full-width {
+  width: 100%;
+}
+
+.map-wrapper {
+  width: 100%;
+  height: 400px;
+  margin: 10px 0;
   border-radius: 8px;
-  border: 1px dashed #ccc;
+  overflow: hidden;
+  border: 1px solid #e0e0e0;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.button-container {
   display: flex;
-  align-items: center;
   justify-content: center;
-  margin-bottom: 20px;
+  margin-top: 15px;
 }
 
-.map-content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  color: #757575;
-}
-
-.map-icon {
-  font-size: 48px;
-  height: 48px;
-  width: 48px;
-  margin-bottom: 8px;
-  opacity: 0.6;
-}
-
-/* Sugerencias de ubicación */
-.location-suggestions {
-  margin-top: 24px;
-}
-
-.suggestions-title {
-  font-size: 16px;
-  font-weight: 500;
-  color: #333;
-  margin: 0 0 12px 0;
-}
-
-.suggestions-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 12px;
-}
-
-.suggestion-button {
+.location-button {
   display: flex;
   align-items: center;
-  justify-content: flex-start;
   gap: 8px;
-  padding: 8px 16px;
-  border-radius: 8px;
-  font-size: 14px;
-  text-align: left;
-  height: auto;
-  line-height: 1.2;
-}
-
-.suggestion-button mat-icon {
-  font-size: 16px;
-  height: 16px;
-  width: 16px;
-}
-
-/* Estilos para los consejos */
-.form-tips {
-  margin-top: 24px;
-  padding: 16px;
-  background-color: #f8f9fa;
-  border-radius: 8px;
-  border-left: 4px solid #3f51b5;
-}
-
-.tip {
-  display: flex;
-  align-items: flex-start;
-  margin-bottom: 12px;
-}
-
-.tip:last-child {
-  margin-bottom: 0;
-}
-
-.tip mat-icon {
-  color: #ffc107;
-  margin-right: 8px;
-  font-size: 20px;
-}
-
-.tip span {
-  font-size: 14px;
-  color: #555;
-  line-height: 1.5;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-  .suggestions-grid {
-    grid-template-columns: 1fr 1fr;
-  }
-}
-
-@media (max-width: 480px) {
-  .suggestions-grid {
-    grid-template-columns: 1fr;
-  }
+  padding: 0 20px;
 }

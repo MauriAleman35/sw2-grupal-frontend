@@ -8,6 +8,7 @@ import { OrganizationLayoutComponent } from '../layouts/organization-layout/orga
 import { TenantGuard } from './guard/TenantGuard';
 import { OrgFacultyComponent } from './page/org-faculty/org-faculty.component';
 import { EventFormComponent } from './components/events/event-form/event-form.component';
+import { SectionFormComponent } from './components/sections/section-form/section-form.component';
 
 
 
@@ -21,10 +22,12 @@ const routes: Routes = [
       { path: 'dashboard', component: OrgDashboardComponent },
       { path: 'faculty', component: OrgFacultyComponent },
       { path: 'events', component: OrgEventsComponent },
-      { path: 'events/create', component: EventFormComponent }, // Corregido
-      { path: 'events/edit/:id', component: EventFormComponent }, // Corregido
+      { path: 'events/create', component: EventFormComponent }, 
+      { path: 'events/edit/:id', component: EventFormComponent }, 
       { path: 'section', component: OrgSectionComponent },
-      { path: 'settings', component: OrgSettingsComponent }
+      { path: 'section/create', component:SectionFormComponent},
+      { path: 'settings', component: OrgSettingsComponent },
+     
     ]
   }
 ];

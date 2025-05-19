@@ -15,6 +15,8 @@ import { AuthTenantInterceptor } from './interceptors/auth-tenant.interceptors';
 import { SubscriptionErrorComponent } from '../public/pages/subscription.error/subscription-error.component';
 import { SubscriptionSuccessComponent } from '../public/pages/subscription.success/subscription-success.component';
 import { MatTimepickerModule, provideNativeDateTimeAdapter } from '@dhutaryan/ngx-mat-timepicker';
+import {NgxMatTimepickerModule} from 'ngx-mat-timepicker';
+
 @NgModule({
   declarations: [
     AppComponent,FooterComponent,HeaderComponent,SubscriptionErrorComponent,SubscriptionSuccessComponent
@@ -24,13 +26,13 @@ import { MatTimepickerModule, provideNativeDateTimeAdapter } from '@dhutaryan/ng
     
     BrowserModule,
     BrowserAnimationsModule,
-    MaterialModule,BehaviorSubject,HttpClient, MatTimepickerModule // Asegúrate de importar el módulo de marketing
+    MaterialModule,BehaviorSubject,HttpClient, NgxMatTimepickerModule // Asegúrate de importar el módulo de marketing
   ],
   providers: [provideHttpClient(),{
     provide: HTTP_INTERCEPTORS,
     useClass: AuthTenantInterceptor,
     multi: true,
-  },provideNativeDateTimeAdapter()],
+  }],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

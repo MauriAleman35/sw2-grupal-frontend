@@ -1,7 +1,7 @@
 // organization/components/event-basic-info/event-basic-info.component.ts
 import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormGroup } from '@angular/forms';
+import { ReactiveFormsModule, FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
@@ -11,6 +11,7 @@ import { Subscription } from 'rxjs';
 import { Faculty } from '../../../interfaces/events';
 import { EventFormService } from '../../../services/event-form.service';
 import { OrganizationService } from '../../../services/organization.service';
+
 
 
 
@@ -32,10 +33,10 @@ import { OrganizationService } from '../../../services/organization.service';
 export class EventBasicInfoComponent implements OnInit, OnDestroy {
   @Input() isEditMode = false;
   
-  basicInfoForm!: FormGroup;
+
   faculties: Faculty[] = [];
   isLoading = false;
-  
+  basicInfoForm: FormGroup;
   // Para contador de caracteres
   titleMaxLength = 100;
   descriptionMaxLength = 500;
@@ -43,29 +44,41 @@ export class EventBasicInfoComponent implements OnInit, OnDestroy {
   // Suscripción para limpiar al destruir el componente
   private formSubscription: Subscription | null = null;
 
-  constructor(
+    constructor(
     private eventFormService: EventFormService,
-    private facultyService: OrganizationService
-  ) {}
+    private facultyService: OrganizationService,
+    private fb: FormBuilder // Asegúrate de inyectar FormBuilder aquí
+  ) {
+    // Inicializamos basicInfoForm con un FormGroup vacío en el constructor
+    this.basicInfoForm = this.fb.group({
+      title: ['', [Validators.required, Validators.maxLength(100)]],
+      description: ['', [Validators.required, Validators.maxLength(500)]],
+      facultyId: ['', Validators.required]
+    });
+  }
 
   ngOnInit(): void {
     // Obtener el formulario del servicio
     this.eventFormService.basicInfoForm$.subscribe(form => {
-      this.basicInfoForm = form;
-      
-      // Limpiar suscripción anterior si existe
-      if (this.formSubscription) {
-        this.formSubscription.unsubscribe();
+      if (form) {
+        // Solo actualiza si form no es null
+        this.basicInfoForm = form;
+      // Verifica el estado del formulario al recibirlo
+      console.log('Formulario básico recibido:', this.basicInfoForm.value);
+        // Limpiar suscripción anterior si existe
+        if (this.formSubscription) {
+          this.formSubscription.unsubscribe();
+        }
+
+        // Suscribirse a cambios en el formulario para actualizar el servicio
+        this.formSubscription = this.basicInfoForm.valueChanges.subscribe(() => {
+          // Actualizar el formulario en el servicio cada vez que cambie
+          this.eventFormService.setBasicInfoForm(this.basicInfoForm);
+          
+          // Forzar la detección de cambios
+          this.eventFormService.notifyFormValidityChange('basicInfo', this.basicInfoForm.valid);
+        });
       }
-      
-      // Suscribirse a cambios en el formulario para actualizar el servicio
-      this.formSubscription = this.basicInfoForm.valueChanges.subscribe(() => {
-        // Actualizar el formulario en el servicio cada vez que cambie
-        this.eventFormService.setBasicInfoForm(this.basicInfoForm);
-        
-        // Forzar la detección de cambios
-        this.eventFormService.notifyFormValidityChange('basicInfo', this.basicInfoForm.valid);
-      });
     });
     
     // Cargar las facultades

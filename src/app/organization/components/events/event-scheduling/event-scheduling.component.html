@@ -1,107 +1,82 @@
-<!-- organization/components/event-scheduling/event-scheduling.component.html -->
-<div class="step-container">
-  <h2 class="step-title">
-    <mat-icon>event</mat-icon>
-    Programación del Evento
-  </h2>
-  <p class="step-description">
-    Establece cuándo comenzará y terminará tu evento. Puedes seleccionar fechas y horas específicas.
-  </p>
-
-  <div class="quick-date-selection">
-    <span class="quick-date-label">Selección rápida:</span>
-    <div class="quick-date-chips">
-      <button mat-stroked-button (click)="setToday()" class="quick-date-chip">
-        <mat-icon>today</mat-icon>
-        Hoy
-      </button>
-      <button mat-stroked-button (click)="setTomorrow()" class="quick-date-chip">
-        <mat-icon>event</mat-icon>
-        Mañana
-      </button>
-      <button mat-stroked-button (click)="setWeekend()" class="quick-date-chip">
-        <mat-icon>weekend</mat-icon>
-        Fin de semana
-      </button>
-    </div>
-  </div>
-
+<!-- organization/components/events/event-scheduling/event-scheduling.component.html -->
+<div class="scheduling-container">
+  <h3 class="section-title">Programación del Evento</h3>
+  
   <form [formGroup]="schedulingForm" class="scheduling-form">
-    <div class="date-time-container">
-      <div class="date-time-section">
-        <h3 class="section-title">Inicio del Evento</h3>
-        
-        <!-- Fecha de inicio -->
-        <mat-form-field appearance="outline" class="form-field">
+    <!-- Fecha y hora de inicio -->
+    <div class="date-time-group">
+      <div class="date-field">
+        <mat-form-field appearance="outline" class="full-width">
           <mat-label>Fecha de inicio</mat-label>
           <input 
             matInput 
-            [matDatepicker]="startDatePicker" 
-            formControlName="start_date"
+            [matDatepicker]="startPicker" 
+            formControlName="startDate"
             [min]="minDate"
             [max]="maxDate"
-            (dateChange)="validateEndDate()"
+            required
           >
-          <mat-datepicker-toggle matIconSuffix [for]="startDatePicker"></mat-datepicker-toggle>
-          <mat-datepicker #startDatePicker></mat-datepicker>
-          <mat-icon matPrefix>calendar_today</mat-icon>
-          <mat-error *ngIf="schedulingForm.get('start_date')?.hasError('required')">
+          <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
+          <mat-datepicker #startPicker (closed)="onStartDateChange()"></mat-datepicker>
+          <mat-error *ngIf="schedulingForm.get('startDate')?.hasError('required')">
             La fecha de inicio es obligatoria
           </mat-error>
         </mat-form-field>
-        
-        <!-- Hora de inicio -->
-        <mat-form-field appearance="outline" class="form-field">
+      </div>
+      
+      <div class="time-field">
+        <mat-form-field appearance="outline" class="full-width">
           <mat-label>Hora de inicio</mat-label>
-          <input 
-            matInput 
-            type="time" 
-            formControlName="start_time"
+          <input
+            matInput
+            formControlName="startTime"
+            required
+            readonly
+            (click)="picker1.open()"
           >
-          <mat-icon matPrefix>schedule</mat-icon>
-          <mat-error *ngIf="schedulingForm.get('start_time')?.hasError('required')">
+          <mat-icon matSuffix (click)="picker1.open()">schedule</mat-icon>
+          <ngx-mat-timepicker #picker1 (timeSet)="onStartTimeChange($event)"></ngx-mat-timepicker>
+          <mat-error *ngIf="schedulingForm.get('startTime')?.hasError('required')">
             La hora de inicio es obligatoria
           </mat-error>
         </mat-form-field>
       </div>
-      
-      <div class="date-time-divider">
-        <div class="divider-line"></div>
-        <mat-icon>arrow_forward</mat-icon>
-        <div class="divider-line"></div>
-      </div>
-      
-      <div class="date-time-section">
-        <h3 class="section-title">Fin del Evento</h3>
-        
-        <!-- Fecha de fin -->
-        <mat-form-field appearance="outline" class="form-field">
+    </div>
+    
+    <!-- Fecha y hora de fin -->
+    <div class="date-time-group">
+      <div class="date-field">
+        <mat-form-field appearance="outline" class="full-width">
           <mat-label>Fecha de fin</mat-label>
           <input 
             matInput 
-            [matDatepicker]="endDatePicker" 
-            formControlName="end_date"
-            [min]="schedulingForm.get('start_date')?.value || minDate"
+            [matDatepicker]="endPicker" 
+            formControlName="endDate"
+            [min]="schedulingForm.get('startDate')?.value || minDate"
             [max]="maxDate"
+            required
           >
-          <mat-datepicker-toggle matIconSuffix [for]="endDatePicker"></mat-datepicker-toggle>
-          <mat-datepicker #endDatePicker></mat-datepicker>
-          <mat-icon matPrefix>calendar_today</mat-icon>
-          <mat-error *ngIf="schedulingForm.get('end_date')?.hasError('required')">
+          <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
+          <mat-datepicker #endPicker (closed)="onEndDateChange()"></mat-datepicker>
+          <mat-error *ngIf="schedulingForm.get('endDate')?.hasError('required')">
             La fecha de fin es obligatoria
           </mat-error>
         </mat-form-field>
-        
-        <!-- Hora de fin -->
-        <mat-form-field appearance="outline" class="form-field">
+      </div>
+      
+      <div class="time-field">
+        <mat-form-field appearance="outline" class="full-width">
           <mat-label>Hora de fin</mat-label>
-          <input 
-            matInput 
-            type="time" 
-            formControlName="end_time"
+          <input
+            matInput
+            formControlName="endTime"
+            required
+            readonly
+            (click)="picker2.open()"
           >
-          <mat-icon matPrefix>schedule</mat-icon>
-          <mat-error *ngIf="schedulingForm.get('end_time')?.hasError('required')">
+          <mat-icon matSuffix (click)="picker2.open()">schedule</mat-icon>
+          <ngx-mat-timepicker #picker2 (timeSet)="onEndTimeChange($event)"></ngx-mat-timepicker>
+          <mat-error *ngIf="schedulingForm.get('endTime')?.hasError('required')">
             La hora de fin es obligatoria
           </mat-error>
         </mat-form-field>
@@ -109,20 +84,44 @@
     </div>
     
     <!-- Duración calculada -->
-    <div class="duration-display" *ngIf="duration">
-      <mat-icon>timelapse</mat-icon>
-      <span>Duración: <strong>{{ duration }}</strong></span>
+    <div class="duration-info">
+      <mat-icon>timer</mat-icon>
+      <span>Duración del evento: <strong>{{ formatDuration() }}</strong></span>
     </div>
+    
+    <!-- Mensaje de error si la fecha de fin es anterior a la de inicio -->
+    <div *ngIf="!validateDates()" class="error-message">
+      <mat-icon>error</mat-icon>
+      <span>La fecha de fin debe ser posterior a la fecha de inicio</span>
+    </div>
+    
+    <!-- Estado del evento -->
+    <!-- <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Estado del evento</mat-label>
+      <mat-select formControlName="status" required>
+        <mat-option value="upcoming">Próximo</mat-option>
+        <mat-option value="ongoing">En curso</mat-option>
+        <mat-option value="completed">Completado</mat-option>
+        <mat-option value="canceled">Cancelado</mat-option>
+      </mat-select>
+      <mat-error *ngIf="schedulingForm.get('status')?.hasError('required')">
+        El estado del evento es obligatorio
+      </mat-error>
+    </mat-form-field> -->
   </form>
-
-  <div class="form-tips">
-    <div class="tip">
-      <mat-icon>lightbulb</mat-icon>
-      <span>Considera añadir tiempo adicional antes y después del evento para preparación y cierre.</span>
-    </div>
-    <div class="tip">
-      <mat-icon>lightbulb</mat-icon>
-      <span>Para eventos de varios días, asegúrate de que las horas de inicio y fin sean apropiadas para cada día.</span>
+  
+  <!-- Información adicional -->
+  <div class="info-section">
+    <div class="info-card">
+      <mat-icon>info</mat-icon>
+      <div class="info-content">
+        <h4>Consejos para la programación</h4>
+        <ul>
+          <li>Programa eventos en horarios convenientes para tu audiencia</li>
+          <li>Considera la duración adecuada según el tipo de evento</li>
+          <li>Deja tiempo suficiente para preparación y limpieza</li>
+        </ul>
+      </div>
     </div>
   </div>
 </div>

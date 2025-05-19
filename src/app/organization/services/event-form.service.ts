@@ -1,6 +1,6 @@
 // organization/services/event-form.service.ts
 import { Injectable } from '@angular/core';
-import { FormGroup } from '@angular/forms';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { BehaviorSubject, Observable } from 'rxjs';
 
 @Injectable({
@@ -49,6 +49,7 @@ export class EventFormService {
   }
 
   setLocationForm(form: FormGroup): void {
+    console.log('Actualizando formulario de ubicación:', form.value);
     this.locationFormSubject.next(form);
     this.locationValidSubject.next(form.valid);
   }
@@ -82,22 +83,48 @@ export class EventFormService {
   }
   
   // Método para resetear todos los formularios
-  resetForms(): void {
-    const basicInfoForm = this.basicInfoFormSubject.value;
-    const schedulingForm = this.schedulingFormSubject.value;
-    const locationForm = this.locationFormSubject.value;
-    const mediaForm = this.mediaFormSubject.value;
-    
-    if (basicInfoForm) basicInfoForm.reset();
-    if (schedulingForm) schedulingForm.reset();
-    if (locationForm) locationForm.reset();
-    if (mediaForm) mediaForm.reset();
-    
-    this.imageFileSubject.next(null);
-    
-    this.basicInfoValidSubject.next(false);
-    this.schedulingValidSubject.next(false);
-    this.locationValidSubject.next(false);
-    this.mediaValidSubject.next(false);
-  }
+  resetAllForms(): void {
+  // Crear formularios nuevos vacíos
+  const emptyBasicInfoForm = new FormGroup({
+    title: new FormControl('', [Validators.required, Validators.maxLength(100)]),
+    description: new FormControl('', [Validators.required, Validators.maxLength(500)]),
+    facultyId: new FormControl('', Validators.required)
+  });
+  
+  const emptySchedulingForm = new FormGroup({
+    startDate: new FormControl('', Validators.required),
+    startTime: new FormControl('', Validators.required),
+    endDate: new FormControl('', Validators.required),
+    endTime: new FormControl('', Validators.required),
+    status: new FormControl('upcoming')
+  });
+  
+  const emptyLocationForm = new FormGroup({
+    address: new FormControl('', Validators.required),
+    latitude: new FormControl(0, Validators.required),
+    longitude: new FormControl(0, Validators.required)
+  });
+  
+  const emptyMediaForm = new FormGroup({
+    imageUrl: new FormControl(''),
+    hasImage: new FormControl(false)
+  });
+  
+  // Actualizar los formularios
+  this.basicInfoFormSubject.next(emptyBasicInfoForm);
+  this.schedulingFormSubject.next(emptySchedulingForm);
+  this.locationFormSubject.next(emptyLocationForm);
+  this.mediaFormSubject.next(emptyMediaForm);
+  
+  // Limpiar el archivo de imagen
+  this.imageFileSubject.next(null);
+  
+  // Actualizar los estados de validez
+  this.basicInfoValidSubject.next(false);
+  this.schedulingValidSubject.next(false);
+  this.locationValidSubject.next(false);
+  this.mediaValidSubject.next(false);
+  
+  console.log('Todos los formularios han sido reseteados');
+}
 }

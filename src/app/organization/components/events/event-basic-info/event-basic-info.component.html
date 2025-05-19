@@ -10,7 +10,7 @@
 
   <form [formGroup]="basicInfoForm" class="basic-info-form">
     <!-- Título del evento -->
-    <mat-form-field appearance="outline" class="form-field">
+    <mat-form-field appearance="outline" matFormField>
       <mat-label>Título del Evento</mat-label>
       <input 
         matInput 
@@ -35,6 +35,7 @@
         matInput 
         formControlName="description" 
         placeholder="Describe brevemente el evento y sus objetivos"
+    
         rows="5"
         maxlength="500"
       ></textarea>

@@ -53,7 +53,16 @@ export interface Event {
   end_date: string;
   address: string;
   facultyId: string;
-  image: File | null; // 👈 Aquí agregas la imagen
+  image: File | null;
+}
+export interface EventUpdate {
+  title?: string;
+  description?: string;
+  start_date?: string;
+  end_date?: string;
+  address?: string;
+  facultyId?: string;
+  image?: File | null;
 }
 
 export interface EventsResponse {

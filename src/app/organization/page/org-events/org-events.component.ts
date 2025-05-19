@@ -17,7 +17,6 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 import { EventFormComponent } from '../../components/events/event-form/event-form.component';
 import { EventDeleteDialogComponent } from '../../components/events/event-delete-dialog/event-delete-dialog.component';
-import { EventsService } from '../../../events/services/events.service';
 import { DatumEvent } from '../../interfaces/events';
 import { OrganizationService } from '../../services/organization.service';
 
@@ -109,68 +108,12 @@ export class OrgEventsComponent implements OnInit {
   }
 
   openCreateDialog(): void {
-    // const dialogRef = this.dialog.open(EventFormComponent, {
-    //   width: '800px',
-    //   data: { mode: 'create' }
-    // });
-
-    // dialogRef.afterClosed().subscribe(result => {
-    //   if (result) {
-    //     this.eventService.createEvent(result).subscribe({
-    //       next: () => {
-    //         this.loadEvents();
-    //         this.snackBar.open('Evento creado con éxito', 'Cerrar', {
-    //           duration: 3000,
-    //           horizontalPosition: 'end',
-    //           verticalPosition: 'top',
-    //           panelClass: ['success-snackbar']
-    //         });
-    //       },
-    //       error: (error) => {
-    //         console.error('Error al crear evento', error);
-    //         this.snackBar.open('Error al crear el evento', 'Cerrar', {
-    //           duration: 3000,
-    //           horizontalPosition: 'end',
-    //           verticalPosition: 'top',
-    //           panelClass: ['error-snackbar']
-    //         });
-    //       }
-    //     });
-    //   }
-    // });
      this.router.navigate(['/tenant', this.tenantName, 'events', 'create']);
   }
 
   openEditDialog(event: DatumEvent): void {
-    const dialogRef = this.dialog.open(EventFormComponent, {
-      width: '800px',
-      data: { mode: 'edit', event: { ...event } }
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        this.eventService.updateEvent(event.id, result).subscribe({
-          next: () => {
-            this.loadEvents();
-            this.snackBar.open('Evento actualizado con éxito', 'Cerrar', {
-              duration: 3000,
-              horizontalPosition: 'end',
-              verticalPosition: 'top',
-              panelClass: ['success-snackbar']
-            });
-          },
-          error: (error) => {
-            console.error('Error al actualizar evento', error);
-            this.snackBar.open('Error al actualizar el evento', 'Cerrar', {
-              duration: 3000,
-              horizontalPosition: 'end',
-              verticalPosition: 'top',
-              panelClass: ['error-snackbar']
-            });
-          }
-        });
-      }
-    });
+   
+      this.router.navigate(['/tenant', this.tenantName, 'events', `edit/:${event.id}`]);
   }
 
   openDeleteDialog(event: DatumEvent): void {

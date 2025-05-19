@@ -13,10 +13,15 @@
       <mat-card class="event-preview-card">
         <div class="event-image-container">
           <img 
-            [src]="imagePreview || '/assets/images/event-placeholder.jpg'" 
+            *ngIf="imagePreview"
+            [src]="imagePreview" 
             alt="Imagen del evento" 
             class="event-image"
           >
+          <div *ngIf="!imagePreview" class="no-image-placeholder">
+            <mat-icon>image</mat-icon>
+            <span>Sin imagen</span>
+          </div>
           <div class="event-status">
             <span class="status-badge bg-blue-100 text-blue-800">
               Próximo
@@ -29,7 +34,7 @@
         </div>
         
         <mat-card-content class="event-content">
-          <h3 class="event-title">{{ basicInfoForm.get('title')?.value || 'Título del Evento' }}</h3>
+          <h3 class="event-title">{{ getTitle() }}</h3>
           
           <div class="event-details">
             <div class="event-detail" *ngIf="startDateTime && endDateTime">
@@ -44,12 +49,12 @@
             
             <div class="event-detail">
               <mat-icon class="detail-icon">location_on</mat-icon>
-              <span>{{ locationForm.get('address')?.value || 'Ubicación del evento' }}</span>
+              <span>{{ getAddress() }}</span>
             </div>
             
             <div class="event-detail" *ngIf="selectedFaculty">
               <mat-icon class="detail-icon">school</mat-icon>
-              <span>{{ selectedFaculty.name }}</span>
+              <span>{{ getFacultyName() }}</span>
             </div>
             
             <div class="event-detail" *ngIf="duration">
@@ -58,7 +63,7 @@
             </div>
           </div>
           
-          <p class="event-description">{{ basicInfoForm.get('description')?.value || 'Descripción del evento' }}</p>
+          <p class="event-description">{{ getDescription() }}</p>
           
           <div class="event-faculty" *ngIf="selectedFaculty">
             <div 
@@ -67,7 +72,7 @@
               [style.color]="getFacultyColor(getFacultyIndex())"
               [style.border-color]="getFacultyColor(getFacultyIndex())"
             >
-              {{ selectedFaculty.name }}
+              {{ getFacultyName() }}
             </div>
           </div>
         </mat-card-content>
@@ -83,15 +88,15 @@
         <div class="section-content">
           <div class="review-item">
             <span class="item-label">Título:</span>
-            <span class="item-value">{{ basicInfoForm.get('title')?.value || 'No especificado' }}</span>
+            <span class="item-value">{{ getTitle() }}</span>
           </div>
           <div class="review-item">
             <span class="item-label">Descripción:</span>
-            <span class="item-value description">{{ basicInfoForm.get('description')?.value || 'No especificado' }}</span>
+            <span class="item-value description">{{ getDescription() }}</span>
           </div>
           <div class="review-item">
             <span class="item-label">Facultad:</span>
-            <span class="item-value">{{ selectedFaculty?.name || 'No especificado' }}</span>
+            <span class="item-value">{{ getFacultyName() }}</span>
           </div>
         </div>
       </div>
@@ -99,48 +104,58 @@
       <mat-divider></mat-divider>
       
       <div class="review-section">
-        <h3 class="section-title">
-          <mat-icon>event</mat-icon>
-          Programación
-        </h3>
-        <div class="section-content">
-          <div class="review-item">
-            <span class="item-label">Fecha de inicio:</span>
-            <span class="item-value">{{ startDateTime ? (startDateTime | date:'dd/MM/yyyy') : 'No especificado' }}</span>
-          </div>
-          <div class="review-item">
-            <span class="item-label">Hora de inicio:</span>
-            <span class="item-value">{{ startDateTime ? (startDateTime | date:'HH:mm') : 'No especificado' }}</span>
-          </div>
-          <div class="review-item">
-            <span class="item-label">Fecha de fin:</span>
-            <span class="item-value">{{ endDateTime ? (endDateTime | date:'dd/MM/yyyy') : 'No especificado' }}</span>
-          </div>
-          <div class="review-item">
-            <span class="item-label">Hora de fin:</span>
-            <span class="item-value">{{ endDateTime ? (endDateTime | date:'HH:mm') : 'No especificado' }}</span>
-          </div>
-          <div class="review-item">
-            <span class="item-label">Duración:</span>
-            <span class="item-value">{{ duration || 'No calculada' }}</span>
-          </div>
-        </div>
-      </div>
+  <h3 class="section-title">
+    <mat-icon>event</mat-icon>
+    Programación
+  </h3>
+  <div class="section-content">
+    <div class="review-item">
+      <span class="item-label">Fecha de inicio:</span>
+      <span class="item-value">{{ startDateTime ? (startDateTime | date:'dd/MM/yyyy') : 'No especificado' }}</span>
+    </div>
+    <div class="review-item">
+      <span class="item-label">Hora de inicio:</span>
+      <span class="item-value">{{ startDateTime ? (startDateTime | date:'HH:mm') : 'No especificado' }}</span>
+    </div>
+    <div class="review-item">
+      <span class="item-label">Fecha de fin:</span>
+      <span class="item-value">{{ endDateTime ? (endDateTime | date:'dd/MM/yyyy') : 'No especificado' }}</span>
+    </div>
+    <div class="review-item">
+      <span class="item-label">Hora de fin:</span>
+      <span class="item-value">{{ endDateTime ? (endDateTime | date:'HH:mm') : 'No especificado' }}</span>
+    </div>
+    <div class="review-item">
+      <span class="item-label">Duración:</span>
+      <span class="item-value">{{ duration || 'No calculada' }}</span>
+    </div>
+  </div>
+</div>
       
-      <mat-divider></mat-divider>
-      
-      <div class="review-section">
-        <h3 class="section-title">
-          <mat-icon>location_on</mat-icon>
-          Ubicación
-        </h3>
-        <div class="section-content">
-          <div class="review-item">
-            <span class="item-label">Dirección:</span>
-            <span class="item-value">{{ locationForm.get('address')?.value || 'No especificado' }}</span>
-          </div>
-        </div>
-      </div>
+   <div class="review-section">
+  <h3 class="section-title">
+    <mat-icon>location_on</mat-icon>
+    Ubicación
+  </h3>
+  <div class="section-content">
+    <div class="review-item">
+      <span class="item-label">Dirección:</span>
+      <span class="item-value">{{ getAddress() }}</span>
+    </div>
+    
+    <!-- Mapa estático -->
+    <div *ngIf="locationForm?.get('latitude')?.value && locationForm?.get('longitude')?.value" 
+         class="map-preview">
+      <img [src]="getStaticMapUrl()" alt="Mapa de ubicación" class="static-map-image">
+    </div>
+    
+    <!-- Mensaje cuando se está cargando las coordenadas -->
+    <div *ngIf="isEditMode && !(locationForm?.get('latitude')?.value && locationForm?.get('longitude')?.value)" 
+         class="loading-map">
+      <p><mat-icon>sync</mat-icon> Cargando mapa...</p>
+    </div>
+  </div>
+</div>
       
       <mat-divider></mat-divider>
       

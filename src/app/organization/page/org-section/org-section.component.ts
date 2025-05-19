@@ -1,179 +1,140 @@
+// section-list.component.ts
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
-import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatChipsModule } from '@angular/material/chips';
 import { MatMenuModule } from '@angular/material/menu';
-import { MatDividerModule } from '@angular/material/divider';
+import { MatBadgeModule } from '@angular/material/badge';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatTabsModule } from '@angular/material/tabs';
-import { CdkDragDrop, moveItemInArray, CdkDragHandle, CdkDropList, CdkDrag } from '@angular/cdk/drag-drop';
+import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 
-interface Section {
-  id: string;
-  title: string;
-  description: string;
-  type: 'banner' | 'featured' | 'categories' | 'events' | 'about' | 'contact';
-  active: boolean;
-  order: number;
-  icon: string;
-}
+
+
+import { Section } from '../../interfaces/section';
+import { EventsService } from '../../../events/services/events.service';
+import { OrganizationService } from '../../services/organization.service';
+import { Event } from '../../interfaces/events';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatFormField, MatLabel } from '@angular/material/form-field';
 
 @Component({
-  selector: 'app-org-section',
+  selector: 'app-section-list',
   standalone: true,
   imports: [
     CommonModule,
     MatCardModule,
-    MatIconModule,
     MatButtonModule,
+    MatIconModule,
+    MatChipsModule,
     MatMenuModule,
-    MatDividerModule,
+    MatBadgeModule,
     MatTooltipModule,
-    MatTabsModule,
-    CdkDropList,
-    CdkDrag,
-    CdkDragHandle
+     MatProgressSpinnerModule,
+    RouterModule,MatFormField,MatLabel
   ],
   templateUrl: './org-section.component.html',
   styleUrls: ['./org-section.component.css']
 })
 export class OrgSectionComponent implements OnInit {
-  sections: Section[] = [
-    {
-      id: '1',
-      title: 'Banner Principal',
-      description: 'Banner destacado con imágenes de eventos principales',
-      type: 'banner',
-      active: true,
-      order: 1,
-      icon: 'view_carousel'
-    },
-    {
-      id: '2',
-      title: 'Eventos Destacados',
-      description: 'Muestra los eventos más importantes',
-      type: 'featured',
-      active: true,
-      order: 2,
-      icon: 'star'
-    },
-    {
-      id: '3',
-      title: 'Categorías',
-      description: 'Listado de categorías de eventos',
-      type: 'categories',
-      active: true,
-      order: 3,
-      icon: 'category'
-    },
-    {
-      id: '4',
-      title: 'Próximos Eventos',
-      description: 'Lista de eventos próximos',
-      type: 'events',
-      active: true,
-      order: 4,
-      icon: 'event'
-    },
-    {
-      id: '5',
-      title: 'Sobre Nosotros',
-      description: 'Información sobre la organización',
-      type: 'about',
-      active: false,
-      order: 5,
-      icon: 'info'
-    },
-    {
-      id: '6',
-      title: 'Contacto',
-      description: 'Formulario de contacto y ubicación',
-      type: 'contact',
-      active: true,
-      order: 6,
-      icon: 'contact_mail'
-    }
-  ];
-  
-  availableSections: Section[] = [
-    {
-      id: '7',
-      title: 'Galería de Fotos',
-      description: 'Muestra imágenes de eventos pasados',
-      type: 'banner',
-      active: false,
-      order: 0,
-      icon: 'photo_library'
-    },
-    {
-      id: '8',
-      title: 'Testimonios',
-      description: 'Opiniones de asistentes a eventos',
-      type: 'about',
-      active: false,
-      order: 0,
-      icon: 'format_quote'
-    }
-  ];
-  
-  constructor() {}
-  
+  sections: Section[] = [];
+  event: any | null = null;
+  tenantId: string = '';
+  eventId: string = '';
+  isLoading: boolean = true;
+  error: string | null = null;
+    tenantName: string = '';
+  constructor(
+    private sectionService: OrganizationService,
+    private eventService: OrganizationService,
+    private route: ActivatedRoute,
+    private router: Router
+  ) {}
+
   ngOnInit(): void {
-    // Ordenar secciones por orden
-    this.sections.sort((a, b) => a.order - b.order);
+    this.route.params.subscribe(params => {
+      this.tenantId = params['tenantId'];
+      this.eventId = params['eventId'];
+      this.loadEvent();
+      this.loadSections();
+    });
+
+      this.route.parent?.paramMap.subscribe(params => {
+    const tenantParam = params.get('tenantName');
+    if (tenantParam) {
+      this.tenantName = tenantParam;
+    }
+  });
   }
-  
-  drop(event: CdkDragDrop<Section[]>): void {
-    moveItemInArray(this.sections, event.previousIndex, event.currentIndex);
-    
-    // Actualizar el orden
-    this.sections.forEach((section, index) => {
-      section.order = index + 1;
+
+  loadEvent(): void {
+    this.eventService.getByIdEvent(this.eventId).subscribe({
+      next: (response) => {
+        this.event = response.data;
+      },
+      error: (error) => {
+        console.error('Error al cargar el evento', error);
+        this.error = 'No se pudo cargar la información del evento';
+      }
     });
   }
-  
-  toggleSectionActive(section: Section): void {
-    section.active = !section.active;
+
+  loadSections(): void {
+    this.isLoading = true;
+    this.sectionService.getSectionsByEventId(this.eventId).subscribe({
+      next: (response) => {
+        this.sections = response.data;
+        this.isLoading = false;
+      },
+      error: (error) => {
+        console.error('Error al cargar las secciones', error);
+        this.error = 'No se pudieron cargar las secciones';
+        this.isLoading = false;
+      }
+    });
   }
-  
-  getActiveStatusClass(active: boolean): string {
-    return active ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800';
+
+  createSection(): void {
+         this.router.navigate(['/tenant', this.tenantName, 'section', 'create']);
   }
-  
-  getActiveStatusText(active: boolean): string {
-    return active ? 'Activo' : 'Inactivo';
+
+  editSection(sectionId: string): void {
+    this.router.navigate([`/tenant/${this.tenantId}/events/${this.eventId}/sections/${sectionId}/edit`]);
   }
-  
-  addSection(section: Section): void {
-    // Clonar la sección y añadirla a las secciones activas
-    const newSection = { ...section };
-    newSection.order = this.sections.length + 1;
-    newSection.active = true;
-    this.sections.push(newSection);
-    
-    // Eliminar de las secciones disponibles
-    const index = this.availableSections.findIndex(s => s.id === section.id);
-    if (index !== -1) {
-      this.availableSections.splice(index, 1);
-    }
+
+  viewSectionDetails(sectionId: string): void {
+    this.router.navigate([`/tenant/${this.tenantId}/events/${this.eventId}/sections/${sectionId}`]);
   }
-  
-  removeSection(section: Section): void {
-    // Eliminar la sección
-    const index = this.sections.findIndex(s => s.id === section.id);
-    if (index !== -1) {
-      this.sections.splice(index, 1);
-      
-      // Actualizar el orden
-      this.sections.forEach((s, i) => {
-        s.order = i + 1;
-      });
-      
-      // Añadir a las secciones disponibles
-      section.active = false;
-      section.order = 0;
-      this.availableSections.push(section);
-    }
+
+  toggleSectionStatus(section: Section): void {
+    const updatedSection = { ...section, is_active: !section.is_active };
+    this.sectionService.updateSection(section.id!, updatedSection).subscribe({
+      next: () => {
+        section.is_active = !section.is_active;
+      },
+      error: (error) => {
+        console.error('Error al cambiar el estado de la sección', error);
+      }
+    });
+  }
+
+  getOccupancyPercentage(section: Section): number {
+    // Aquí iría la lógica para calcular la ocupación
+    // Por ahora, retornamos un valor aleatorio como ejemplo
+    return Math.floor(Math.random() * 100);
+  }
+
+  getOccupancyColor(percentage: number): string {
+    if (percentage < 30) return 'bg-green-500';
+    if (percentage < 70) return 'bg-yellow-500';
+    return 'bg-red-500';
+  }
+
+  formatPrice(price: number): string {
+    return new Intl.NumberFormat('es-BO', { 
+      style: 'currency', 
+      currency: 'BOB' 
+    }).format(price);
   }
 }

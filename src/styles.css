@@ -29,7 +29,29 @@ body {
 .mat-mdc-form-field-focus-overlay {
   background-color: transparent !important;
 }
+.mat-mdc-form-field-infix {
+  border-top: 0px solid transparent !important;
+  padding-top: 8px !important;
+  padding-bottom: 8px !important;
+}
 
+.mat-mdc-text-field-wrapper .mat-mdc-form-field-infix {
+  border-top-width: 0 !important;
+  border-top-style: none !important;
+}
+
+/* Asegurar que los íconos estén alineados correctamente */
+.mat-mdc-form-field-icon-prefix > .mat-icon {
+  padding-bottom: 0 !important;
+  padding-top: 0 !important;
+  align-self: center !important;
+}
+
+/* Mejorar la apariencia general de los campos */
+.mat-mdc-form-field-appearance-outline .mat-mdc-form-field-flex {
+  padding: 0 0.75em !important;
+  gap: 8px !important;
+}
 .mat-mdc-form-field-flex {
   align-items: center !important;
 }

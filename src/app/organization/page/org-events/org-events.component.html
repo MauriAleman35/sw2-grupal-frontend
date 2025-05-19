@@ -129,9 +129,17 @@
               <mat-icon>visibility</mat-icon>
               Ver detalles
             </button>
-            <button mat-button color="accent" (click)="openEditDialog(event)">
+            <button mat-button color="accent" [routerLink]="['/tenant', tenantName, 'events', 'edit',event.id]">
               <mat-icon>edit</mat-icon>
               Editar
+            </button>
+              <button 
+              mat-icon-button 
+              color="warn" 
+              matTooltip="Eliminar"
+              (click)="openDeleteDialog(event)"
+            >
+              <mat-icon>delete</mat-icon>
             </button>
           </mat-card-actions>
         </mat-card>
@@ -290,6 +298,16 @@
             <button mat-button color="accent" (click)="openEditDialog(event)">
               <mat-icon>edit</mat-icon>
               Editar
+            </button>
+            
+
+              <button 
+              mat-icon-button 
+              color="warn" 
+              matTooltip="Eliminar"
+              (click)="openDeleteDialog(event)"
+            >
+              <mat-icon>delete</mat-icon>
             </button>
           </mat-card-actions>
         </mat-card>

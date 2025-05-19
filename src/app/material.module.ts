@@ -18,6 +18,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatStepperModule } from '@angular/material/stepper';
+import { NgxMatTimepickerModule } from 'ngx-mat-timepicker';
 // Añade aquí todos los módulos de Material que necesites
 
 const MaterialComponents = [
@@ -35,7 +36,7 @@ const MaterialComponents = [
       MatTabsModule,
       MatDividerModule,
       MatChipsModule,
-      MatTooltipModule
+      MatTooltipModule,    NgxMatTimepickerModule
  // ✅ Agrégalo aquí
  // ✅ Ya que también lo usas
   // Añade aquí todos los módulos que hayas importado arriba
