@@ -56,6 +56,7 @@ export class EventFormComponent implements OnInit {
   isLoading = false;
   event: Partial<DatumEvent> = {};
   imageFile: File | null = null;
+  imageSection: File | null = null;
   tenantName: string = '';
   isSubmitting = false;
   // Formularios para cada paso
@@ -153,6 +154,9 @@ export class EventFormComponent implements OnInit {
     this.eventFormService.imageFile$.subscribe(file => {
       this.imageFile = file;
     });
+     this.eventFormService.imageSectionFile$.subscribe(file => {
+      this.imageSection = file;
+    });
   }
 
   private initForms(): void {
@@ -179,6 +183,7 @@ export class EventFormComponent implements OnInit {
   
   this.mediaForm = this.fb.group({
     imageUrl: [''],
+    imageSection: [''],
     hasImage: [false]
   });
   
@@ -299,13 +304,14 @@ private getCoordinatesForAddress(address: string): void {
   }
   
   // Multimedia
-  if (this.event.image_url) {
+  if (this.event.image_event) {
     this.mediaForm.patchValue({
-      imageUrl: this.event.image_url,
+      imageUrl: this.event.image_event,
+      imageSection: this.event.image_section,
       hasImage: true
     });
     
-    console.log('Imagen cargada:', this.event.image_url);
+    console.log('Imagen cargada:', this.event.image_event,this.event.image_section);
   }
   
   // Actualizar los formularios en el servicio DESPUÉS de poblados
@@ -350,6 +356,11 @@ private getCoordinatesForAddress(address: string): void {
     console.log('Enviando nueva imagen:', this.imageFile.name);
     eventData.image = this.imageFile;
   }
+      console.log('Enviando nueva imagen section:', this.imageSection?.name);
+  if (this.imageSection) {
+
+    eventData.imageSection = this.imageSection;
+  }
   
   // Si estamos en modo edición, actualizar el evento
   if (this.isEditMode && this.eventId) {
@@ -366,7 +377,11 @@ private getCoordinatesForAddress(address: string): void {
   // Manejar la imagen
   if (this.imageFile) {
     console.log('Enviando nueva imagen:', this.imageFile.name);
-    formData.append('file', this.imageFile);
+    formData.append('image_event', this.imageFile);
+  }
+  if (this.imageSection) {
+    console.log('Enviando nueva imagen:', this.imageSection.name);
+    formData.append('image_section', this.imageSection);
   }
     this.organizationService.updateEvent(cleanEventId, formData).subscribe({
       next: (response) => {
@@ -440,7 +455,8 @@ private getCoordinatesForAddress(address: string): void {
       end_date: endDateTime.toISOString(),
       address: this.locationForm.value.address,
       facultyId: this.basicInfoForm.value.facultyId,
-      image: this.imageFile || null // Si no hay imagen, será null
+      image: this.imageFile || null, 
+      imageSection:this.imageSection || null// Si no hay imagen, será null
     };
     
     return eventData;

@@ -50,7 +50,7 @@
       </div>
     </div>
     
-  <button mat-raised-button color="primary" class="create-btn" [routerLink]="['/tenant', tenantName, 'events', 'create']">
+  <button mat-raised-button color="primary" class="create-btn" (click)="openCreateEvent()">
   <mat-icon>add</mat-icon>
   Crear Evento
 </button>
@@ -68,7 +68,7 @@
       <div class="events-grid">
         <mat-card *ngFor="let event of filterEventsByStatus('upcoming')" class="event-card">
           <div class="event-image-container">
-            <img [src]="event.image_url" [alt]="event.title" class="event-image">
+            <img [src]="event.image_event" [alt]="event.title" class="event-image">
             <div class="event-status">
               <span [ngClass]="getStatusClass('upcoming')" class="status-badge">
                 {{ getStatusText('upcoming') }}
@@ -87,7 +87,7 @@
                 <mat-icon>more_vert</mat-icon>
               </button>
               <mat-menu #eventMenu="matMenu">
-                <button mat-menu-item (click)="openEditDialog(event)">
+                <button mat-menu-item (click)="openEditEvent(event)">
                   <mat-icon>edit</mat-icon>
                   <span>Editar</span>
                 </button>
@@ -157,7 +157,7 @@
       <div class="events-grid">
         <mat-card *ngFor="let event of filterEventsByStatus('active')" class="event-card">
           <div class="event-image-container">
-            <img [src]="event.image_url" [alt]="event.title" class="event-image">
+            <img [src]="event.image_event" [alt]="event.title" class="event-image">
             <div class="event-status">
               <span [ngClass]="getStatusClass('active')" class="status-badge">
                 {{ getStatusText('active') }}
@@ -176,7 +176,7 @@
                 <mat-icon>more_vert</mat-icon>
               </button>
               <mat-menu #eventMenu="matMenu">
-                <button mat-menu-item (click)="openEditDialog(event)">
+                <button mat-menu-item (click)="openEditEvent(event)">
                   <mat-icon>edit</mat-icon>
                   <span>Editar</span>
                 </button>
@@ -218,7 +218,7 @@
               <mat-icon>visibility</mat-icon>
               Ver detalles
             </button>
-            <button mat-button color="accent" (click)="openEditDialog(event)">
+            <button mat-button color="accent" (click)="openEditEvent(event)">
               <mat-icon>edit</mat-icon>
               Editar
             </button>
@@ -238,7 +238,7 @@
       <div class="events-grid">
         <mat-card *ngFor="let event of filterEventsByStatus('completed')" class="event-card">
           <div class="event-image-container">
-            <img [src]="event.image_url" [alt]="event.title" class="event-image">
+            <img [src]="event.image_event" [alt]="event.title" class="event-image">
             <div class="event-status">
               <span [ngClass]="getStatusClass('completed')" class="status-badge">
                 {{ getStatusText('completed') }}
@@ -257,7 +257,7 @@
                 <mat-icon>more_vert</mat-icon>
               </button>
               <mat-menu #eventMenu="matMenu">
-                <button mat-menu-item (click)="openEditDialog(event)">
+                <button mat-menu-item (click)="openEditEvent(event)">
                   <mat-icon>edit</mat-icon>
                   <span>Editar</span>
                 </button>
@@ -295,7 +295,7 @@
               <mat-icon>visibility</mat-icon>
               Ver detalles
             </button>
-            <button mat-button color="accent" (click)="openEditDialog(event)">
+            <button mat-button color="accent" (click)="openEditEvent(event)">
               <mat-icon>edit</mat-icon>
               Editar
             </button>
@@ -325,7 +325,7 @@
       <div class="events-grid">
         <mat-card *ngFor="let event of filterEventsByStatus('cancelled')" class="event-card">
           <div class="event-image-container">
-            <img [src]="event.image_url" [alt]="event.title" class="event-image">
+            <img [src]="event.image_event" [alt]="event.title" class="event-image">
             <div class="event-status">
               <span [ngClass]="getStatusClass('cancelled')" class="status-badge">
                 {{ getStatusText('cancelled') }}
@@ -344,7 +344,7 @@
                 <mat-icon>more_vert</mat-icon>
               </button>
               <mat-menu #eventMenu="matMenu">
-                <button mat-menu-item (click)="openEditDialog(event)">
+                <button mat-menu-item (click)="openEditEvent(event)">
                   <mat-icon>edit</mat-icon>
                   <span>Editar</span>
                 </button>
@@ -386,7 +386,7 @@
               <mat-icon>visibility</mat-icon>
               Ver detalles
             </button>
-            <button mat-button color="accent" (click)="openEditDialog(event)">
+            <button mat-button color="accent" (click)="openEditEvent(event)">
               <mat-icon>edit</mat-icon>
               Editar
             </button>

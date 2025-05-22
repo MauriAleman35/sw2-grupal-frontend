@@ -1,13 +1,11 @@
-<!-- organization/components/events/event-media/event-media.component.html -->
 <div class="media-container">
   <h3 class="section-title">Medios del Evento</h3>
-  
+
   <form [formGroup]="mediaForm" class="media-form">
-    <!-- Sección de carga de imagen -->
+    <!-- Sección de carga de imagen del evento -->
     <div class="image-upload-section">
       <h4>Imagen del Evento</h4>
-      
-      <!-- Vista previa de la imagen (se muestra si hay una imagen) -->
+
       <div class="image-preview-container" *ngIf="imagePreviewUrl">
         <img [src]="imagePreviewUrl" alt="Vista previa de la imagen" class="image-preview">
         <div class="image-actions">
@@ -22,8 +20,7 @@
           </button>
         </div>
       </div>
-      
-      <!-- Botón de carga (se muestra si no hay imagen) -->
+
       <div class="upload-container" *ngIf="!imagePreviewUrl">
         <button 
           type="button" 
@@ -43,15 +40,47 @@
         >
         <p class="upload-hint">Formatos recomendados: JPG, PNG (máx. 5MB)</p>
       </div>
-      
-      <!-- Mensaje de error si la imagen es requerida -->
-      <mat-error *ngIf="mediaForm.get('imageUrl')?.hasError('required') && mediaForm.get('imageUrl')?.touched">
-        La imagen es obligatoria para el evento
-      </mat-error>
     </div>
-    
-    
-    
-    
+
+    <!-- Sección de carga de imagen de la sección -->
+    <div class="image-upload-section">
+      <h4>Imagen de la Sección</h4>
+
+      <div class="image-preview-container" *ngIf="imageSectionPreviewUrl">
+        <img [src]="imageSectionPreviewUrl" alt="Vista previa de la imagen" class="image-preview">
+        <div class="image-actions">
+          <button 
+            type="button" 
+            mat-mini-fab 
+            color="warn" 
+            (click)="removeImageSection()"
+            aria-label="Eliminar imagen"
+          >
+            <mat-icon>delete</mat-icon>
+          </button>
+        </div>
+      </div>
+
+      <div class="upload-container" *ngIf="!imageSectionPreviewUrl">
+        <button 
+          type="button" 
+          mat-raised-button 
+          color="primary" 
+          (click)="fileSectionInput.click()"
+        >
+          <mat-icon>add_photo_alternate</mat-icon>
+          Seleccionar Imagen para Sección
+        </button>
+        <input 
+          #fileSectionInput 
+          type="file" 
+          style="display: none" 
+          accept="image/*" 
+          (change)="onFileSectionSelected($event)"
+        >
+        <p class="upload-hint">Formatos recomendados: JPG, PNG (máx. 5MB)</p>
+      </div>
+    </div>
+
   </form>
 </div>

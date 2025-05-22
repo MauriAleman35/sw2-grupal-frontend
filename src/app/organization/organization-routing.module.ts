@@ -24,8 +24,11 @@ const routes: Routes = [
       { path: 'events', component: OrgEventsComponent },
       { path: 'events/create', component: EventFormComponent }, 
       { path: 'events/edit/:id', component: EventFormComponent }, 
+      { path: 'section/create', component: SectionFormComponent },
+      { path: 'section/edit/:id', component: SectionFormComponent },
+      { path: 'section/event/:eventId', component: OrgSectionComponent }, 
       { path: 'section', component: OrgSectionComponent },
-      { path: 'section/create', component:SectionFormComponent},
+
       { path: 'settings', component: OrgSettingsComponent },
      
     ]

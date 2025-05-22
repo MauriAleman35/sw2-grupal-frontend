@@ -15,6 +15,7 @@ export class EventFormService {
   
   // BehaviorSubject para el archivo de imagen
   private imageFileSubject = new BehaviorSubject<File | null>(null);
+  private imageSectionFileSubject = new BehaviorSubject<File | null>(null);
   
   // BehaviorSubjects para la validez de los formularios
   private basicInfoValidSubject = new BehaviorSubject<boolean>(false);
@@ -28,7 +29,7 @@ export class EventFormService {
   locationForm$ = this.locationFormSubject.asObservable();
   mediaForm$ = this.mediaFormSubject.asObservable();
   imageFile$ = this.imageFileSubject.asObservable();
-  
+  imageSectionFile$ = this.imageSectionFileSubject.asObservable();
   // Observables públicos para la validez
   basicInfoValid$ = this.basicInfoValidSubject.asObservable();
   schedulingValid$ = this.schedulingValidSubject.asObservable();
@@ -62,6 +63,9 @@ export class EventFormService {
   // Método para establecer el archivo de imagen
   setImageFile(file: File | null): void {
     this.imageFileSubject.next(file);
+  }
+  setImageSectionFile(file: File | null): void {
+    this.imageSectionFileSubject.next(file);
   }
   
   // Método para notificar cambios en la validez de los formularios
@@ -107,6 +111,7 @@ export class EventFormService {
   
   const emptyMediaForm = new FormGroup({
     imageUrl: new FormControl(''),
+    imageSection: new FormControl(''),
     hasImage: new FormControl(false)
   });
   

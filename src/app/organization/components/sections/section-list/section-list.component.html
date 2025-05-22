@@ -1,0 +1,133 @@
+<div class="px-6 py-4">
+  <!-- Estado de carga -->
+  <div *ngIf="loading" class="flex justify-center my-8">
+    <mat-spinner diameter="40"></mat-spinner>
+  </div>
+  
+  <!-- Sin secciones -->
+  <div *ngIf="!loading && (!sections || sections.length === 0)" class="py-16 text-center">
+    <div class="mx-auto w-24 h-24 rounded-full bg-gray-100 flex items-center justify-center mb-4">
+      <mat-icon class="text-gray-400" style="font-size: 40px; width: 40px; height: 40px;">event_seat</mat-icon>
+    </div>
+    <h3 class="text-xl font-medium text-gray-700">No hay secciones disponibles</h3>
+    <p class="text-gray-500 mt-2 mb-6 max-w-md mx-auto">
+      Crea secciones para organizar la distribución de asientos y establecer diferentes precios por áreas
+    </p>
+  </div>
+  
+  <!-- Lista de secciones -->
+  <div *ngIf="!loading && sections && sections.length > 0">
+    <!-- Vista móvil: tarjetas -->
+    <div class="md:hidden grid grid-cols-1 gap-4">
+      <div *ngFor="let section of sections" 
+           class="bg-white border border-gray-200 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow">
+        <div class="flex justify-between items-start mb-3">
+          <h3 class="text-lg font-medium text-gray-800">{{ section.name }}</h3>
+          <span [ngClass]="getStatusClass(section.status)" class="px-2 py-1 rounded-full text-xs font-medium">
+            {{ getStatusLabel(section.status) }}
+          </span>
+        </div>
+        
+        <div class="grid grid-cols-2 gap-3 mb-4">
+          <div>
+            <p class="text-xs text-gray-500">Capacidad</p>
+            <p class="text-sm font-medium">{{ section.capacity }} asientos</p>
+          </div>
+          <div>
+            <p class="text-xs text-gray-500">Precio</p>
+            <p class="text-sm font-medium">{{ section.price | currency:'USD':'symbol':'1.2-2' }}</p>
+          </div>
+        </div>
+        
+        <div class="flex justify-end space-x-2 mt-2">
+          <button mat-icon-button color="primary" matTooltip="Ver detalles" (click)="view.emit(section)">
+            <mat-icon>visibility</mat-icon>
+          </button>
+          <button mat-icon-button color="accent" matTooltip="Editar" (click)="edit.emit(section)">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button mat-icon-button color="warn" matTooltip="Eliminar" (click)="delete.emit(section)">
+            <mat-icon>delete</mat-icon>
+          </button>
+          <button mat-icon-button color="primary" matTooltip="Tickets" (click)="createTickets.emit(section)">
+            <mat-icon>confirmation_number</mat-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Vista escritorio: tabla -->
+    <div class="hidden md:block overflow-x-auto">
+      <table mat-table [dataSource]="sections" class="w-full">
+        <!-- Nombre -->
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef class="bg-gray-50"> Nombre </th>
+          <td mat-cell *matCellDef="let section" class="py-4 px-4">
+            <div class="font-medium text-gray-800">{{section.name}}</div>
+            <div *ngIf="section.description" class="text-xs text-gray-500 mt-1 truncate max-w-xs">
+              {{section.description}}
+            </div>
+          </td>
+        </ng-container>
+        
+        <!-- Capacidad -->
+        <ng-container matColumnDef="capacity">
+          <th mat-header-cell *matHeaderCellDef class="bg-gray-50"> Capacidad </th>
+          <td mat-cell *matCellDef="let section" class="py-4 px-4">
+            <div class="flex items-center">
+              <mat-icon class="text-gray-400 mr-1 text-base">people</mat-icon>
+              <span>{{section.capacity}}</span>
+            </div>
+            <div *ngIf="section.row_count && section.column_count" class="text-xs text-gray-500 mt-1">
+              {{section.row_count}} filas × {{section.column_count}} columnas
+            </div>
+          </td>
+        </ng-container>
+        
+        <!-- Precio -->
+        <ng-container matColumnDef="price">
+          <th mat-header-cell *matHeaderCellDef class="bg-gray-50"> Precio </th>
+          <td mat-cell *matCellDef="let section" class="py-4 px-4">
+            <div class="font-medium">{{section.price | currency:'USD':'symbol':'1.2-2'}}</div>
+          </td>
+        </ng-container>
+        
+        <!-- Estado -->
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef class="bg-gray-50"> Estado </th>
+          <td mat-cell *matCellDef="let section" class="py-4 px-4">
+            <span [ngClass]="getStatusClass(section.status)" class="px-2 py-1 rounded-full text-xs font-medium">
+              {{ getStatusLabel(section.status) }}
+            </span>
+          </td>
+        </ng-container>
+        
+        <!-- Acciones -->
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef class="bg-gray-50"> Acciones </th>
+          <td mat-cell *matCellDef="let section" class="py-4 px-4">
+            <div class="flex space-x-1">
+              <button mat-icon-button color="primary" matTooltip="Ver detalles" (click)="view.emit(section); $event.stopPropagation();">
+                <mat-icon>visibility</mat-icon>
+              </button>
+              <button mat-icon-button color="accent" matTooltip="Editar sección" (click)="edit.emit(section); $event.stopPropagation();">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button color="warn" matTooltip="Eliminar sección" (click)="delete.emit(section); $event.stopPropagation();">
+                <mat-icon>delete</mat-icon>
+              </button>
+              <button mat-icon-button color="primary" matTooltip="Gestionar tickets" (click)="createTickets.emit(section); $event.stopPropagation();">
+                <mat-icon>confirmation_number</mat-icon>
+              </button>
+            </div>
+          </td>
+        </ng-container>
+        
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;" 
+            class="hover:bg-gray-50 transition-colors cursor-pointer"
+            (click)="view.emit(row)"></tr>
+      </table>
+    </div>
+  </div>
+</div>

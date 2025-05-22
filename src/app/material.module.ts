@@ -19,24 +19,32 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatStepperModule } from '@angular/material/stepper';
 import { NgxMatTimepickerModule } from 'ngx-mat-timepicker';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatSortModule } from '@angular/material/sort';
+import { MatTableModule } from '@angular/material/table';
 // Añade aquí todos los módulos de Material que necesites
 
 const MaterialComponents = [
-  MatInputModule,
-  MatFormFieldModule,
-  MatButtonModule,
-  MatIconModule,
-  MatCheckboxModule,
-  MatProgressSpinnerModule,
-  MatTabsModule,
-  MatCardModule,    MatMenuModule,       MatStepperModule,
+   MatButtonModule,
+    MatCardModule,
+    MatCheckboxModule,
+    MatChipsModule,
+    MatDialogModule,
+    MatFormFieldModule,
+    MatIconModule,
+    MatInputModule,
+    MatPaginatorModule,
+    MatProgressBarModule,
     MatProgressSpinnerModule,
-      MatSelectModule,
-      MatSlideToggleModule,
-      MatTabsModule,
-      MatDividerModule,
-      MatChipsModule,
-      MatTooltipModule,    NgxMatTimepickerModule
+    MatSelectModule,
+    MatSlideToggleModule,
+    MatSnackBarModule,
+    MatSortModule,
+    MatTableModule,
+    MatTooltipModule,MatTabsModule
  // ✅ Agrégalo aquí
  // ✅ Ya que también lo usas
   // Añade aquí todos los módulos que hayas importado arriba

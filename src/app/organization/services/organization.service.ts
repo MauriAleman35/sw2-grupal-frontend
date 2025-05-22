@@ -4,7 +4,7 @@ import { HttpClient, HttpContext } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { FacultyDeleteResponse, FacultyParams, FacultyPostResponse, FacultyResponse, FacultyUpdateResponse} from '../interfaces/faculty';
 import { USE_TENANT_TOKEN } from '../../context/tenant-token.context';
-import { Event, EventsResponse, GetByIDResponse } from '../interfaces/events';
+import { Event, EventsCreateResponse, EventsResponse } from '../interfaces/events';
 import { Section } from '../interfaces/section';
 
 @Injectable({
@@ -50,14 +50,14 @@ export class OrganizationService {
           }
     )
   }
-  getByIdEvent(id:string):Observable<GetByIDResponse>{
-    return this.Http.get<GetByIDResponse>(`${this.ApiUrl}/event/${id}`, {
+  getByIdEvent(id:string):Observable<any>{
+    return this.Http.get<any>(`${this.ApiUrl}/event/${id}`, {
             context: new HttpContext().set(USE_TENANT_TOKEN, true) 
           }
     )
 
   }
-  createEvent(event:Event):Observable<FacultyPostResponse>{
+  createEvent(event:Event):Observable<EventsCreateResponse>{
      const formData = new FormData();
     formData.append('title', event.title);
     formData.append('description', event.description);
@@ -68,10 +68,14 @@ export class OrganizationService {
       console.log(event.image);
     if (event.image) {
     
-       formData.append('file', event.image);
+       formData.append('image_event', event.image);
+    }
+     if (event.imageSection) {
+
+       formData.append('image_section', event.imageSection);
     }
 
-    return this.Http.post<FacultyPostResponse>(`${this.ApiUrl}/event`,formData, {
+    return this.Http.post<EventsCreateResponse>(`${this.ApiUrl}/event`,formData, {
             context: new HttpContext().set(USE_TENANT_TOKEN, true) 
           }
     )

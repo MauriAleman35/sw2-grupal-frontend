@@ -10,6 +10,7 @@ export interface Data {
     title:       string;
     description: string;
     image_url:   string;
+    image_section: string;
     start_date:  Date;
     end_date:    Date;
     address:     string;
@@ -54,6 +55,7 @@ export interface Event {
   address: string;
   facultyId: string;
   image: File | null;
+  imageSection: File | null;
 }
 export interface EventUpdate {
   title?: string;
@@ -77,7 +79,8 @@ export interface DatumEvent {
     tenantId:    string;
     title:       string;
     description: string;
-    image_url:   string;
+    image_event: string;
+    image_section:   string;
     start_date:  Date;
     end_date:    Date;
     address:     string;
@@ -122,53 +125,42 @@ export interface Pagination {
     pages: number;
 }
 
-
-export interface GetByIDResponse {
+export interface GetSectionByIDResponse {
     statusCode: number;
-    data:       Data;
+    data:       DataSectionById;
     message:    string;
-    metadata:   Metadata;
+    metadata:   MetadataById;
 }
 
-export interface Data {
-    id:                    string;
-    tenantId:              string;
-    title:                 string;
-    description:           string;
-    image_url:             string;
-    start_date:            Date;
-    end_date:              Date;
-    address:               string;
-    is_active:             boolean;
-    created_at:            Date;
-    updated_at:            Date;
-    faculty:               Faculty;
-    sections:              any[];
-    identityVerifications: any[];
-    tenant:                Tenant;
+export interface DataSectionById {
+    id:          string;
+    tenantId:    string;
+    name:        string;
+    description: string;
+    capacity:    number;
+    price:       string;
+    is_active:   boolean;
+    created_at:  Date;
+    updated_at:  Date;
+    event:       EventById;
+    tickets:     any[];
 }
 
-export interface Faculty {
-    id:         string;
-    tenantId:   string;
-    name:       string;
-    location:   string;
-    is_active:  boolean;
-    created_at: Date;
-    updated_at: Date;
+export interface EventById {
+    id:          string;
+    tenantId:    string;
+    title:       string;
+    description: string;
+    image_url:   string;
+    start_date:  Date;
+    end_date:    Date;
+    address:     string;
+    is_active:   boolean;
+    created_at:  Date;
+    updated_at:  Date;
 }
 
-export interface Tenant {
-    id:           string;
-    name:         string;
-    display_name: string;
-    logo_url:     null;
-    is_active:    boolean;
-    created_at:   Date;
-    updated_at:   Date;
-}
-
-export interface Metadata {
-    timestamp: Date;
+export interface MetadataById {
+    timestamp: string;
     version:   string;
 }

@@ -1,0 +1,178 @@
+<div class="p-6">
+  <div *ngIf="section" class="space-y-8">
+    <!-- Encabezado con acciones -->
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+      <div>
+        <h2 class="text-xl font-bold text-gray-800">{{ section.name }}</h2>
+        <div class="flex items-center mt-1">
+          <span 
+            class="px-2 py-1 rounded-full text-xs font-medium"
+            [ngClass]="{
+              'bg-green-100 text-green-800': section.status === 'available',
+              'bg-yellow-100 text-yellow-800': section.status === 'limited',
+              'bg-red-100 text-red-800': section.status === 'sold_out',
+              'bg-gray-100 text-gray-800': !section.status
+            }">
+            {{ getStatusLabel(section.status) }}
+          </span>
+        </div>
+      </div>
+      
+      <div class="flex space-x-3">
+        <button mat-stroked-button color="primary" (click)="edit.emit(section)">
+          <mat-icon>edit</mat-icon> Editar
+        </button>
+        <button mat-stroked-button color="warn" (click)="delete.emit(section)">
+          <mat-icon>delete</mat-icon> Eliminar
+        </button>
+        <button mat-flat-button color="accent" (click)="createTickets.emit(section)">
+          <mat-icon>confirmation_number</mat-icon> Administrar Tickets
+        </button>
+      </div>
+    </div>
+    
+    <!-- Contenido principal -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <!-- Columna izquierda: Información general -->
+      <div class="md:col-span-2 space-y-6">
+        <mat-card appearance="outlined">
+          <mat-card-header>
+            <mat-card-title class="text-lg">Información General</mat-card-title>
+          </mat-card-header>
+          <mat-card-content class="pt-4">
+            <div *ngIf="section.description" class="mb-4">
+              <h3 class="text-sm font-medium text-gray-500 mb-1">Descripción</h3>
+              <p class="text-gray-800">{{ section.description }}</p>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <h3 class="text-sm font-medium text-gray-500 mb-1">Capacidad</h3>
+                <p class="text-gray-800 flex items-center">
+                  <mat-icon class="text-gray-400 mr-1" style="font-size: 18px;">people</mat-icon>
+                  {{ section.capacity }} asientos
+                </p>
+              </div>
+              
+              <div>
+                <h3 class="text-sm font-medium text-gray-500 mb-1">Precio</h3>
+                <p class="text-gray-800 flex items-center">
+                  <mat-icon class="text-gray-400 mr-1" style="font-size: 18px;">payments</mat-icon>
+                  {{ section.price | currency:'USD':'symbol':'1.2-2' }}
+                </p>
+              </div>
+            </div>
+            
+            <div *ngIf="section.row_count || section.column_count" class="mt-4 grid grid-cols-2 gap-4">
+              <div *ngIf="section.row_count">
+                <h3 class="text-sm font-medium text-gray-500 mb-1">Filas</h3>
+                <p class="text-gray-800">{{ section.row_count }}</p>
+              </div>
+              
+              <div *ngIf="section.column_count">
+                <h3 class="text-sm font-medium text-gray-500 mb-1">Columnas</h3>
+                <p class="text-gray-800">{{ section.column_count }}</p>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+        
+        <!-- Diagrama de asientos (si hay filas y columnas definidas) -->
+        <mat-card *ngIf="section.row_count && section.column_count" appearance="outlined">
+          <mat-card-header>
+            <mat-card-title class="text-lg">Distribución de Asientos</mat-card-title>
+          </mat-card-header>
+          <mat-card-content class="pt-4">
+            <div class="flex justify-center p-4 overflow-auto bg-gray-50 rounded-lg">
+              <div class="grid grid-flow-row auto-rows-max gap-1 max-w-full" 
+                  [style.grid-template-columns]="'repeat(' + (section.column_count > 30 ? 30 : section.column_count) + ', minmax(24px, 24px))'">
+                <div *ngFor="let row of [].constructor(section.row_count > 20 ? 20 : section.row_count); let r = index">
+                  <div *ngFor="let col of [].constructor(section.column_count > 30 ? 30 : section.column_count); let c = index" 
+                      class="seat w-6 h-6 bg-blue-100 border border-blue-300 rounded flex items-center justify-center text-xs text-blue-800">
+                    {{r+1}}-{{c+1}}
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div *ngIf="section.row_count > 20 || section.column_count > 30" class="text-center text-sm text-gray-500 mt-2">
+              * Vista limitada. Mostrando 20 filas x 30 columnas de {{ section.row_count }} filas x {{ section.column_count }} columnas totales.
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+      
+      <!-- Columna derecha: Estado y Estadísticas -->
+      <div class="space-y-6">
+        <mat-card appearance="outlined">
+          <mat-card-header>
+            <mat-card-title class="text-lg">Estado</mat-card-title>
+          </mat-card-header>
+          <mat-card-content class="pt-4">
+            <div class="flex flex-col items-center">
+              <div class="w-24 h-24 rounded-full flex items-center justify-center mb-4"
+                   [ngClass]="{
+                     'bg-green-100': section.status === 'available',
+                     'bg-yellow-100': section.status === 'limited',
+                     'bg-red-100': section.status === 'sold_out',
+                     'bg-gray-100': !section.status
+                   }">
+                <mat-icon [ngClass]="{
+                  'text-green-600': section.status === 'available',
+                  'text-yellow-600': section.status === 'limited',
+                  'text-red-600': section.status === 'sold_out',
+                  'text-gray-600': !section.status
+                }" style="font-size: 40px; width: 40px; height: 40px;">
+                  {{ section.status === 'available' ? 'check_circle' : 
+                     section.status === 'limited' ? 'warning' : 
+                     section.status === 'sold_out' ? 'cancel' : 'help' }}
+                </mat-icon>
+              </div>
+              
+              <h3 class="text-lg font-medium" [ngClass]="{
+                'text-green-700': section.status === 'available',
+                'text-yellow-700': section.status === 'limited',
+                'text-red-700': section.status === 'sold_out',
+                'text-gray-700': !section.status
+              }">
+                {{ getStatusLabel(section.status) }}
+              </h3>
+            </div>
+          </mat-card-content>
+        </mat-card>
+        
+        <!-- Estadísticas (simuladas) -->
+        <mat-card appearance="outlined">
+          <mat-card-header>
+            <mat-card-title class="text-lg">Estadísticas</mat-card-title>
+          </mat-card-header>
+          <mat-card-content class="pt-4">
+            <div class="space-y-4">
+              <div>
+                <h3 class="text-sm font-medium text-gray-500 mb-1">Tickets vendidos</h3>
+                <div class="h-2 bg-gray-200 rounded-full overflow-hidden">
+                  <div class="h-full bg-blue-500" [style.width]="'35%'"></div>
+                </div>
+                <div class="flex justify-between mt-1 text-xs text-gray-600">
+                  <span>35% ({{ Math.round(section.capacity * 0.35) }} / {{ section.capacity }})</span>
+                  <span>{{ section.capacity - Math.round(section.capacity * 0.35) }} disponibles</span>
+                </div>
+              </div>
+              
+              <div>
+                <h3 class="text-sm font-medium text-gray-500 mb-1">Ingreso generado</h3>
+                <p class="text-gray-800 font-medium">
+                  {{ (section.price * Math.round(section.capacity * 0.35)) | currency:'USD':'symbol':'1.2-2' }}
+                </p>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Si no hay sección seleccionada -->
+  <div *ngIf="!section" class="flex justify-center items-center h-64">
+    <p class="text-gray-500">Seleccione una sección para ver sus detalles</p>
+  </div>
+</div>

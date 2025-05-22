@@ -22,21 +22,36 @@
          
           
           <div class="form-row">
-            <mat-form-field appearance="outline" class="form-field">
-              <mat-label>Ubicacion</mat-label>
-              <textarea 
-                matInput 
-                formControlName="location" 
-                placeholder="Breve descripción de la ubicacion de la facultad"
-                rows="3"
-              ></textarea>
-              <mat-error *ngIf="facultyForm.get('location')?.hasError('required')">
-                La descripción es obligatoria
-              </mat-error>
-              <mat-error *ngIf="facultyForm.get('location')?.hasError('maxlength')">
-                La descripción no puede exceder los 250 caracteres
-              </mat-error>
-            </mat-form-field>
+              <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Dirección</mat-label>
+      <input 
+        matInput 
+        formControlName="location" 
+        placeholder="Selecciona en el mapa para obtener la dirección" 
+        readonly
+      >
+      <mat-icon matSuffix>place</mat-icon>
+    </mat-form-field>
+    
+    <!-- Componente del mapa -->
+    <app-location-picker
+      #locationPicker
+      (locationSelected)="onLocationSelected($event)"
+    ></app-location-picker>
+    
+    <!-- Botón para usar ubicación actual -->
+    <div class="action-buttons">
+      <button 
+        mat-raised-button 
+        color="primary" 
+        type="button" 
+        (click)="useCurrentLocation()"
+      >
+        <mat-icon>my_location</mat-icon>
+        Usar mi ubicación
+      </button>
+    </div>
+    
           </div>
         </div>
         

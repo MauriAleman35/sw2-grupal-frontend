@@ -30,7 +30,9 @@ export class EventMediaComponent implements OnInit, OnDestroy {
   mediaForm!: FormGroup;
   
   imagePreviewUrl: string = '';
+  imageSectionPreviewUrl: string = '';
   selectedFile: File | null = null;
+  selectedFileSection: File | null = null; 
   
   private subscriptions: Subscription[] = [];
 
@@ -42,11 +44,17 @@ export class EventMediaComponent implements OnInit, OnDestroy {
       if (form) {
         this.mediaForm = form;
         
-        // Obtener la URL de la imagen para previsualización
+        // Obtener la URL de la imagen del evento para previsualización
         const imageUrl = form.get('imageUrl')?.value;
+        
         if (imageUrl && imageUrl !== '') {
           this.imagePreviewUrl = imageUrl;
           console.log('Imagen cargada en MediaComponent:', this.imagePreviewUrl);
+        }
+        const imageSection=form.get('imageSection')?.value;
+        if (imageSection && imageSection !== '') {
+          this.imageSectionPreviewUrl = imageSection; //cambiar
+          console.log('Imagen cargada en MediaComponent:', this.imageSectionPreviewUrl);
         }
       }
     });
@@ -61,8 +69,16 @@ export class EventMediaComponent implements OnInit, OnDestroy {
         this.imagePreviewUrl = URL.createObjectURL(file);
       }
     });
+    const fileSectionSub = this.eventFormService.imageSectionFile$.subscribe(file => {
+      if (file) {
+        this.selectedFile = file;
+        // Crear una URL para previsualizar la imagen
+        this.imageSectionPreviewUrl = URL.createObjectURL(file);
+      }
+    });
     
     this.subscriptions.push(fileSub);
+        this.subscriptions.push(fileSectionSub);
   }
   
   ngOnDestroy(): void {
@@ -90,7 +106,25 @@ export class EventMediaComponent implements OnInit, OnDestroy {
       }
     }
   }
-  
+  // Método para manejar la selección de la imagen de la sección
+  onFileSectionSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+
+    if (input.files && input.files.length > 0) {
+      const file = input.files[0];
+      this.selectedFileSection = file;
+      this.imageSectionPreviewUrl = URL.createObjectURL(file);
+
+      if (this.mediaForm) {
+        this.mediaForm.patchValue({
+          imageSection: this.imageSectionPreviewUrl
+        });
+      }
+
+      // Actualizar el servicio con el archivo seleccionado
+      this.eventFormService.setImageSectionFile(file);
+    }
+  }
   removeImage(): void {
     this.selectedFile = null;
     this.imagePreviewUrl = '';
@@ -102,6 +136,18 @@ export class EventMediaComponent implements OnInit, OnDestroy {
     if (this.mediaForm) {
       this.mediaForm.patchValue({
         imageUrl: ''
+      });
+    }
+  }
+    removeImageSection(): void {
+    this.selectedFileSection = null;
+    this.imageSectionPreviewUrl = '';
+
+    this.eventFormService.setImageSectionFile(null);
+
+    if (this.mediaForm) {
+      this.mediaForm.patchValue({
+        imageSection: ''
       });
     }
   }

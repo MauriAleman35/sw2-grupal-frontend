@@ -107,11 +107,11 @@ export class OrgEventsComponent implements OnInit {
     });
   }
 
-  openCreateDialog(): void {
+  openCreateEvent(): void {
      this.router.navigate(['/tenant', this.tenantName, 'events', 'create']);
   }
 
-  openEditDialog(event: DatumEvent): void {
+  openEditEvent(event: DatumEvent): void {
    
       this.router.navigate(['/tenant', this.tenantName, 'events', `edit/:${event.id}`]);
   }

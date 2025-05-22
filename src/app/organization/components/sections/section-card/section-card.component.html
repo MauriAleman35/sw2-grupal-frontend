@@ -1,0 +1,113 @@
+
+<div class="bg-white rounded-lg shadow-md transition-all hover:shadow-lg overflow-hidden border border-gray-200">
+  <!-- Header con datos de evento si es necesario -->
+  <div *ngIf="showEventInfo && isEventData(section)" 
+       class="bg-blue-50 px-4 py-2 text-sm flex items-center border-b border-blue-100">
+    <mat-icon class="text-blue-700 mr-2 text-sm">event</mat-icon>
+    <span class="text-blue-700 font-medium truncate" [title]="getEventTitle()">
+      {{ getEventTitle() }}
+    </span>
+  </div>
+
+  <!-- Cabecera de la tarjeta -->
+  <div class="px-5 pt-4 pb-3 bg-gradient-to-r from-indigo-50 to-blue-50 border-b border-gray-200">
+    <div class="flex justify-between items-center">
+      <h3 class="font-semibold text-lg text-gray-800 truncate" [title]="section.name">
+        {{ section.name }}
+      </h3>
+      <div class="flex items-center">
+        <!-- Badge de estado activo/inactivo -->
+        <span *ngIf="section.is_active" class="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">
+          Activo
+        </span>
+        <span *ngIf="!section.is_active" class="px-2 py-1 text-xs font-medium bg-red-100 text-red-800 rounded-full">
+          Inactivo
+        </span>
+        
+        <!-- Badge de tickets (si aplica) -->
+        <span *ngIf="hasTickets()" 
+              class="ml-2 px-2 py-1 text-xs font-medium bg-purple-100 text-purple-800 rounded-full">
+          Con tickets
+        </span>
+        <span *ngIf="isSectionByEvent(section) && !hasTickets()" 
+              class="ml-2 px-2 py-1 text-xs font-medium bg-amber-100 text-amber-800 rounded-full">
+          Sin tickets
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Contenido de la tarjeta -->
+  <div class="p-5">
+    <!-- Descripción -->
+    <p class="text-gray-600 text-sm line-clamp-2 mb-4" [title]="section.description">
+      {{ section.description || 'Sin descripción' }}
+    </p>
+
+    <!-- Información de la sección -->
+    <div class="grid grid-cols-2 gap-4 mb-4">
+      <!-- Capacidad -->
+      <div class="bg-gray-50 p-3 rounded text-center">
+        <div class="text-xs text-gray-500 mb-1">Capacidad</div>
+        <div class="font-semibold text-gray-800">{{ section.capacity }} personas</div>
+      </div>
+      
+      <!-- Precio -->
+      <div class="bg-gray-50 p-3 rounded text-center">
+        <div class="text-xs text-gray-500 mb-1">Precio</div>
+        <div class="font-semibold text-gray-800">{{ section.price | currency }}</div>
+      </div>
+    </div>
+
+    <!-- Tickets (si es sección por evento) -->
+    <div *ngIf="isSectionByEvent(section)" class="mt-4">
+      <div class="flex justify-between items-center text-sm mb-1">
+        <span class="text-gray-600">Disponibilidad de tickets:</span>
+        <span class="font-medium" [ngClass]="{'text-green-700': hasTickets(), 'text-amber-700': !hasTickets()}">
+          {{ getTicketsCount() }} / {{ section.capacity }}
+        </span>
+      </div>
+      <mat-progress-bar 
+        mode="determinate" 
+        [value]="getProgressValue()" 
+        [color]="getProgressValue() > 0 ? 'primary' : 'accent'"
+        class="rounded-full h-2">
+      </mat-progress-bar>
+    </div>
+
+    <!-- Botones de acción -->
+    <div class="flex justify-end space-x-2 pt-4 mt-4 border-t border-gray-100">
+      <!-- Botón para crear tickets solo si no tiene tickets y es una sección por evento -->
+      <button 
+        *ngIf="isSectionByEvent(section) && !hasTickets() && section.is_active"
+        mat-flat-button 
+        color="accent" 
+        (click)="onCreateTickets()"
+        class="mr-auto"
+        matTooltip="Crear tickets para esta sección">
+        <mat-icon class="text-sm mr-1">confirmation_number</mat-icon>
+        Crear tickets
+      </button>
+      
+      <!-- Botón para ver tickets solo si ya tiene tickets -->
+      <button 
+        *ngIf="hasTickets()"
+        mat-stroked-button 
+        color="primary" 
+        (click)="onViewTickets()"
+        class="mr-auto"
+        matTooltip="Ver tickets de esta sección">
+        <mat-icon class="text-sm mr-1">visibility</mat-icon>
+        Ver tickets
+      </button>
+      
+      <!-- Botones de edición y eliminación -->
+      <button mat-icon-button color="primary" matTooltip="Editar sección" (click)="onEdit()">
+        <mat-icon>edit</mat-icon>
+      </button>
+      <button mat-icon-button color="warn" matTooltip="Eliminar sección" (click)="onDelete()">
+        <mat-icon>delete</mat-icon>
+      </button>
+    </div>
+  </div>
+</div>
