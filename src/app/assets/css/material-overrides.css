@@ -1,0 +1,19 @@
+/* Archivo específico para sobrescribir Angular Material */
+
+.mat-mdc-form-field .mdc-line-ripple {
+  display: none !important;
+}
+
+.mdc-text-field--outlined .mdc-notched-outline .mdc-notched-outline__trailing {
+  border-bottom-width: 0 !important;
+  border-bottom-style: none !important;
+}
+
+.mdc-text-field--focused .mdc-line-ripple::after {
+  transform: scaleY(0) !important;
+  opacity: 0 !important;
+}
+
+.mat-mdc-form-field:not(.mat-mdc-form-field-has-icon-prefix) .mat-mdc-text-field-wrapper {
+  padding-bottom: 0 !important;
+}

@@ -1,8 +1,10 @@
 /* You can add global styles to this file, and also import other style files */
+@import '@angular/material/prebuilt-themes/azure-blue.css';
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
 html,
 body {
   height: 100%;
@@ -14,12 +16,76 @@ body {
   background-color: #f8f9fb;
 }
 
+/* ========== SOLUCIÓN PARA ELIMINAR LA LÍNEA DE LOS FORM FIELDS ========== */
+
+/* Eliminar completamente todas las variantes de líneas */
+.mat-mdc-form-field .mdc-line-ripple,
+.mdc-line-ripple,
+.mat-form-field-underline,
+.mat-mdc-form-field-bottom-line {
+  display: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  height: 0 !important;
+  border: none !important;
+}
+
+/* Eliminar línea en campos standard y filled */
+.mat-mdc-text-field-wrapper::before,
+.mat-mdc-text-field-wrapper::after,
+.mdc-text-field::before,
+.mdc-text-field::after {
+  display: none !important;
+  border: none !important;
+}
+
+/* Eliminar líneas en campos outline */
+.mat-mdc-form-field-appearance-outline .mdc-notched-outline__trailing,
+.mat-mdc-form-field-appearance-outline .mdc-notched-outline__leading,
+.mat-mdc-form-field-appearance-outline .mdc-notched-outline__notch {
+  border-bottom-style: none !important;
+}
+
+/* Eliminar líneas cuando el campo tiene foco */
+.mdc-text-field--focused .mdc-line-ripple::after,
+.mdc-text-field--focused::after {
+  transform: none !important;
+  opacity: 0 !important;
+  display: none !important;
+}
+
+/* Forzar posicionamiento correcto del contenedor del form field */
+.mat-mdc-form-field {
+  display: inline-flex !important;
+  flex-direction: column !important;
+  min-width: 0 !important;
+  text-align: left !important;
+}
+
+/* Agregar bloqueador en posición absoluta para cubrir cualquier línea */
+.mat-mdc-form-field::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background-color: transparent;
+  z-index: 10;
+}
+
+/* ========== FIN DE LA SOLUCIÓN PARA LÍNEAS ========== */
+
+/* Estilos para form fields */
 .mat-mdc-form-field-subscript-wrapper {
   display: none !important;
 }
 
 .mat-mdc-form-field-infix {
   padding: 0.5em 0 !important;
+  border-top: 0px solid transparent !important;
+  padding-top: 8px !important;
+  padding-bottom: 8px !important;
 }
 
 .mat-mdc-text-field-wrapper {
@@ -28,11 +94,6 @@ body {
 
 .mat-mdc-form-field-focus-overlay {
   background-color: transparent !important;
-}
-.mat-mdc-form-field-infix {
-  border-top: 0px solid transparent !important;
-  padding-top: 8px !important;
-  padding-bottom: 8px !important;
 }
 
 .mat-mdc-text-field-wrapper .mat-mdc-form-field-infix {
@@ -45,6 +106,7 @@ body {
   padding-bottom: 0 !important;
   padding-top: 0 !important;
   align-self: center !important;
+  color: #a58d65 !important;
 }
 
 /* Mejorar la apariencia general de los campos */
@@ -52,33 +114,40 @@ body {
   padding: 0 0.75em !important;
   gap: 8px !important;
 }
+
 .mat-mdc-form-field-flex {
   align-items: center !important;
 }
 
-.mat-mdc-form-field-icon-prefix > .mat-icon {
-  color: #a58d65 !important;
+/* Estilos para Organization Material Protected */
+.organization-material-protected .mat-mdc-form-field {
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+  font-size: 1rem;
+  line-height: 1.5;
 }
 
+.organization-material-protected .mat-mdc-form-field-infix {
+  padding: 0.5em 0 !important;
+}
+
+.organization-material-protected .mat-mdc-text-field-wrapper {
+  background-color: white !important;
+}
+
+/* Estilos para botones y checkboxes */
 .mat-mdc-checkbox .mdc-checkbox .mdc-checkbox__native-control:enabled:checked ~ .mdc-checkbox__background,
 .mat-mdc-checkbox .mdc-checkbox .mdc-checkbox__native-control:enabled:indeterminate ~ .mdc-checkbox__background,
-.mat-mdc-checkbox
-  .mdc-checkbox
-  .mdc-checkbox__native-control[data-indeterminate="true"]:enabled
-  ~ .mdc-checkbox__background {
+.mat-mdc-checkbox .mdc-checkbox .mdc-checkbox__native-control[data-indeterminate="true"]:enabled ~ .mdc-checkbox__background {
   background-color: #d4a017 !important;
   border-color: #d4a017 !important;
 }
 
-.mat-mdc-radio-button
-  .mdc-radio
-  .mdc-radio__native-control:enabled:checked
-  + .mdc-radio__background
-  .mdc-radio__outer-circle,
+.mat-mdc-radio-button .mdc-radio .mdc-radio__native-control:enabled:checked + .mdc-radio__background .mdc-radio__outer-circle,
 .mat-mdc-radio-button .mdc-radio .mdc-radio__native-control:enabled + .mdc-radio__background .mdc-radio__inner-circle {
   border-color: #d4a017 !important;
 }
 
+/* Estilos para botones primarios */
 .mat-mdc-button.mat-primary {
   --mdc-filled-button-container-color: #d4a017;
   --mdc-filled-button-label-text-color: #ffffff;
@@ -88,6 +157,7 @@ body {
   --mdc-filled-button-container-color: #a58d65;
 }
 
+/* Estilos para botones outline */
 .mat-mdc-outlined-button {
   --mdc-outlined-button-outline-color: #a58d65;
   --mdc-outlined-button-label-text-color: #a58d65;
@@ -96,4 +166,87 @@ body {
 .mat-mdc-outlined-button:hover {
   --mdc-outlined-button-container-color: #a58d65;
   --mdc-outlined-button-label-text-color: #ffffff;
+}
+
+/* Estilos específicos para el campo de búsqueda de facultad */
+.search-field .mat-mdc-form-field-flex,
+.search-field {
+  width: 100% !important;
+  display: inline-flex !important;
+}
+
+.search-field .mdc-line-ripple,
+.search-field .mat-mdc-text-field-wrapper::after,
+.search-field .mat-mdc-text-field-wrapper::before {
+  display: none !important;
+  border: none !important;
+  visibility: hidden !important;
+  height: 0 !important;
+}
+
+/* Asegurar que el campo de búsqueda específico no tenga línea */
+input[placeholder="Buscar facultad"] + .mdc-line-ripple,
+input[placeholder*="Buscar"] + .mdc-line-ripple {
+  display: none !important;
+  border: none !important;
+  visibility: hidden !important;
+  height: 0 !important;
+}
+
+/* ======== SOLUCIÓN DEFINITIVA PARA LÍNEA EN MATERIAL INPUTS ======== */
+/* Selector agresivo para cualquier tipo de línea en form fields */
+.mdc-line-ripple,
+.mdc-line-ripple::before,
+.mdc-line-ripple::after,
+.mat-mdc-form-field-bottom-line,
+.mat-form-field-underline {
+  display: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  height: 0 !important;
+  transform: scaleY(0) !important;
+  border-width: 0 !important;
+}
+
+/* Override directo para elementos después del input */
+input ~ .mdc-line-ripple {
+  display: none !important;
+  opacity: 0 !important;
+}
+
+/* Enfoque específico para campos de búsqueda */
+[placeholder*="Buscar"] ~ .mdc-line-ripple,
+[placeholder*="buscar"] ~ .mdc-line-ripple {
+  display: none !important;
+  opacity: 0 !important;
+}
+
+/* Solución nuclear: eliminar cualquier pseudo-elemento que dibuje líneas */
+.mat-mdc-text-field-wrapper::before,
+.mat-mdc-text-field-wrapper::after,
+.mdc-text-field::before,
+.mdc-text-field::after {
+  content: none !important;
+  border: none !important;
+  display: none !important;
+}
+
+/* Bloqueador físico que cubre cualquier línea */
+.mat-mdc-form-field::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background-color: white;
+  z-index: 99;
+}
+
+/* Ajuste para campos outline */
+.mat-mdc-form-field-appearance-outline .mdc-notched-outline__trailing,
+.mat-mdc-form-field-appearance-outline .mdc-notched-outline__leading,
+.mat-mdc-form-field-appearance-outline .mdc-notched-outline__notch {
+  border-bottom-style: none !important;
+  border-bottom-width: 0 !important;
 }

@@ -9,6 +9,7 @@ import { TenantGuard } from './guard/TenantGuard';
 import { OrgFacultyComponent } from './page/org-faculty/org-faculty.component';
 import { EventFormComponent } from './components/events/event-form/event-form.component';
 import { SectionFormComponent } from './components/sections/section-form/section-form.component';
+import { OrgTicketComponent } from './page/org-ticket/org-ticket.component';
 
 
 
@@ -20,6 +21,8 @@ const routes: Routes = [
     children: [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       { path: 'dashboard', component: OrgDashboardComponent },
+      {path:'ticket',component:OrgTicketComponent},
+
       { path: 'faculty', component: OrgFacultyComponent },
       { path: 'events', component: OrgEventsComponent },
       { path: 'events/create', component: EventFormComponent }, 

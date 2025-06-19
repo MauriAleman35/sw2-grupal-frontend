@@ -1,0 +1,274 @@
+.ticket-card {
+  margin-bottom: 16px;
+  transition: all 0.3s ease;
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+}
+
+.ticket-card:hover {
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+}
+
+.ticket-card.selected {
+  border: 2px solid #1976d2;
+  box-shadow: 0 4px 20px rgba(25, 118, 210, 0.3);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 16px 16px 0 16px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.promotion-badge,
+.availability-badge {
+  display: flex;
+  align-items: center;
+}
+
+.promotion-chip,
+.availability-chip {
+  font-size: 12px;
+  height: 28px;
+}
+
+.promotion-chip .discount-percentage {
+  margin-left: 4px;
+  font-weight: bold;
+}
+
+.section-info {
+  margin-bottom: 16px;
+}
+
+.section-name {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0 0 4px 0;
+  color: #1976d2;
+}
+
+.event-title {
+  font-size: 14px;
+  color: #666;
+  margin: 0 0 4px 0;
+  font-weight: 500;
+}
+
+.section-description {
+  font-size: 12px;
+  color: #888;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.price-info {
+  margin-bottom: 16px;
+  padding: 12px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+}
+
+.current-price,
+.original-price {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.original-price:last-child {
+  margin-bottom: 0;
+}
+
+.price-label {
+  font-size: 12px;
+  color: #666;
+  font-weight: 500;
+}
+
+.price-value {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1976d2;
+}
+
+.price-value.original {
+  text-decoration: line-through;
+  color: #999;
+  font-size: 14px;
+}
+
+.promotion-dates {
+  margin-bottom: 16px;
+  padding: 8px;
+  background-color: #e3f2fd;
+  border-radius: 6px;
+  border-left: 4px solid #1976d2;
+}
+
+.date-range {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.date-icon {
+  font-size: 16px;
+  margin-right: 6px;
+  color: #1976d2;
+}
+
+.date-text {
+  font-size: 12px;
+  color: #333;
+  font-weight: 500;
+}
+
+.promotion-status {
+  display: flex;
+  justify-content: center;
+}
+
+.status-chip {
+  font-size: 11px;
+  height: 24px;
+}
+
+.ticket-stats {
+  margin-bottom: 16px;
+}
+
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px;
+  background-color: #f5f5f5;
+  border-radius: 6px;
+  text-align: center;
+}
+
+.stat-icon {
+  font-size: 20px;
+  margin-bottom: 4px;
+}
+
+.stat-value {
+  font-size: 16px;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 2px;
+}
+
+.stat-label {
+  font-size: 10px;
+  color: #666;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+
+.occupancy-bar {
+  background-color: #f5f5f5;
+  padding: 8px;
+  border-radius: 6px;
+}
+
+.occupancy-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.occupancy-label {
+  font-size: 12px;
+  color: #666;
+  font-weight: 500;
+}
+
+.occupancy-percentage {
+  font-size: 12px;
+  font-weight: 700;
+  color: #333;
+}
+
+.occupancy-progress {
+  height: 6px;
+  border-radius: 3px;
+}
+
+.card-actions {
+  padding: 8px 16px 16px 16px;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.card-actions button {
+  flex: 1;
+  min-width: 80px;
+  font-size: 12px;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .card-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .promotion-badge,
+  .availability-badge {
+    justify-content: center;
+  }
+
+  .stats-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .card-actions {
+    flex-direction: column;
+  }
+
+  .card-actions button {
+    width: 100%;
+  }
+}
+
+/* Utility classes */
+.text-green-600 {
+  color: #16a085 !important;
+}
+
+.text-blue-600 {
+  color: #1976d2 !important;
+}
+
+/* Animation for loading states */
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.ticket-card.loading {
+  animation: pulse 1.5s ease-in-out infinite;
+}

@@ -1,0 +1,250 @@
+<div class="ticket-management-container">
+  <!-- Header -->
+  <div class="header-section">
+    <div class="title-section">
+      <h1 class="page-title">Gestión de Tickets</h1>
+      
+      <!-- Muestra información diferente dependiendo del paso actual -->
+      <p class="page-subtitle" *ngIf="currentStep === 'selectEvent'">
+        Selecciona un evento para gestionar sus tickets
+      </p>
+      
+      <p class="page-subtitle" *ngIf="currentStep === 'viewSections'">
+        <button mat-icon-button color="primary" (click)="backToEventSelection()" 
+                class="back-button" matTooltip="Volver a selección de eventos">
+          <mat-icon>arrow_back</mat-icon>
+        </button>
+        Administrando tickets del evento: <strong>{{ getSelectedEventTitle() }}</strong>
+        <span class="pagination-info" *ngIf="eventSections.length > 0">({{ getPaginationInfo() }})</span>
+      </p>
+    </div>
+    
+    <div class="action-buttons" *ngIf="currentStep === 'viewSections'">
+      <button 
+        mat-raised-button 
+        color="primary" 
+        (click)="openPriceUpdateDialog()"
+        [disabled]="selectedSections.length === 0"
+        class="action-btn"
+      >
+        <mat-icon>local_offer</mat-icon>
+        Aplicar Promoción
+        <span *ngIf="selectedSections.length > 0" class="selection-count">
+          ({{ selectedSections.length }})
+        </span>
+      </button>
+      
+      <button 
+        mat-raised-button 
+        color="accent" 
+        (click)="restoreOriginalPrices()"
+        [disabled]="selectedSections.length === 0"
+        class="action-btn"
+      >
+        <mat-icon>restore</mat-icon>
+        Restaurar Precios
+      </button>
+
+      <button 
+        mat-icon-button 
+        (click)="refreshData()"
+        matTooltip="Actualizar datos"
+        class="refresh-btn"
+      >
+        <mat-icon>refresh</mat-icon>
+      </button>
+    </div>
+  </div>
+
+  <!-- Paso 1: Selección de Evento -->
+  <div *ngIf="currentStep === 'selectEvent'" class="event-selection-container">
+    <mat-card class="event-selection-card">
+      <mat-card-header>
+        <mat-card-title>Selecciona un Evento</mat-card-title>
+        <mat-card-subtitle>Elige el evento cuyos tickets deseas gestionar</mat-card-subtitle>
+      </mat-card-header>
+      
+      <mat-card-content>
+        <form [formGroup]="filterForm" class="event-selection-form">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Buscar Evento</mat-label>
+            <input matInput formControlName="searchTerm" placeholder="Buscar por nombre...">
+            <mat-icon matSuffix>search</mat-icon>
+          </mat-form-field>
+          
+          <div class="events-list">
+            <mat-card *ngFor="let event of availableEvents" 
+                     class="event-card" 
+                     (click)="filterForm.get('selectedEvent')?.setValue(event.id)">
+              <mat-card-content class="event-card-content">
+                <div class="event-info">
+                  <h3>{{ event.title }}</h3>
+                  <p *ngIf="event.ticketCount">{{ event.ticketCount }} tickets</p>
+                </div>
+                <mat-icon color="primary">chevron_right</mat-icon>
+              </mat-card-content>
+            </mat-card>
+            
+            <div *ngIf="availableEvents.length === 0 && !loading" class="no-events-message">
+              <mat-icon>event_busy</mat-icon>
+              <p>No se encontraron eventos disponibles</p>
+            </div>
+          </div>
+        </form>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Paso 2: Visualización de Secciones del Evento -->
+  <div *ngIf="currentStep === 'viewSections'">
+    <!-- Statistics Cards -->
+    <div class="statistics-section">
+      <div class="stats-grid">
+        <mat-card class="stat-card total-tickets">
+          <mat-card-content>
+            <div class="stat-content">
+              <div class="stat-icon">
+                <mat-icon>confirmation_number</mat-icon>
+              </div>
+              <div class="stat-info">
+                <div class="stat-value">{{ statistics.totalTickets | number }}</div>
+                <div class="stat-label">Total Tickets</div>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card class="stat-card sold-tickets">
+          <mat-card-content>
+            <div class="stat-content">
+              <div class="stat-icon">
+                <mat-icon>check_circle</mat-icon>
+              </div>
+              <div class="stat-info">
+                <div class="stat-value">{{ statistics.soldTickets | number }}</div>
+                <div class="stat-label">Vendidos</div>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card class="stat-card available-tickets">
+          <mat-card-content>
+            <div class="stat-content">
+              <div class="stat-icon">
+                <mat-icon>inventory</mat-icon>
+              </div>
+              <div class="stat-info">
+                <div class="stat-value">{{ statistics.availableTickets | number }}</div>
+                <div class="stat-label">Disponibles</div>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card class="stat-card revenue">
+          <mat-card-content>
+            <div class="stat-content">
+              <div class="stat-icon">
+                <mat-icon>attach_money</mat-icon>
+              </div>
+              <div class="stat-info">
+                <div class="stat-value">{{ formatCurrency(statistics.totalRevenue) }}</div>
+                <div class="stat-label">Ingresos</div>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </div>
+
+    <!-- Filtro de búsqueda para secciones -->
+    <div class="filters-section">
+      <form [formGroup]="filterForm" class="filters-form">
+        <div class="filters-row">
+          <!-- Search -->
+          <mat-form-field appearance="outline" class="search-field">
+            <mat-label>Buscar Secciones</mat-label>
+            <input matInput formControlName="searchTerm" placeholder="Buscar por nombre de sección...">
+            <mat-icon matSuffix>search</mat-icon>
+          </mat-form-field>
+        </div>
+      </form>
+    </div>
+
+    <!-- Selection Actions -->
+    <div class="selection-section" *ngIf="eventSections.length > 0">
+      <div class="selection-info">
+        <span class="selection-text">
+          {{ selectedSections.length }} de {{ eventSections.length }} secciones seleccionadas en esta página
+        </span>
+      </div>
+      
+      <div class="selection-actions">
+        <button mat-button (click)="selectAllVisible()" class="selection-btn">
+          <mat-icon>select_all</mat-icon>
+          Seleccionar Página
+        </button>
+        
+        <button 
+          mat-button 
+          (click)="clearSelection()" 
+          [disabled]="selectedSections.length === 0"
+          class="selection-btn"
+        >
+          <mat-icon>clear</mat-icon>
+          Limpiar Selección
+        </button>
+      </div>
+    </div>
+
+    <!-- Loading Spinner -->
+    <div class="loading-section" *ngIf="loading">
+      <mat-spinner diameter="50"></mat-spinner>
+      <p>Cargando datos...</p>
+    </div>
+
+    <!-- Tickets Grid -->
+    <div class="tickets-section" *ngIf="!loading">
+      <div class="tickets-grid" *ngIf="eventSections.length > 0">
+        <app-ticket-card
+          *ngFor="let ticketGroup of eventSections; trackBy: trackByTicketGroup"
+          [ticketGroup]="ticketGroup"
+          [isSelected]="isTicketSelected(ticketGroup.sectionId)"
+          (selectionChange)="onTicketSelectionChange(ticketGroup.sectionId, $event)"
+        ></app-ticket-card>
+      </div>
+
+      <!-- Pagination -->
+      <div class="pagination-section" *ngIf="eventSections.length > 0">
+        <mat-paginator
+          [length]="pagination.total"
+          [pageSize]="pagination.limit"
+          [pageIndex]="pagination.page - 1"
+          [pageSizeOptions]="pageSizeOptions"
+          [showFirstLastButtons]="true"
+          (page)="onPageChange($event)"
+          class="custom-paginator"
+        ></mat-paginator>
+        
+        <div class="pagination-info-detailed">
+          <span class="pagination-text">
+            Página {{ pagination.page }} de {{ pagination.pages }} 
+            ({{ pagination.total }} secciones en total)
+          </span>
+        </div>
+      </div>
+
+      <!-- Empty State -->
+      <div class="empty-state" *ngIf="eventSections.length === 0 && !loading">
+        <mat-icon class="empty-icon">search_off</mat-icon>
+        <h3>No se encontraron secciones para este evento</h3>
+        <p>Este evento aún no tiene secciones o tickets definidos</p>
+        <button mat-raised-button color="primary" (click)="backToEventSelection()">
+          <mat-icon>arrow_back</mat-icon>
+          Volver a eventos
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

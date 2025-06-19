@@ -1,63 +1,72 @@
 /* Contenedor principal */
 .faculty-container {
-    display: flex;
-    flex-direction: column;
-    gap: 24px;
-  }
-  
-  /* Encabezado */
-  .faculty-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 8px;
-  }
-  
-  .page-title {
-    font-size: 24px;
-    font-weight: 600;
-    color: #111827;
-    margin: 0;
-  }
-  
-  .page-subtitle {
-    font-size: 14px;
-    color: #6b7280;
-    margin: 4px 0 0;
-  }
-  
-  .create-btn {
-    background-color: #d4a017;
-    color: white;
-  }
-  
-  .create-btn:hover {
-    background-color: #b58a13;
-  }
-  
-  /* Filtros */
-  .filters-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background-color: white;
-    border-radius: 8px;
-    padding: 16px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  }
-  
-  .search-container {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    flex: 1;
-  }
-  
-  .search-field {
-    flex: 1;
-    max-width: 500px;
-  }
-  
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 24px;
+}
+
+/* Encabezado */
+.faculty-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.page-title {
+  font-size: 24px;
+  font-weight: 600;
+  color: #111827;
+  margin: 0;
+}
+
+.page-subtitle {
+  font-size: 14px;
+  color: #6b7280;
+  margin: 4px 0 0;
+}
+
+.create-btn {
+  background-color: #d4a017 !important;
+  color: white !important;
+  height: auto !important;
+  line-height: normal !important;
+  padding: 8px 16px !important;
+}
+
+.create-btn:hover {
+  background-color: #b58a13 !important;
+}
+
+/* Filtros */
+.filters-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: white;
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.search-container {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex: 1;
+}
+
+.search-field {
+  flex: 1;
+  max-width: 500px;
+}
+
+/* Asegúrate que el campo de búsqueda se vea correctamente */
+:host ::ng-deep .search-field .mat-mdc-form-field-flex {
+  background-color: white;
+  border-radius: 4px;
+}
   .status-filter {
     width: 150px;
   }

@@ -1,4 +1,29 @@
 /* Layout principal */
+
+ .organization-material-protected {
+      /* Revertir los resets problemáticos de Tailwind */
+      all: revert;
+      
+      /* Restaurar solo los estilos básicos necesarios */
+      font-family: Roboto, "Helvetica Neue", sans-serif;
+      color: rgba(0, 0, 0, 0.87);
+      background-color: #f8f9fb;
+      box-sizing: border-box;
+    }
+
+    /* Aseguramos que los estilos personalizados de Material no se pierdan */
+    :host ::ng-deep .organization-material-protected .mat-mdc-form-field-subscript-wrapper {
+      display: none !important;
+    }
+    
+    :host ::ng-deep .organization-material-protected .mat-mdc-form-field-infix {
+      padding: 0.5em 0 !important;
+    }
+    
+    :host ::ng-deep .organization-material-protected .mat-mdc-text-field-wrapper {
+      background-color: white !important;
+    }
+    
 .org-layout {
     display: flex;
     height: 100vh;

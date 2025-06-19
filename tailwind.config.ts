@@ -1,5 +1,9 @@
-/** @type {import('tailwindcss').Config} */
+
 module.exports = {
+    important:true,
+    corePlugins:{
+      preflight: true  , // Desactiva preflight si no lo necesitas
+    },
     content: [
       "./src/**/*.{html,ts}",
     ],

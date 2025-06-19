@@ -1,0 +1,135 @@
+<mat-card class="ticket-card" [class.selected]="isSelected">
+  <div class="card-header">
+    <mat-checkbox 
+      [checked]="isSelected"
+      (change)="onSelectionChange($event.checked)"
+      color="primary"
+    ></mat-checkbox>
+    
+    <div class="promotion-badge" *ngIf="ticketGroup.hasActivePromotion">
+      <mat-chip 
+        [color]="getPromotionColor()" 
+        selected
+        class="promotion-chip"
+      >
+        <mat-icon matChipAvatar>{{ getPromotionIcon() }}</mat-icon>
+        {{ getPromotionTypeLabel() }}
+        <span *ngIf="getDiscountPercentage() > 0" class="discount-percentage">
+          -{{ getDiscountPercentage() }}%
+        </span>
+      </mat-chip>
+    </div>
+
+    <!-- Badge de disponibilidad -->
+    <div class="availability-badge">
+      <mat-chip 
+        [color]="getAvailabilityStatus().color"
+        selected
+        class="availability-chip"
+      >
+        <mat-icon matChipAvatar>{{ getAvailabilityStatus().icon }}</mat-icon>
+        {{ getAvailabilityStatus().label }}
+      </mat-chip>
+    </div>
+  </div>
+
+  <mat-card-content>
+    <div class="section-info">
+      <h3 class="section-name">{{ ticketGroup.sectionName }}</h3>
+      <p class="event-title">{{ ticketGroup.eventTitle }}</p>
+      <p class="section-description" *ngIf="ticketGroup.sectionDescription">
+        {{ ticketGroup.sectionDescription }}
+      </p>
+    </div>
+
+    <div class="price-info">
+      <div class="current-price">
+        <span class="price-label">Precio actual:</span>
+        <span class="price-value">{{ formatCurrency(ticketGroup.currentPrice) }}</span>
+      </div>
+      
+      <div *ngIf="ticketGroup.hasActivePromotion && ticketGroup.originalPrice" class="original-price">
+        <span class="price-label">Precio original:</span>
+        <span class="price-value original">{{ formatCurrency(ticketGroup.originalPrice) }}</span>
+      </div>
+    </div>
+
+    <div class="promotion-dates" *ngIf="ticketGroup.hasActivePromotion && ticketGroup.validFrom && ticketGroup.validUntil">
+      <div class="date-range">
+        <mat-icon class="date-icon">schedule</mat-icon>
+        <span class="date-text">
+          {{ formatDate(ticketGroup.validFrom) }} - {{ formatDate(ticketGroup.validUntil) }}
+        </span>
+      </div>
+      
+      <div class="promotion-status">
+        <mat-chip 
+          [color]="isPromotionActive() ? 'primary' : 'warn'"
+          selected
+          class="status-chip"
+        >
+          <mat-icon matChipAvatar>
+            {{ isPromotionActive() ? 'check_circle' : 'schedule' }}
+          </mat-icon>
+          {{ isPromotionActive() ? 'Activa' : 'Expirada' }}
+        </mat-chip>
+      </div>
+    </div>
+
+    <div class="ticket-stats">
+      <div class="stats-row">
+        <div class="stat-item">
+          <mat-icon class="stat-icon">confirmation_number</mat-icon>
+          <span class="stat-value">{{ formatNumber(ticketGroup.totalTickets) }}</span>
+          <span class="stat-label">Total</span>
+        </div>
+        
+        <div class="stat-item">
+          <mat-icon class="stat-icon text-green-600">check_circle</mat-icon>
+          <span class="stat-value">{{ formatNumber(ticketGroup.soldTickets) }}</span>
+          <span class="stat-label">Vendidos</span>
+        </div>
+        
+        <div class="stat-item">
+          <mat-icon class="stat-icon text-blue-600">inventory</mat-icon>
+          <span class="stat-value">{{ formatNumber(ticketGroup.availableTickets) }}</span>
+          <span class="stat-label">Disponibles</span>
+        </div>
+      </div>
+
+      <div class="occupancy-bar">
+        <div class="occupancy-info">
+          <span class="occupancy-label">Ocupación</span>
+          <span class="occupancy-percentage">{{ getOccupancyPercentage() }}%</span>
+        </div>
+        <mat-progress-bar 
+          [value]="getOccupancyPercentage()" 
+          [color]="getOccupancyColor()"
+          class="occupancy-progress"
+        ></mat-progress-bar>
+      </div>
+    </div>
+  </mat-card-content>
+
+  <mat-card-actions class="card-actions">
+    <button mat-button color="primary" matTooltip="Ver detalles del ticket">
+      <mat-icon>visibility</mat-icon>
+      Detalles
+    </button>
+    
+    <button mat-button color="accent" matTooltip="Ver historial de precios">
+      <mat-icon>history</mat-icon>
+      Historial
+    </button>
+
+    <button 
+      mat-button 
+      color="warn" 
+      matTooltip="Editar configuración"
+      *ngIf="ticketGroup.availableTickets > 0"
+    >
+      <mat-icon>edit</mat-icon>
+      Editar
+    </button>
+  </mat-card-actions>
+</mat-card>

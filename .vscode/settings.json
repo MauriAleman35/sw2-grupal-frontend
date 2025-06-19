@@ -1,0 +1,12 @@
+{
+"tailwindCSS.includeLanguages": {
+        "typescript": "javascript",
+        "html": "html"
+},
+"tailwindCSS.validate": true,
+"tailwindCSS.files.exclude": [
+        "*/.scss",
+        "**/themes.scss"
+],
+"material-icon-theme.activeIconPack": "angular",
+}

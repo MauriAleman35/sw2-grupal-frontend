@@ -1,0 +1,162 @@
+/* Estilos para la selección de eventos */
+.event-selection-container {
+  padding: 20px 0;
+}
+
+.event-selection-card {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.event-selection-form {
+  display: flex;
+  flex-direction: column;
+  padding: 16px 0;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.events-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.event-card {
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-left: 4px solid transparent;
+}
+
+.event-card:hover {
+  background-color: rgba(0, 0, 0, 0.04);
+  border-left: 4px solid #3f51b5;
+}
+
+.event-card-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.event-info h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.event-info p {
+  margin: 4px 0 0;
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.no-events-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 0;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.no-events-message mat-icon {
+  font-size: 48px;
+  height: 48px;
+  width: 48px;
+  margin-bottom: 16px;
+}
+
+/* Estilos para el encabezado con botón atrás */
+.back-button {
+  margin-right: 8px;
+  vertical-align: middle;
+}
+
+/* Estilos generales adicionales */
+.ticket-management-container {
+  padding: 16px;
+}
+
+.header-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.page-title {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 500;
+}
+
+.page-subtitle {
+  margin: 4px 0 0;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+/* Estilos para estadísticas */
+.statistics-section {
+  margin-bottom: 24px;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.stat-card {
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.stat-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.stat-content {
+  display: flex;
+  align-items: center;
+}
+
+.stat-icon {
+  margin-right: 16px;
+}
+
+.stat-icon mat-icon {
+  font-size: 36px;
+  height: 36px;
+  width: 36px;
+}
+
+.stat-value {
+  font-size: 24px;
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+.stat-label {
+  color: rgba(0, 0, 0, 0.6);
+  font-size: 14px;
+}
+
+/* Secciones específicas - colores */
+.total-tickets .stat-icon mat-icon {
+  color: #3f51b5;
+}
+
+.sold-tickets .stat-icon mat-icon {
+  color: #4caf50;
+}
+
+.available-tickets .stat-icon mat-icon {
+  color: #ff9800;
+}
+
+.revenue .stat-icon mat-icon {
+  color: #f44336;
+}

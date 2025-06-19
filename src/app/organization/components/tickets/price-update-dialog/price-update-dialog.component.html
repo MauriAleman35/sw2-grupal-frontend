@@ -1,0 +1,200 @@
+<!-- components/ticket-management/price-update-dialog/price-update-dialog.component.html -->
+<div class="price-update-dialog">
+  <h2 mat-dialog-title class="dialog-title">
+    <mat-icon class="title-icon">local_offer</mat-icon>
+    Aplicar Promoción a Tickets
+  </h2>
+
+  <mat-dialog-content class="dialog-content">
+    <div class="selected-sections mb-4">
+      <h3 class="text-lg font-medium mb-2">Secciones seleccionadas ({{ selectedSections.length }}):</h3>
+      <div class="flex flex-wrap gap-2">
+        <mat-chip *ngFor="let group of ticketGroups" selected color="primary">
+          {{ group.sectionName }} - {{ group.eventTitle }}
+        </mat-chip>
+      </div>
+    </div>
+
+    <form [formGroup]="priceForm" class="price-form">
+      <!-- Tipo de modificación -->
+      <mat-form-field appearance="outline" class="w-full mb-4">
+        <mat-label>Tipo de Promoción</mat-label>
+        <mat-select formControlName="modificationType" required>
+          <mat-option *ngFor="let type of promotionTypes" [value]="type.value">
+            <div class="promotion-option">
+              <div class="flex items-center">
+                <mat-icon class="mr-2 text-sm">{{ type.icon }}</mat-icon>
+                <span class="option-label">{{ type.label }}</span>
+              </div>
+              <span class="option-description">{{ type.description }}</span>
+            </div>
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <!-- Fechas de validez -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+        <mat-form-field appearance="outline">
+          <mat-label>Válido desde</mat-label>
+          <input 
+            matInput 
+            [matDatepicker]="startPicker" 
+            formControlName="validFrom"
+            required
+          >
+          <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
+          <mat-datepicker #startPicker></mat-datepicker>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Válido hasta</mat-label>
+          <input 
+            matInput 
+            [matDatepicker]="endPicker" 
+            formControlName="validUntil"
+            required
+          >
+          <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
+          <mat-datepicker #endPicker></mat-datepicker>
+        </mat-form-field>
+      </div>
+
+      <!-- Opción de aplicar a todos o individual -->
+      <div class="pricing-options mb-4">
+        <mat-checkbox formControlName="applyToAll" color="primary">
+          Aplicar el mismo precio a todas las secciones seleccionadas
+        </mat-checkbox>
+      </div>
+
+      <!-- Precio general (cuando applyToAll es true) -->
+      <div *ngIf="applyToAll" class="general-price mb-4">
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Nuevo Precio</mat-label>
+          <input 
+            matInput 
+            formControlName="newPrice" 
+            type="number"
+            min="0.01"
+            step="0.01"
+            required
+          >
+          <span matPrefix>Bs.&nbsp;</span>
+          <mat-icon matSuffix>attach_money</mat-icon>
+          <mat-error *ngIf="priceForm.get('newPrice')?.hasError('required')">
+            El precio es obligatorio
+          </mat-error>
+          <mat-error *ngIf="priceForm.get('newPrice')?.hasError('min')">
+            El precio debe ser mayor a 0
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <!-- Precios individuales (cuando applyToAll es false) -->
+      <div *ngIf="!applyToAll" class="individual-prices mb-4">
+        <h4 class="text-lg font-medium mb-3">Precios por Sección</h4>
+        <div class="space-y-3">
+          <div *ngFor="let group of ticketGroups" class="individual-price-item">
+            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+              <div class="section-info">
+                <h5 class="font-medium">{{ group.sectionName }}</h5>
+                <p class="text-sm text-gray-600">{{ group.eventTitle }}</p>
+                <p class="text-xs text-gray-500">
+                  Precio actual: {{ formatCurrency(getCurrentPriceAsNumber(group)) }}
+                </p>
+              </div>
+              <div class="price-input">
+                <mat-form-field appearance="outline" class="w-32">
+                  <mat-label>Precio</mat-label>
+                  <input 
+                    matInput 
+                    type="number"
+                    min="0.01"
+                    step="0.01"
+                    [value]="individualPrices[group.sectionId]"
+                    (input)="onIndividualPriceChange(group.sectionId, +$any($event.target).value)"
+                  >
+                  <span matPrefix>Bs.&nbsp;</span>
+                </mat-form-field>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+
+    <!-- Vista previa de la promoción -->
+    <div class="promotion-preview bg-blue-50 p-4 rounded-lg mt-4 border border-blue-200">
+      <h4 class="text-lg font-medium text-blue-800 mb-3 flex items-center">
+        <mat-icon class="mr-2">preview</mat-icon>
+        Vista Previa de la Promoción
+      </h4>
+      
+      <div class="preview-stats grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="stat-card bg-white p-3 rounded-lg">
+          <div class="flex items-center justify-between">
+            <span class="stat-label text-sm text-gray-600">Descuento Promedio:</span>
+            <span class="stat-value text-lg font-bold text-green-600">
+              {{ calculateDiscount() }}%
+            </span>
+          </div>
+        </div>
+        
+        <div class="stat-card bg-white p-3 rounded-lg">
+          <div class="flex items-center justify-between">
+            <span class="stat-label text-sm text-gray-600">Secciones:</span>
+            <span class="stat-value text-lg font-bold text-blue-600">
+              {{ selectedSections.length }}
+            </span>
+          </div>
+        </div>
+        
+        <div class="stat-card bg-white p-3 rounded-lg">
+          <div class="flex items-center justify-between">
+            <span class="stat-label text-sm text-gray-600">Diferencia de Ingresos:</span>
+            <span class="stat-value text-lg font-bold" 
+                  [class.text-red-600]="getTotalRevenueDifference() < 0"
+                  [class.text-green-600]="getTotalRevenueDifference() >= 0">
+              {{ formatCurrency(getTotalRevenueDifference()) }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Detalles por sección -->
+      <div class="section-details mt-4">
+        <h5 class="font-medium mb-2">Detalles por Sección:</h5>
+        <div class="space-y-2">
+          <div *ngFor="let group of ticketGroups" 
+               class="flex justify-between items-center p-2 bg-white rounded text-sm">
+            <span class="font-medium">{{ group.sectionName }}</span>
+            <div class="flex items-center space-x-2">
+              <span class="text-gray-500">
+                {{ formatCurrency(getCurrentPriceAsNumber(group)) }}
+              </span>
+              <mat-icon class="text-gray-400 text-sm">arrow_forward</mat-icon>
+              <span class="font-bold text-blue-600">
+                {{ formatCurrency(getNewPriceForSection(group.sectionId)) }}
+              </span>
+              <span class="text-green-600 text-xs">
+                ({{ calculateDiscount(group.sectionId) }}%)
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions class="dialog-actions">
+    <button mat-button (click)="onCancel()">Cancelar</button>
+    <button 
+      mat-raised-button 
+      color="primary" 
+      (click)="onSubmit()"
+      [disabled]="priceForm.invalid"
+    >
+      <mat-icon>check</mat-icon>
+      Aplicar Promoción
+    </button>
+  </mat-dialog-actions>
+</div>
