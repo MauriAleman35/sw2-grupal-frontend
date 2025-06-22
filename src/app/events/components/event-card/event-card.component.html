@@ -4,14 +4,14 @@
 >
   <!-- Imagen del evento -->
   <div class="h-48 overflow-hidden">
-    <img [src]="event.imageUrl" [alt]="event.title" class="w-full h-full object-cover">
+    <img [src]="event.image_event" [alt]="event.title" class="w-full h-full object-cover">
   </div>
   
   <div class="p-5 flex-grow flex flex-col">
     <!-- Facultad como chip -->
     <div class="mb-3">
       <span class="inline-block px-3 py-1 text-xs font-medium bg-[#a58d65]/10 text-[#a58d65] rounded-full">
-        {{event.faculty}}
+        {{event.faculty.name}}
       </span>
     </div>
     
@@ -22,17 +22,17 @@
     <div class="space-y-2 mt-2 text-gray-600 flex-grow">
       <div class="flex items-center">
         <mat-icon class="text-[#d4a017] mr-2 text-sm">event</mat-icon>
-        <span class="text-sm">{{event.date | date:'dd/MM/yyyy - HH:mm'}}</span>
+        <span class="text-sm">{{event.start_date | date:'dd/MM/yyyy - HH:mm'}}</span>
       </div>
       
       <div class="flex items-center">
         <mat-icon class="text-[#d4a017] mr-2 text-sm">location_on</mat-icon>
-        <span class="text-sm line-clamp-1">{{event.location}}</span>
+        <span class="text-sm line-clamp-1">{{event.address}}</span>
       </div>
       
       <div class="flex items-center">
         <mat-icon class="text-[#d4a017] mr-2 text-sm">sell</mat-icon>
-        <span class="text-sm font-semibold">{{event.price}}</span>
+        <span class="text-sm font-semibold">{{event.sections[0].price}}</span>
       </div>
     </div>
   </div>

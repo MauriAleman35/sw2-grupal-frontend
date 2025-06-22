@@ -1,0 +1,46 @@
+/* Estilos para las tarjetas de sección */
+.section-card {
+  transition: all 0.2s ease-in-out;
+  border-left: 3px solid transparent;
+}
+
+.section-card:hover {
+  border-left-color: #d4a017;
+  transform: translateX(3px);
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.05);
+}
+
+/* Estilos para la imagen de sección */
+.section-image-container {
+  height: 100%;
+  width: 100%;
+  background-size: cover;
+  background-position: center;
+  transition: transform 0.3s ease;
+}
+
+.section-image-container:hover {
+  transform: scale(1.02);
+}
+
+/* Estilos para los botones de cantidad */
+button[mat-icon-button] {
+  transition: background-color 0.2s ease-in-out;
+}
+
+button[mat-icon-button]:hover:not([disabled]) {
+  background-color: rgba(212, 160, 23, 0.1);
+}
+
+/* Efecto de sticky para la columna derecha */
+@media (min-width: 1024px) {
+  .sticky {
+    position: sticky;
+    top: 2rem;
+  }
+}
+
+/* Sombras y bordes */
+.shadow-hover:hover {
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}

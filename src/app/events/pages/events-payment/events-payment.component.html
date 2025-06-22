@@ -1,0 +1,264 @@
+<div class="min-h-screen bg-[#f8f9fb] pb-12">
+  <!-- Header del proceso de compra -->
+  <div class="bg-white shadow-md py-4 mb-8">
+    <div class="container mx-auto px-4">
+      <div class="flex items-center justify-between">
+        <button mat-icon-button (click)="goToEventDetail()" class="text-gray-500">
+          <mat-icon>arrow_back</mat-icon>
+        </button>
+        <h1 class="text-xl font-semibold text-center flex-grow">Compra de Tickets</h1>
+        <span class="w-10"></span> <!-- Espacio para balancear -->
+      </div>
+      
+      <!-- Pasos del proceso -->
+      <div class="flex justify-between items-center mt-4 px-4">
+        <div class="flex flex-col items-center">
+          <div [ngClass]="{'bg-[#d4a017]': currentStep >= 1, 'bg-gray-300': currentStep < 1}" 
+               class="rounded-full w-8 h-8 flex items-center justify-center text-white font-medium">
+            1
+          </div>
+          <span class="text-xs mt-1 text-gray-600">Selección</span>
+        </div>
+        <div class="flex-grow h-0.5 mx-2" [ngClass]="{'bg-[#d4a017]': currentStep >= 2, 'bg-gray-300': currentStep < 2}"></div>
+        <div class="flex flex-col items-center">
+          <div [ngClass]="{'bg-[#d4a017]': currentStep >= 2, 'bg-gray-300': currentStep < 2}" 
+               class="rounded-full w-8 h-8 flex items-center justify-center text-white font-medium">
+            2
+          </div>
+          <span class="text-xs mt-1 text-gray-600">Datos</span>
+        </div>
+        <div class="flex-grow h-0.5 mx-2" [ngClass]="{'bg-[#d4a017]': currentStep >= 3, 'bg-gray-300': currentStep < 3}"></div>
+        <div class="flex flex-col items-center">
+          <div [ngClass]="{'bg-[#d4a017]': currentStep >= 3, 'bg-gray-300': currentStep < 3}" 
+               class="rounded-full w-8 h-8 flex items-center justify-center text-white font-medium">
+            3
+          </div>
+          <span class="text-xs mt-1 text-gray-600">Pago</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Mensaje de carga -->
+  <div *ngIf="loading" class="flex justify-center items-center py-20">
+    <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#d4a017]"></div>
+  </div>
+  
+  <!-- Mensaje de error -->
+  <div *ngIf="error" class="flex flex-col items-center justify-center py-20 px-4">
+    <mat-icon class="text-red-500 text-5xl mb-4">error</mat-icon>
+    <p class="text-xl text-center">No se pudo encontrar el evento solicitado</p>
+    <button 
+      class="mt-6 bg-[#d4a017] hover:bg-[#a58d65] text-white px-6 py-2 rounded-full transition-colors duration-300"
+      routerLink="/"
+    >
+      Volver a eventos
+    </button>
+  </div>
+  
+  <!-- Contenido del proceso de compra -->
+  <div *ngIf="!loading && !error && event" class="container mx-auto px-4">
+    <!-- Información del evento -->
+    <div class="bg-white rounded-lg shadow-md p-4 mb-6">
+      <div class="flex items-center">
+        <img [src]="event.image_event" [alt]="event.title" class="h-16 w-16 object-cover rounded-md">
+        <div class="ml-4">
+          <h2 class="text-lg font-semibold">{{ event.title }}</h2>
+          <p class="text-gray-600">{{ formatDate(event.start_date) }} - {{ event.faculty.name }}</p>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Paso 1: Selección de entradas -->
+    <div *ngIf="currentStep === 1" class="fade-in">
+      <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+        <h2 class="text-xl font-semibold mb-4 flex items-center">
+          <mat-icon class="text-[#d4a017] mr-2">confirmation_number</mat-icon>
+          Selecciona tus entradas
+        </h2>
+        
+        <!-- Componente selector de tickets -->
+        <app-ticket-selector
+          [sections]="event.sections"
+          [eventImage]="event.image_section"
+          [sectionImage]="event.image_section" 
+          [eventTitle]="event.title"
+          (selectionChange)="onTicketSelectionChange($event)">
+        </app-ticket-selector>
+      </div>
+      
+      <!-- Resumen de compra -->
+      <app-payment-summary
+        [ticketSelections]="selectedTickets"
+        [totalAmount]="totalAmount"
+        [currencySymbol]="'Bs.'">
+      </app-payment-summary>
+      
+      <!-- Botones de navegación -->
+      <div class="flex justify-between mt-8">
+        <button 
+          mat-stroked-button 
+          (click)="goToEventDetail()" 
+          class="px-6 py-2">
+          <mat-icon class="mr-1">arrow_back</mat-icon>
+          Volver
+        </button>
+        <button 
+          mat-raised-button 
+          color="primary"
+          [disabled]="selectedTickets.length === 0" 
+          (click)="nextStep()" 
+          class="bg-[#d4a017] hover:bg-[#a58d65] px-6 py-2">
+          Continuar
+          <mat-icon class="ml-1">arrow_forward</mat-icon>
+        </button>
+      </div>
+    </div>
+    
+    <!-- Paso 2: Datos personales -->
+    <div *ngIf="currentStep === 2" class="fade-in">
+      <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+        <h2 class="text-xl font-semibold mb-4 flex items-center">
+          <mat-icon class="text-[#d4a017] mr-2">person</mat-icon>
+          Información personal
+        </h2>
+        
+        <!-- Formulario de datos personales -->
+        <form [formGroup]="userForm" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-label>Nombres</mat-label>
+            <input matInput placeholder="Ingresa tus nombres" formControlName="name">
+            <mat-error *ngIf="userForm.get('name')?.hasError('required') && userForm.get('name')?.touched">
+              Nombre es requerido
+            </mat-error>
+          </mat-form-field>
+          
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-label>Apellidos</mat-label>
+            <input matInput placeholder="Ingresa tus apellidos" formControlName="lastname">
+            <mat-error *ngIf="userForm.get('lastname')?.hasError('required') && userForm.get('lastname')?.touched">
+              Apellido es requerido
+            </mat-error>
+          </mat-form-field>
+          
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-label>Correo electrónico</mat-label>
+            <input matInput placeholder="ejemplo@correo.com" type="email" formControlName="email">
+            <mat-error *ngIf="userForm.get('email')?.hasError('required') && userForm.get('email')?.touched">
+              Email es requerido
+            </mat-error>
+            <mat-error *ngIf="userForm.get('email')?.hasError('email') && userForm.get('email')?.touched">
+              Ingrese un email válido
+            </mat-error>
+          </mat-form-field>
+          
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-label>Teléfono</mat-label>
+            <input matInput placeholder="987654321" type="tel" formControlName="phone">
+            <mat-error *ngIf="userForm.get('phone')?.hasError('required') && userForm.get('phone')?.touched">
+              Teléfono es requerido
+            </mat-error>
+          </mat-form-field>
+          
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-label>DNI/CI</mat-label>
+            <input matInput placeholder="12345678" type="text" formControlName="dni">
+            <mat-error *ngIf="userForm.get('dni')?.hasError('required') && userForm.get('dni')?.touched">
+              DNI/CI es requerido
+            </mat-error>
+          </mat-form-field>
+          
+          <div class="col-span-1 md:col-span-2 mt-4">
+            <mat-checkbox formControlName="acceptTerms" color="primary">
+              Acepto los <a href="#" class="text-[#d4a017]">términos y condiciones</a>
+            </mat-checkbox>
+            <mat-error *ngIf="userForm.get('acceptTerms')?.hasError('required') && userForm.get('acceptTerms')?.touched" class="text-xs text-red-500 mt-2">
+              Debes aceptar los términos y condiciones
+            </mat-error>
+          </div>
+        </form>
+      </div>
+      
+      <!-- Resumen de compra -->
+      <app-payment-summary
+        [ticketSelections]="selectedTickets"
+        [totalAmount]="totalAmount"
+        [currencySymbol]="'Bs.'">
+      </app-payment-summary>
+      
+      <!-- Botones de navegación -->
+      <div class="flex justify-between mt-8">
+        <button 
+          mat-stroked-button 
+          (click)="prevStep()" 
+          [disabled]="processingPayment"
+          class="px-6 py-2">
+          <mat-icon class="mr-1">arrow_back</mat-icon>
+          Atrás
+        </button>
+        <button 
+          mat-raised-button 
+          color="primary" 
+          (click)="nextStep()"
+          [disabled]="processingPayment" 
+          class="bg-[#d4a017] hover:bg-[#a58d65] px-6 py-2">
+          <span *ngIf="!processingPayment">
+            Continuar al pago
+            <mat-icon class="ml-1">arrow_forward</mat-icon>
+          </span>
+          <span *ngIf="processingPayment" class="flex items-center">
+            <div class="w-5 h-5 border-2 border-t-transparent border-white rounded-full animate-spin mr-2"></div>
+            Procesando...
+          </span>
+        </button>
+      </div>
+    </div>
+    
+    <!-- Paso 3: Procesando pago / Confirmación -->
+    <div *ngIf="currentStep === 3" class="fade-in">
+      <div class="bg-white rounded-lg shadow-md p-8 mb-6 text-center">
+        <!-- Estado de procesamiento -->
+        <div *ngIf="processingPayment && !paymentSuccess" class="flex flex-col items-center justify-center py-10">
+          <div class="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-[#d4a017] mb-6"></div>
+          <h2 class="text-xl font-semibold mb-4 text-gray-800">Procesando tu pago</h2>
+          <p class="text-gray-600 mb-6">Completa el pago en la ventana de Stripe y regresa aquí.</p>
+          <p class="text-sm text-gray-500">Estamos verificando automáticamente el estado de tu pago...</p>
+        </div>
+        
+        <!-- Vista de éxito -->
+        <div *ngIf="paymentSuccess" class="py-10">
+          <div class="flex justify-center">
+            <div class="rounded-full bg-green-100 p-5 mb-6">
+              <mat-icon class="text-green-600 text-5xl">check_circle</mat-icon>
+            </div>
+          </div>
+          
+          <h2 class="text-2xl font-semibold mb-4 text-gray-800">¡Compra exitosa!</h2>
+          <p class="text-gray-700 mb-6">Hemos enviado los detalles de tu compra a tu correo electrónico.</p>
+          
+          <div class="bg-gray-50 p-5 rounded-lg mb-6">
+           
+            <div class="flex justify-between mb-3">
+              <span class="text-gray-600">Total:</span>
+              <span class="font-semibold">Bs. {{ totalAmount.toFixed(2) }}</span>
+            </div>
+            <div class="flex justify-between mb-3">
+              <span class="text-gray-600">Fecha:</span>
+              <span class="font-semibold">{{ getCurrentFormattedDate() }}</span>
+            </div>
+          </div>
+          
+          <div class="mt-8">
+            <button 
+              mat-raised-button 
+              color="primary" 
+              routerLink="/MyTickets" 
+              class="bg-[#d4a017] hover:bg-[#a58d65] px-8 py-2">
+              Ver mis tickets
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

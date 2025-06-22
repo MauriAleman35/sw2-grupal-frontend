@@ -7,29 +7,12 @@ import { MatIconModule } from '@angular/material/icon';
 import { CarouselComponent } from '../../components/carrousel/carousel.component';
 import { SearchBarComponent } from '../../components/search-bar/search-bar.component';
 import { EventCardComponent } from '../../components/event-card/event-card.component';
-
-
-interface Event {
-  id: number;
-  title: string;
-  slug: string; // Añadimos slug como campo obligatorio
-  date: Date;
-  location: string;
-  faculty: string;
-  imageUrl: string;
-  price: string;
-  description: string;
-  featured?: boolean;
-}
-
-interface Faculty {
-  id: number;
-  name: string;
-}
+import { DatumEventsAll, Faculty } from '../../interfaces/events';
+import { EventsService } from '../../services/events.service';
 
 interface SearchFilters {
   searchTerm: string;
-  facultyId: number | null;
+  facultyId: string;
   date: Date | null;
 }
 
@@ -50,146 +33,119 @@ interface SearchFilters {
   styleUrls: ['./home.component.css']
 })
 export class HomeComponent implements OnInit {
-  events: Event[] = [];
-  featuredEvents: Event[] = [];
-  filteredEvents: Event[] = [];
+  events: DatumEventsAll[] = [];
+  featuredEvents: DatumEventsAll[] = [];
+  filteredEvents: DatumEventsAll[] = [];
   faculties: Faculty[] = [];
+  
+  // Params
+  page: number = 1;
+  limit: number = 10;
 
-  constructor(private router: Router) { }
+  constructor(private router: Router, private eventsService: EventsService) { }
 
   ngOnInit(): void {
-    // Datos de ejemplo
-    this.faculties = [
-      { id: 1, name: 'Ingeniería' },
-      { id: 2, name: 'Ciencias Económicas' },
-      { id: 3, name: 'Medicina' },
-      { id: 4, name: 'Derecho' },
-      { id: 5, name: 'Humanidades' }
-    ];
+    this.loadEventsAll();
+    this.loadFaculties();
+  }
 
-    this.events = [
-      {
-        id: 1,
-        title: 'Conferencia de Innovación Tecnológica',
-        slug: 'conferencia-innovacion-tecnologica',
-        date: new Date('2025-05-15T18:00:00'),
-        location: 'Auditorio Central',
-        faculty: 'Ingeniería',
-        imageUrl: 'https://picsum.photos/800/500?random=1',
-        price: 'Bs. 50',
-        description: 'Conferencia sobre las últimas tendencias en innovación tecnológica con expertos internacionales.',
-        featured: true
-      },
-      {
-        id: 2,
-        title: 'Feria de Emprendimientos',
-        slug: 'feria-emprendimientos',
-        date: new Date('2025-05-20T10:00:00'),
-        location: 'Plaza Principal',
-        faculty: 'Ciencias Económicas',
-        imageUrl: 'https://picsum.photos/800/500?random=2',
-        price: 'Entrada Libre',
-        description: 'Exposición de proyectos de emprendimiento de estudiantes universitarios.',
-        featured: true
-      },
-      {
-        id: 3,
-        title: 'Seminario de Derecho Constitucional',
-        slug: 'seminario-derecho-constitucional',
-        date: new Date('2025-05-25T14:00:00'),
-        location: 'Sala de Conferencias',
-        faculty: 'Derecho',
-        imageUrl: 'https://picsum.photos/800/500?random=3',
-        price: 'Bs. 30',
-        description: 'Análisis de casos prácticos de derecho constitucional con profesionales destacados.',
-        featured: true
-      },
-      {
-        id: 4,
-        title: 'Jornada de Salud Preventiva',
-        slug: 'jornada-salud-preventiva',
-        date: new Date('2025-06-05T09:00:00'),
-        location: 'Campus Universitario',
-        faculty: 'Medicina',
-        imageUrl: 'https://picsum.photos/800/500?random=4',
-        price: 'Gratuito',
-        description: 'Jornada de atención médica preventiva abierta a toda la comunidad universitaria.',
-      },
-      {
-        id: 5,
-        title: 'Festival Cultural Universitario',
-        slug: 'festival-cultural-universitario',
-        date: new Date('2025-06-10T16:00:00'),
-        location: 'Teatro Municipal',
-        faculty: 'Humanidades',
-        imageUrl: 'https://picsum.photos/800/500?random=5',
-        price: 'Bs. 20',
-        description: 'Presentaciones artísticas y culturales de los diferentes departamentos de la facultad.',
-      },
-      {
-        id: 6,
-        title: 'Hackathon Universitario',
-        slug: 'hackathon-universitario',
-        date: new Date('2025-06-15T08:00:00'),
-        location: 'Laboratorio de Computación',
-        faculty: 'Ingeniería',
-        imageUrl: 'https://picsum.photos/800/500?random=6',
-        price: 'Bs. 25',
-        description: 'Competencia de programación para desarrollar soluciones innovadoras a problemas reales.',
+  loadFaculties(): void {
+    this.eventsService.getAllEvents(this.page, this.limit).subscribe({
+      next: (res) => {
+        // Extraer facultades únicas por ID para evitar duplicados
+        const uniqueFaculties = new Map<string, Faculty>();
+        res.data.forEach(event => {
+          uniqueFaculties.set(event.faculty.id, event.faculty);
+        });
+        
+        // Convertir el Map a un array
+        this.faculties = Array.from(uniqueFaculties.values());
+        console.log('Facultades cargadas:', this.faculties);
       }
-    ];
+    });
+  }
 
-    // Filtrar eventos destacados para el carrusel
-    this.featuredEvents = this.events.filter(event => event.featured);
-    this.filteredEvents = [...this.events];
+  loadEventsAll(): void {
+    this.eventsService.getAllEvents(this.page, this.limit).subscribe({
+      next: (res) => {
+        // Obtenemos la fecha actual
+        const currentDate = new Date();
+        
+        // Filtramos para mostrar solo eventos futuros
+        this.events = res.data.filter(event => {
+          const eventDate = new Date(event.start_date);
+          return eventDate >= currentDate && event.is_active;
+        });
+        
+        this.featuredEvents = this.events.filter(event => event.is_active==true);
+        this.filteredEvents = [...this.events];
+        
+        console.log('Eventos cargados (solo futuros):', this.events.length);
+      },
+      error: (err) => {
+        console.error('Error al cargar los eventos:', err);
+      }
+    });
   }
 
   handleSearch(filters: SearchFilters): void {
+    console.log('Filtros recibidos:', filters);
+    
     this.filteredEvents = this.events.filter(event => {
       // Filtro por término de búsqueda
-      const matchesSearch = filters.searchTerm ? 
+      const matchesSearch = !filters.searchTerm || 
         event.title.toLowerCase().includes(filters.searchTerm.toLowerCase()) ||
-        event.description.toLowerCase().includes(filters.searchTerm.toLowerCase()) : 
-        true;
-      
+        event.description.toLowerCase().includes(filters.searchTerm.toLowerCase());
+   
       // Filtro por facultad
-      const matchesFaculty = filters.facultyId ? 
-        event.faculty === this.faculties.find(f => f.id === filters.facultyId)?.name : 
-        true;
-      
-      // Filtro por fecha
-      const matchesDate = filters.date ? 
-        event.date.toDateString() === filters.date.toDateString() : 
-        true;
+      const matchesFaculty = !filters.facultyId || event.faculty.id === filters.facultyId;
+       
+      // Filtro por fecha específica (si se seleccionó)
+      let matchesDate = true;
+      if (filters.date) {
+        const eventDate = new Date(event.start_date);
+        const filterDate = new Date(filters.date);
+        matchesDate = (
+          eventDate.getDate() === filterDate.getDate() &&
+          eventDate.getMonth() === filterDate.getMonth() &&
+          eventDate.getFullYear() === filterDate.getFullYear()
+        );
+      }
       
       return matchesSearch && matchesFaculty && matchesDate;
     });
+
+    console.log('Eventos filtrados:', this.filteredEvents);
   }
 
   resetFilters(): void {
     this.filteredEvents = [...this.events];
   }
 
-  viewEventDetails(eventParam: number | string): void {
-    // Si recibimos un ID (número), buscamos el slug correspondiente
-    if (typeof eventParam === 'number') {
-      const event = this.events.find(e => e.id === eventParam);
-      if (event) {
-        this.router.navigate(['/events', event.slug]);
-      }
-    } else {
-      // Si ya recibimos un slug (string), lo usamos directamente
-      this.router.navigate(['/events', eventParam]);
+  viewEventDetails(eventParam: string): void {
+    console.log('Navigating to event:', eventParam);
+    const event = this.events.find(e => e.id === eventParam);
+    if (event) {
+      const eventSlug = this.generateSlug(event.title);
+      this.router.navigate(['/events', eventSlug]);
     }
   }
   
-  // Método auxiliar para generar slugs (por si necesitas generar más)
   private generateSlug(title: string): string {
     return title
       .toLowerCase()
-      .replace(/[^\w\s-]/g, '') // Elimina caracteres especiales
-      .replace(/\s+/g, '-') // Reemplaza espacios con guiones
-      .replace(/--+/g, '-') // Elimina guiones múltiples
-      .trim(); // Elimina espacios al inicio y final
+      .replace(/[^\w\s-]/g, '')
+      .replace(/\s+/g, '-')
+      .replace(/--+/g, '-')
+      .trim();
+  }
+  
+  /**
+   * Verifica si un evento ya pasó
+   */
+  isEventInPast(eventDate: string): boolean {
+    const today = new Date();
+    const event = new Date(eventDate);
+    return event < today;
   }
 }

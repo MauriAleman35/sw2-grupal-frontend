@@ -10,6 +10,7 @@ import { EventsAccountComponent } from "./pages/events-account/events-account.co
 import { SubscriptionSuccessComponent } from "../../public/pages/subscription.success/subscription-success.component";
 import { SubscriptionErrorComponent } from "../../public/pages/subscription.error/subscription-error.component";
 import { EventsMyTenantsComponent } from "./pages/events-my-tenants/events-my-tenants.component";
+import { EventsPaymentComponent } from "./pages/events-payment/events-payment.component";
 
 const routes: Routes = [
   // Rutas con layout principal
@@ -19,9 +20,11 @@ const routes: Routes = [
     children: [
       { path: '', component: HomeComponent },
       { path: 'events/:slug', component: EventsDetailComponent },
+        {path:'events/:slug/payment', component:EventsPaymentComponent},
       { path: 'MyTickets', component: EventsTicketsComponent },
       { path: 'MyTickets/:id', component: EventsTicketsDetailsComponent },
       { path: 'Create-Event', component: EventsCreateComponent },
+    
       { path: 'Account', component: EventsAccountComponent },
       {path:'MyUnit',component:EventsMyTenantsComponent}
     ]

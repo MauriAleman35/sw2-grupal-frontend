@@ -1,0 +1,38 @@
+/* Estilos para las tarjetas de tickets */
+.ticket-card {
+  transition: all 0.3s ease;
+}
+
+.ticket-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Animación para el estado de carga */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-out forwards;
+}
+
+/* Personalización de los colores de Material */
+::ng-deep .mat-mdc-raised-button.mat-primary {
+  background-color: #d4a017 !important;
+}
+
+::ng-deep .mat-mdc-raised-button.mat-primary:hover {
+  background-color: #a58d65 !important;
+}
+
+::ng-deep .mat-mdc-progress-spinner.mat-accent circle {
+  stroke: #d4a017 !important;
+}

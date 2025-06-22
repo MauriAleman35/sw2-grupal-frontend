@@ -157,7 +157,20 @@
         </mat-card>
       </div>
     </div>
-
+    <!-- Añade esto después de la sección de estadísticas -->
+<div class="unique-tickets-info" *ngIf="eventSections.length > 0 && !loading">
+  <mat-card class="info-card">
+    <mat-card-content>
+      <div class="flex items-center">
+        <mat-icon class="text-blue-500 mr-2">info</mat-icon>
+        <span>
+          Mostrando <strong>{{ uniqueTicketTypes }}</strong> tipos de tickets únicos 
+          (representando un total de <strong>{{ statistics.totalTickets }}</strong> tickets).
+        </span>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>
     <!-- Filtro de búsqueda para secciones -->
     <div class="filters-section">
       <form [formGroup]="filterForm" class="filters-form">

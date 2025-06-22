@@ -10,25 +10,6 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { EventsService } from '../../services/events.service';
 import { Tenant } from '../../interfaces/tenants';
-interface Role {
-  id: string;
-  name: string;
-  description: string;
-  is_active: boolean;
-  created_at: string;
-  updated_at: string;
-}
-
-
-
-interface TenantsResponse {
-  statusCode: number;
-  message: string;
-  data: {
-    total: number;
-    tenants: Tenant[];
-  };
-}
 @Component({
   selector: 'app-events-my-tenants',
   standalone: true,

@@ -1,18 +1,34 @@
 <div class="min-h-screen bg-[#f8f9fb] text-gray-800 py-8">
-    <div class="container mx-auto px-4">
-      <!-- Título de la página -->
-      <h1 class="text-2xl md:text-3xl font-bold text-center mb-6 text-[#a58d65]">Mis Tickets</h1>
-      
-      <!-- Mensaje informativo -->
-      <div class="bg-white border border-[#a58d65]/20 rounded-lg p-4 mb-8 shadow-sm">
-        <p class="text-sm md:text-base text-gray-700">
-          Con tu sesión iniciada guardarás todos tus tickets comprados en esta vista, ingresa a cada uno para descargar los tickets que serán las entradas a tu evento.
-        </p>
-        <p class="text-sm md:text-base mt-2 text-[#d4a017] font-medium">
-          <strong>Importante:</strong> No compartas tu acceso al sistema y tampoco las imágenes QRs de tus entradas.
-        </p>
-      </div>
-      
+  <div class="container mx-auto px-4">
+    <!-- Título de la página -->
+    <h1 class="text-2xl md:text-3xl font-bold text-center mb-6 text-[#a58d65]">Mis Tickets</h1>
+    
+    <!-- Mensaje informativo -->
+    <div class="bg-white border border-[#a58d65]/20 rounded-lg p-4 mb-8 shadow-sm">
+      <p class="text-sm md:text-base text-gray-700">
+        Con tu sesión iniciada guardarás todos tus tickets comprados en esta vista, ingresa a cada uno para descargar los tickets que serán las entradas a tu evento.
+      </p>
+      <p class="text-sm md:text-base mt-2 text-[#d4a017] font-medium">
+        <strong>Importante:</strong> No compartas tu acceso al sistema y tampoco las imágenes QRs de tus entradas.
+      </p>
+    </div>
+    
+    <!-- Estado de carga -->
+    <div *ngIf="loading" class="flex justify-center items-center py-20">
+      <mat-spinner [diameter]="40" color="accent"></mat-spinner>
+    </div>
+
+    <!-- Mensaje de error -->
+    <div *ngIf="error && !loading" class="bg-red-100 text-red-700 p-4 rounded-lg mb-8 text-center">
+      <mat-icon class="align-middle mr-2">error_outline</mat-icon>
+      Ocurrió un error al cargar tus tickets. Por favor intenta nuevamente.
+      <button mat-raised-button color="warn" class="mt-4" (click)="loadPurchases()">
+        Reintentar
+      </button>
+    </div>
+    
+    <!-- Contenido principal cuando está cargado -->
+    <ng-container *ngIf="!loading && !error">
       <!-- Tabs de navegación -->
       <div class="mb-8">
         <div class="flex border-b border-[#a58d65]/20">
@@ -21,14 +37,14 @@
             class="flex-1 py-3 font-medium text-center focus:outline-none transition-colors duration-200"
             (click)="changeTab(0)"
           >
-            Activos
+            Activos <span *ngIf="activeTickets.length > 0" class="ml-1 bg-[#d4a017] text-white px-2 py-0.5 rounded-full text-xs">{{ activeTickets.length }}</span>
           </button>
           <button 
             [ngClass]="{'border-b-2 border-[#d4a017] text-[#d4a017] font-semibold': selectedTabIndex === 1, 'text-gray-500': selectedTabIndex !== 1}"
             class="flex-1 py-3 font-medium text-center focus:outline-none transition-colors duration-200"
             (click)="changeTab(1)"
           >
-            Historial
+            Historial <span *ngIf="historyTickets.length > 0" class="ml-1 bg-gray-400 text-white px-2 py-0.5 rounded-full text-xs">{{ historyTickets.length }}</span>
           </button>
         </div>
       </div>
@@ -37,16 +53,68 @@
       <div *ngIf="selectedTabIndex === 0" class="min-h-[300px]">
         <div *ngIf="activeTickets.length === 0" class="flex flex-col items-center justify-center py-16">
           <mat-icon class="text-5xl text-[#a58d65]/50 mb-4">confirmation_number</mat-icon>
-          <p class="text-gray-500 text-center">Accede fácilmente a tus tickets activos en esta sección</p>
+          <p class="text-gray-500 text-center">No tienes tickets activos en este momento</p>
+          <button mat-raised-button color="primary" class="mt-4 bg-[#d4a017]" routerLink="/comprar">
+            Comprar tickets
+          </button>
         </div>
         
         <div *ngIf="activeTickets.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <app-ticket-card 
-            *ngFor="let ticket of activeTickets" 
-            [ticket]="ticket"
-            (viewDetails)="viewTicketDetails($event)"
-            (download)="downloadTicket($event)"
-          ></app-ticket-card>
+          <!-- Card de Ticket -->
+          <div *ngFor="let ticket of activeTickets" class="bg-white rounded-lg shadow-md overflow-hidden ticket-card">
+            <!-- Imagen (gradient como placeholder) -->
+            <div class="h-40 bg-gradient-to-r from-[#d4a017]/90 to-[#a58d65]/90 relative">
+              <div class="absolute inset-0 flex flex-col justify-end p-4 text-white">
+                <h3 class="text-xl font-semibold">{{ ticket.eventName }}</h3>
+                <div class="flex items-center mt-1">
+                  <mat-icon class="text-sm mr-1">event</mat-icon>
+                  <span class="text-sm">{{ ticket.date | date:'dd/MM/yyyy - HH:mm' }}</span>
+                </div>
+                <div class="flex items-center mt-1">
+                  <mat-icon class="text-sm mr-1">location_on</mat-icon>
+                  <span class="text-sm">{{ ticket.location || 'Ubicación no especificada' }}</span>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Información del ticket -->
+            <div class="p-4">
+              <div class="flex justify-between items-center mb-3">
+                <span class="text-sm text-gray-600">{{ ticket.sectionName }}</span>
+                <span class="font-semibold text-[#d4a017]">{{ ticket.price }}</span>
+              </div>
+              
+              <div class="flex justify-between items-center">
+                <div>
+                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                    Pagado
+                  </span>
+                  <span class="ml-2 text-sm text-gray-600">{{ ticket.quantity }} ticket{{ ticket.quantity > 1 ? 's' : '' }}</span>
+                </div>
+              </div>
+              
+              <!-- Acciones -->
+              <div class="flex justify-between mt-4 pt-4 border-t border-gray-100">
+                <button 
+                  mat-stroked-button 
+                  (click)="viewTicketDetails(ticket.id)"
+                  class="text-[#a58d65] border-[#a58d65] hover:bg-[#a58d65]/10"
+                >
+                  Ver detalles
+                </button>
+                
+                <button 
+                  mat-raised-button
+                  color="primary" 
+                  (click)="downloadTicket(ticket)"
+                  class="bg-[#d4a017] hover:bg-[#a58d65]"
+                >
+                  <mat-icon>download</mat-icon>
+                  Descargar
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
       
@@ -54,17 +122,60 @@
       <div *ngIf="selectedTabIndex === 1" class="min-h-[300px]">
         <div *ngIf="historyTickets.length === 0" class="flex flex-col items-center justify-center py-16">
           <mat-icon class="text-5xl text-[#a58d65]/50 mb-4">history</mat-icon>
-          <p class="text-gray-500 text-center">Aquí encontrarás el historial de tus tickets pasados</p>
+          <p class="text-gray-500 text-center">No tienes tickets en tu historial</p>
         </div>
         
         <div *ngIf="historyTickets.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <app-ticket-card 
-            *ngFor="let ticket of historyTickets" 
-            [ticket]="ticket"
-            (viewDetails)="viewTicketDetails($event)"
-            (download)="downloadTicket($event)"
-          ></app-ticket-card>
+          <!-- Card de Ticket Histórico (con estilo de "usado") -->
+          <div *ngFor="let ticket of historyTickets" class="bg-white rounded-lg shadow-md overflow-hidden opacity-75 ticket-card">
+            <!-- Imagen con overlay de "usado" -->
+            <div class="h-40 bg-gradient-to-r from-gray-600 to-gray-500 relative">
+              <div class="absolute inset-0 flex items-center justify-center bg-black/50">
+                <span class="transform rotate-45 bg-red-500 text-white py-1 px-10 text-lg font-bold">UTILIZADO</span>
+              </div>
+              <div class="absolute inset-0 flex flex-col justify-end p-4 text-white">
+                <h3 class="text-xl font-semibold">{{ ticket.eventName }}</h3>
+                <div class="flex items-center mt-1">
+                  <mat-icon class="text-sm mr-1">event</mat-icon>
+                  <span class="text-sm">{{ ticket.date | date:'dd/MM/yyyy - HH:mm' }}</span>
+                </div>
+                <div class="flex items-center mt-1">
+                  <mat-icon class="text-sm mr-1">location_on</mat-icon>
+                  <span class="text-sm">{{ ticket.location || 'Ubicación no especificada' }}</span>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Información del ticket -->
+            <div class="p-4">
+              <div class="flex justify-between items-center mb-3">
+                <span class="text-sm text-gray-600">{{ ticket.sectionName }}</span>
+                <span class="font-semibold text-gray-500">{{ ticket.price }}</span>
+              </div>
+              
+              <div class="flex justify-between items-center">
+                <div>
+                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                    Utilizado
+                  </span>
+                  <span class="ml-2 text-sm text-gray-600">{{ ticket.quantity }} ticket{{ ticket.quantity > 1 ? 's' : '' }}</span>
+                </div>
+              </div>
+              
+              <!-- Acciones -->
+              <div class="flex justify-between mt-4 pt-4 border-t border-gray-100">
+                <button 
+                  mat-stroked-button 
+                  (click)="viewTicketDetails(ticket.id)"
+                  class="text-gray-500 border-gray-300"
+                >
+                  Ver detalles
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
+    </ng-container>
   </div>
+</div>

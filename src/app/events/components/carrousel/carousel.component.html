@@ -6,7 +6,7 @@
     <!-- Imagen con efecto parallax -->
     <div class="absolute inset-0 scale-110 transition-transform duration-10000 ease-linear"
          [ngClass]="{'scale-100': i === currentIndex}">
-      <img [src]="event.imageUrl" alt="{{event.title}}" class="w-full h-full object-cover">
+      <img [src]="event.image_event" alt="{{event.title}}" class="w-full h-full object-cover">
       <!-- Overlay con gradiente -->
       <div class="absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-transparent"></div>
     </div>
@@ -17,7 +17,7 @@
         <div class="max-w-xl">
           <!-- Etiqueta de facultad -->
           <div class="inline-block px-3 py-1 bg-[#d4a017] text-white text-sm font-medium rounded-full mb-4">
-            {{event.faculty}}
+            {{event.faculty.name}}
           </div>
           
           <h2 class="text-3xl md:text-5xl font-bold mb-3 text-white">{{event.title}}</h2>
@@ -30,7 +30,7 @@
               </div>
               <div>
                 <div class="text-sm opacity-80">Fecha</div>
-                <div>{{event.date | date:'dd/MM/yyyy - HH:mm'}}</div>
+                <div>{{event.start_date| date:'dd/MM/yyyy - HH:mm'}}</div>
               </div>
             </div>
             
@@ -40,7 +40,7 @@
               </div>
               <div>
                 <div class="text-sm opacity-80">Lugar</div>
-                <div>{{event.location}}</div>
+                <div>{{event.address}}</div>
               </div>
             </div>
           </div>

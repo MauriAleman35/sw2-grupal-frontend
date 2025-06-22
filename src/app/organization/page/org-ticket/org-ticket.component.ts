@@ -55,11 +55,10 @@ interface EventOption {
 export class OrgTicketComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
 
-  // Nuevo enfoque: primero seleccionar evento, luego ver sus secciones
-  // Form y filtros
   filterForm: FormGroup;
   
-  // Estados de navegación
+  uniqueTicketTypes: number = 0;
+
   currentStep = 'selectEvent'; // 'selectEvent' | 'viewSections'
   selectedEventId: string | null = null;
   selectedEventDetails: any = null;
@@ -69,11 +68,10 @@ export class OrgTicketComponent implements OnInit, OnDestroy {
   eventSections: TicketGroup[] = [];
   selectedSections: string[] = [];
 
-  // Paginación
+
   pagination: Pagination = { total: 0, page: 1, limit: 10, pages: 0 };
   pageSizeOptions = [10, 25, 50, 100];
 
-  // Estados
   loading = false;
   statistics: TicketStatistics = {
     totalTickets: 0,
@@ -171,13 +169,14 @@ export class OrgTicketComponent implements OnInit, OnDestroy {
   }
 
   // Reemplaza el método loadEventSections en tu componente
+// Actualiza tu método loadEventSections
 loadEventSections(eventId: string, searchTerm: string = ""): void {
   this.loading = true;
   
   // Actualizar el evento seleccionado
   this.selectedEventDetails = this.availableEvents.find(e => e.id === eventId);
   
-  // Usar el nuevo método corregido que filtra por evento en el cliente
+  // Usar el método mejorado que filtra por evento en el cliente
   this.ticketService.getEventSectionsAndTickets(
     eventId, 
     this.pagination.page, 
@@ -192,6 +191,16 @@ loadEventSections(eventId: string, searchTerm: string = ""): void {
         this.eventSections = response.tickets;
         this.pagination = response.pagination;
         this.statistics = response.totalStats;
+        
+        // Actualizar contador de tipos únicos de tickets
+        this.uniqueTicketTypes = this.eventSections.length;
+        
+        // Calcular el total real contando tickets agrupados
+        const totalRealTickets = this.eventSections.reduce((total, section) => 
+          total + (section._count || 1), 0);
+          
+        console.log(`Mostrando ${this.uniqueTicketTypes} tipos de tickets únicos de un total de ${totalRealTickets} tickets reales`);
+        
         this.loading = false;
       },
       error: (error) => {
@@ -280,8 +289,8 @@ loadEventSections(eventId: string, searchTerm: string = ""): void {
   this.ticketService
     .updateTicketPrices(
       priceUpdates, 
-      this.pagination.page, // Pasar la página actual
-      this.pagination.limit // Pasar el límite actual
+      this.pagination.page, 
+      this.pagination.limit 
     )
     .pipe(takeUntil(this.destroy$))
     .subscribe({

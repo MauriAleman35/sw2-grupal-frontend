@@ -1,0 +1,49 @@
+/* Animaciones */
+.fade-in {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Estilos para los botones Material */
+::ng-deep .mat-mdc-raised-button.mat-primary {
+  background-color: #d4a017 !important;
+}
+
+::ng-deep .mat-mdc-raised-button.mat-primary:hover {
+  background-color: #a58d65 !important;
+}
+
+/* Estilo para campos de formulario */
+::ng-deep .mat-form-field-appearance-outline .mat-form-field-outline-thick {
+  color: #d4a017;
+}
+
+::ng-deep .mat-form-field.mat-focused .mat-form-field-label {
+  color: #d4a017 !important;
+}
+
+/* Estilo para checkbox */
+::ng-deep .mat-checkbox-checked.mat-primary .mat-checkbox-background {
+  background-color: #d4a017 !important;
+}
+
+/* Botón de pago con efecto pulsante */
+.pulse-button {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(212, 160, 23, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(212, 160, 23, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(212, 160, 23, 0);
+  }
+}

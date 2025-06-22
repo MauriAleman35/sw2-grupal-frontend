@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -8,15 +8,11 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-
-interface Faculty {
-  id: number;
-  name: string;
-}
+import { Faculty } from '../../../organization/interfaces/events';
 
 interface SearchFilters {
   searchTerm: string;
-  facultyId: number | null;
+  facultyId: string;
   date: Date | null;
 }
 
@@ -38,16 +34,28 @@ interface SearchFilters {
   templateUrl: './search-bar.component.html',
   styleUrls: ['./search-bar.component.css']
 })
-export class SearchBarComponent {
+export class SearchBarComponent implements OnChanges {
   @Input() faculties: Faculty[] = [];
   @Output() search = new EventEmitter<SearchFilters>();
   @Output() reset = new EventEmitter<void>();
 
   searchTerm: string = '';
-  selectedFaculty: number | null = null;
+  selectedFaculty: string = '';
   selectedDate: Date | null = null;
+  
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['faculties'] && this.faculties.length > 0) {
+      console.log('Facultades disponibles en búsqueda:', this.faculties);
+    }
+  }
 
   applyFilters(): void {
+    console.log('Aplicando filtros:', {
+      searchTerm: this.searchTerm,
+      facultyId: this.selectedFaculty,
+      date: this.selectedDate
+    });
+    
     this.search.emit({
       searchTerm: this.searchTerm,
       facultyId: this.selectedFaculty,
@@ -57,7 +65,7 @@ export class SearchBarComponent {
 
   resetFilters(): void {
     this.searchTerm = '';
-    this.selectedFaculty = null;
+    this.selectedFaculty = '';
     this.selectedDate = null;
     this.reset.emit();
   }

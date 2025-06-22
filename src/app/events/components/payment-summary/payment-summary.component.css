@@ -1,0 +1,43 @@
+/* Animación de transición entre pasos */
+.fade-in {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Estilos de los pasos activos e inactivos */
+.step-active {
+  color: #d4a017;
+  font-weight: 500;
+}
+
+.step-inactive {
+  color: #9ca3af;
+}
+
+/* Estilos para los botones de Material */
+::ng-deep .mat-mdc-raised-button.mat-primary {
+  background-color: #d4a017 !important;
+}
+
+::ng-deep .mat-mdc-raised-button.mat-primary:hover {
+  background-color: #a58d65 !important;
+}
+
+/* Mejoras visuales para los inputs */
+::ng-deep .mat-form-field-appearance-outline .mat-form-field-outline {
+  color: #d4a017;
+}
+
+::ng-deep .mat-form-field-appearance-outline.mat-focused .mat-form-field-outline-thick {
+  color: #d4a017;
+}

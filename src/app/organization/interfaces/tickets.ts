@@ -166,3 +166,58 @@ export enum PriceModificationType {
   GROUP_DISCOUNT = "GROUP_DISCOUNT",
   EARLY_BIRD = "EARLY_BIRD",
 }
+// Actualizar la interfaz TicketsBySectionResponse para incluir estadísticas
+export interface TicketsBySectionResponse {
+  statusCode: number;
+  data: DatumTicketsBySection[];
+  message: string;
+  metadata: Metadata;
+  // Añadir estadísticas (opcional)
+  ticketStats?: {
+    totalUniqueTypes: number;
+    totalRealTickets: number;
+    activeTickets: number;
+    inactiveTickets: number;
+  };
+}
+
+// Actualizar la interfaz DatumTicketsBySection para incluir campos de agrupamiento
+export interface DatumTicketsBySection {
+  id: string;
+  tenantId: string;
+  date: Date;
+  price: string;
+  originalPrice: string;
+  modificationType: PriceModificationType | null;
+  validFrom: string | null;
+  validUntil: string | null;
+  is_active: boolean;
+  created_at: Date;
+  updated_at: Date;
+  ticketPurchases: any[];
+  // Campos adicionales para agrupamiento
+  _count?: number;  // Cantidad de tickets en este grupo
+  _ticketIds?: string[];  // IDs de los tickets agrupados
+}
+
+// Actualizar la interfaz TicketGroup para incluir campos de agrupamiento
+export interface TicketGroup {
+  sectionId: string;
+  sectionName: string;
+  sectionDescription: string;
+  eventTitle: string;
+  eventId: string;
+  totalTickets: number;
+  availableTickets: number;
+  soldTickets: number;
+  currentPrice: string;
+  originalPrice: string;
+  modificationType: PriceModificationType | null;
+  validFrom: string | null;
+  validUntil: string | null;
+  hasActivePromotion: boolean;
+  section: Section;
+  // Campos adicionales para agrupamiento
+  _count?: number;
+  _ticketIds?: string[];
+}

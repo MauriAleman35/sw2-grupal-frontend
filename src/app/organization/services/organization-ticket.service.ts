@@ -223,30 +223,184 @@ export class OrganizationTicketService {
       );
   }
 
-  // Método para obtener tickets de una sección específica
-  getTicketsBySectionId(sectionId: string, page = 1, limit = 10): Observable<TicketsBySectionResponse> {
-    this.loadingSubject.next(true);
+ // Método mejorado para obtener tickets por sección con agrupamiento más preciso
+getTicketsBySectionId(sectionId: string, page = 1, limit = 10): Observable<TicketsBySectionResponse> {
+  this.loadingSubject.next(true);
+  
+  let httpParams = new HttpParams()
+    .set("page", "1")  // Pedimos todos los tickets de la primera página
+    .set("limit", "1000");  // Un límite alto para obtener más tickets
     
-    let httpParams = new HttpParams()
-      .set("page", page.toString())
-      .set("limit", limit.toString());
-      
-    return this.http
-      .get<TicketsBySectionResponse>(`${this.apiUrl}/section/${sectionId}`, {
-        context: new HttpContext().set(USE_TENANT_TOKEN, true),
-        params: httpParams
+  return this.http
+    .get<TicketsBySectionResponse>(`${this.apiUrl}/section/${sectionId}`, {
+      context: new HttpContext().set(USE_TENANT_TOKEN, true),
+      params: httpParams
+    })
+    .pipe(
+      map((response) => {
+        if (response.statusCode === 200) {
+          console.log(`Recibidos ${response.data.length} tickets para sección ${sectionId}`);
+          
+          // Agrupar tickets por características únicas usando el método mejorado
+          const uniqueTickets = this.groupTicketsByUniqueProperties(response.data);
+          console.log(`Agrupados en ${uniqueTickets.length} tipos de tickets únicos`);
+          
+          // Calcular el total real de tickets (contando duplicados)
+          const totalRealTickets = response.data.length;
+          
+          // Aplicar paginación manual a los tickets agrupados
+          const startIndex = (page - 1) * limit;
+          const paginatedUniqueTickets = uniqueTickets.slice(startIndex, startIndex + limit);
+          
+          // Crear respuesta modificada con tickets agrupados y paginados
+          const modifiedResponse: TicketsBySectionResponse = {
+            ...response,
+            data: paginatedUniqueTickets,
+            metadata: {
+              ...response.metadata,
+              pagination: {
+                total: uniqueTickets.length,  // Total de tipos únicos
+                page: page,
+                limit: limit,
+                pages: Math.ceil(uniqueTickets.length / limit)
+              }
+            },
+            // Añadir información sobre total real y total agrupado
+            ticketStats: {
+              totalUniqueTypes: uniqueTickets.length,
+              totalRealTickets: totalRealTickets,
+              activeTickets: response.data.filter(t => t.is_active).length,
+              inactiveTickets: response.data.filter(t => !t.is_active).length
+            }
+          };
+          
+          this.loadingSubject.next(false);
+          return modifiedResponse;
+        }
+        
+        this.loadingSubject.next(false);
+        return response;
+      }),
+      catchError((error) => {
+        this.loadingSubject.next(false);
+        console.error(`Error retrieving tickets for section ${sectionId}:`, error);
+        return throwError(() => error);
       })
-      .pipe(
-        map((response) => {
-          this.loadingSubject.next(false);
-          return response;
-        }),
-        catchError((error) => {
-          this.loadingSubject.next(false);
-          console.error(`Error retrieving tickets for section ${sectionId}:`, error);
-          return throwError(() => error);
-        })
-      );
+    );
+}
+
+// Nuevo método mejorado para agrupar tickets con criterios más específicos
+private groupTicketsByUniqueProperties(tickets: DatumTicketsBySection[]): DatumTicketsBySection[] {
+  if (!tickets || tickets.length === 0) return [];
+  
+  // Primero, agrupamos los tickets con el mismo ID (para asegurarnos de no duplicar)
+  const ticketsById = this.groupTicketsByIds(tickets);
+  
+  // Ahora agrupamos por propiedades únicas más específicas
+  const result: DatumTicketsBySection[] = [];
+  const processedKeys = new Set<string>();
+  
+  ticketsById.forEach(ticket => {
+    // Verificar si este ticket ya fue incluido en un grupo
+    let found = false;
+    
+    // Comparar este ticket con cada grupo ya existente
+    for (const existingTicket of result) {
+      // Usar la comparación mejorada para determinar si los tickets son realmente iguales
+      if (this.areTicketsEqual(ticket, existingTicket)) {
+        // Son el mismo tipo de ticket, incrementar contador
+        existingTicket._count = (existingTicket._count || 1) + 1;
+        existingTicket._ticketIds = [...(existingTicket._ticketIds || []), ticket.id];
+        found = true;
+        break;
+      }
+    }
+    
+    // Si no se encontró en ningún grupo, crear uno nuevo
+    if (!found) {
+      result.push({
+        ...ticket,
+        _count: 1,
+        _ticketIds: [ticket.id]
+      });
+    }
+  });
+  
+  console.log(`Agrupamiento mejorado: ${tickets.length} tickets -> ${result.length} tipos únicos`);
+  return result;
+}
+
+// Método para agrupar tickets por IDs (eliminar duplicados exactos)
+private groupTicketsByIds(tickets: DatumTicketsBySection[]): DatumTicketsBySection[] {
+  const uniqueTicketsMap: { [key: string]: DatumTicketsBySection } = {};
+  
+  tickets.forEach(ticket => {
+    if (!uniqueTicketsMap[ticket.id]) {
+      uniqueTicketsMap[ticket.id] = ticket;
+    }
+  });
+  
+  return Object.values(uniqueTicketsMap);
+}
+  // Método para agrupar tickets por propiedades únicas
+ private groupUniqueTicketsByProperties(tickets: DatumTicketsBySection[]): DatumTicketsBySection[] {
+  if (!tickets || tickets.length === 0) return [];
+  
+  // Mapa para agrupar tickets con propiedades similares
+  const uniqueTicketsMap: { [key: string]: DatumTicketsBySection & { _count?: number, _ticketIds?: string[] } } = {};
+  
+  tickets.forEach(ticket => {
+    // Crear una clave única más específica para diferenciar correctamente los tickets
+    const uniqueKey = this.createMoreSpecificUniqueTicketKey(ticket);
+    
+    if (!uniqueTicketsMap[uniqueKey]) {
+      // Si es el primer ticket de este tipo, lo agregamos al mapa
+      uniqueTicketsMap[uniqueKey] = {
+        ...ticket,
+        // Añadir campos para conteo y tracking
+        _count: 1,
+        _ticketIds: [ticket.id]
+      };
+    } else {
+      // Si ya existe un ticket similar, incrementamos el contador
+      uniqueTicketsMap[uniqueKey]._count = (uniqueTicketsMap[uniqueKey]._count || 1) + 1;
+      // Añadir este ID a la lista de IDs agrupados
+      uniqueTicketsMap[uniqueKey]._ticketIds?.push(ticket.id);
+    }
+  });
+  
+  // Convertir el mapa a un array
+  return Object.values(uniqueTicketsMap);
+}
+
+// Método mejorado para crear una clave única más específica
+private createMoreSpecificUniqueTicketKey(ticket: DatumTicketsBySection): string {
+  // Combinar propiedades que hacen único a un tipo de ticket
+  // Añadir más propiedades para hacer la clave más específica
+  return [
+    ticket.price,
+    ticket.originalPrice,
+    ticket.modificationType || 'none',
+    ticket.is_active ? 'active' : 'inactive',
+    ticket.validFrom || 'no-start',
+    ticket.validUntil || 'no-end',
+    // Añadir más propiedades para distinguir mejor los tickets
+    ticket.date ? new Date(ticket.date).toISOString().split('T')[0] : 'no-date', // Incluir solo la fecha (sin hora)
+    // Si hay otros campos que podrían diferenciar los tickets, añadirlos aquí
+  ].join('|');  // Usar un separador más claro
+}
+  
+  // Método para crear una clave única para cada tipo de ticket
+  private createUniqueTicketKey(ticket: DatumTicketsBySection): string {
+    // Combinar propiedades que hacen único a un tipo de ticket
+    return [
+      ticket.price,
+      ticket.originalPrice,
+      ticket.modificationType || 'none',
+      ticket.is_active ? 'active' : 'inactive',
+      ticket.validFrom || 'no-start',
+      ticket.validUntil || 'no-end'
+    ].join('-');
   }
 
   getTicketById(ticketId: string): Observable<GetByIDResponse> {
@@ -254,34 +408,70 @@ export class OrganizationTicketService {
       context: new HttpContext().set(USE_TENANT_TOKEN, true),
     });
   }
-// Modificar para actualizar una sola sección a la vez
-updateTicketPrice(priceUpdate: PriceUpdateRequest, page = 1, limit = 10): Observable<any> {
-  console.log("Sending price update to backend:", priceUpdate);
-  
-  // Agrega los parámetros de consulta page y limit
-  const params = new HttpParams()
-    .set('page', page.toString())
-    .set('limit', limit.toString());
-  
-  return this.http.post(`${this.apiUrl}/bulk/price-update`, priceUpdate, {
-    context: new HttpContext().set(USE_TENANT_TOKEN, true),
-    params: params
-  });
-}
- // Método para procesar múltiples actualizaciones de manera secuencial
-updateTicketPrices(priceUpdates: PriceUpdateRequest[], page = 1, limit = 10): Observable<any> {
-  if (priceUpdates.length === 0) {
-    return of({ success: true });
-  }
-  
-  
-  return this.updateTicketPrice(priceUpdates[0], page, limit);
+  // Añadir este método al servicio para verificar si dos tickets son realmente iguales
+private areTicketsEqual(ticket1: DatumTicketsBySection, ticket2: DatumTicketsBySection): boolean {
+  // Verificación más estricta de igualdad entre tickets
+  return (
+    ticket1.price === ticket2.price &&
+    ticket1.originalPrice === ticket2.originalPrice &&
+    ticket1.modificationType === ticket2.modificationType &&
+    ticket1.is_active === ticket2.is_active &&
+    ticket1.validFrom === ticket2.validFrom &&
+    ticket1.validUntil === ticket2.validUntil &&
+    // Comparar solo las fechas (sin la hora)
+    this.getSameDatePart(ticket1.date) === this.getSameDatePart(ticket2.date) &&
+    // Otras propiedades específicas que puedan diferenciar los tickets
+    this.getAdditionalTicketProperties(ticket1) === this.getAdditionalTicketProperties(ticket2)
+  );
 }
 
-  restoreOriginalPrices(sectionIds: string[],page = 1, limit = 10): Observable<any> {
+// Método auxiliar para obtener solo la parte de fecha (sin hora)
+private getSameDatePart(date: any): string {
+  if (!date) return 'no-date';
+  return new Date(date).toISOString().split('T')[0];
+}
+
+// Método para extraer propiedades adicionales que puedan diferenciar tickets
+private getAdditionalTicketProperties(ticket: DatumTicketsBySection): string {
+  // Extraer cualquier propiedad adicional que pueda hacer que los tickets sean diferentes
+  // Por ejemplo, si tienen alguna propiedad personalizada o metadatos
+  const additionalProps = [];
+  
+  // Ejemplo: si hay alguna propiedad en ticketPurchases que distinga los tickets
+  if (ticket.ticketPurchases && ticket.ticketPurchases.length > 0) {
+    additionalProps.push('has-purchases');
+  }
+  
+  return additionalProps.join('-');
+}
+  // Modificar para actualizar una sola sección a la vez
+  updateTicketPrice(priceUpdate: PriceUpdateRequest, page = 1, limit = 10): Observable<any> {
+    console.log("Sending price update to backend:", priceUpdate);
+    
+    // Agrega los parámetros de consulta page y limit
+    const params = new HttpParams()
+      .set('page', page.toString())
+      .set('limit', limit.toString());
+    
+    return this.http.post(`${this.apiUrl}/bulk/price-update`, priceUpdate, {
+      context: new HttpContext().set(USE_TENANT_TOKEN, true),
+      params: params
+    });
+  }
+  
+  // Método para procesar múltiples actualizaciones de manera secuencial
+  updateTicketPrices(priceUpdates: PriceUpdateRequest[], page = 1, limit = 10): Observable<any> {
+    if (priceUpdates.length === 0) {
+      return of({ success: true });
+    }
+    
+    return this.updateTicketPrice(priceUpdates[0], page, limit);
+  }
+
+  restoreOriginalPrices(sectionIds: string[], page = 1, limit = 10): Observable<any> {
     return this.http.post(
       `${this.apiUrl}/bulk/restore-prices`,
-      { sectionIds ,page, limit },
+      { sectionIds, page, limit },
       {
         context: new HttpContext().set(USE_TENANT_TOKEN, true),
       },
@@ -342,6 +532,9 @@ updateTicketPrices(priceUpdates: PriceUpdateRequest[], page = 1, limit = 10): Ob
           validUntil: ticket.validUntil,
           hasActivePromotion,
           section: ticket.section,
+          // Añadir información de agrupamiento
+          _count: sectionTicketsInPage.length,
+          _ticketIds: sectionTicketsInPage.map(t => t.id)
         };
 
         groupedMap.set(groupKey, ticketGroup);

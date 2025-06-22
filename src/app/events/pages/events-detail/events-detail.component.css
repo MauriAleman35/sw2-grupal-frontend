@@ -1,0 +1,18 @@
+/* Añadir una animación suave al hacer scroll */
+.scroll-animation {
+  scroll-behavior: smooth;
+}
+
+/* Estilos para resaltar la sección de destino del scroll */
+.highlight-section {
+  animation: highlight 1s ease-out;
+}
+
+@keyframes highlight {
+  0% {
+    background-color: rgba(212, 160, 23, 0.2);
+  }
+  100% {
+    background-color: transparent;
+  }
+}

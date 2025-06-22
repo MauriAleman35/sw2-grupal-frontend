@@ -1,4 +1,3 @@
-
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatTabsModule } from '@angular/material/tabs';
@@ -8,27 +7,33 @@ import { MatCardModule } from '@angular/material/card';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatDividerModule } from '@angular/material/divider';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { Router } from '@angular/router';
 import { TicketCardComponent } from '../../components/ticket-card/ticket-card.component';
+import { EventsService } from '../../services/events.service';
+import { Datum } from '../../interfaces/purchase';
 
-interface Ticket {
-  id: number;
-  eventId: number;
+// Modelo simplificado para la UI
+interface TicketModel {
+  id: string;
+  eventId: string;
   eventName: string;
   location: string;
   date: Date;
-  imageUrl: string;
+  imageUrl?: string;
   quantity: number;
-  status: 'Pagado' | 'Pendiente' | 'Cancelado';
+  status: 'paid' | 'pending' | 'cancelled';
   price: string;
   qrCode?: string;
-  seatInfo?: string;
+  sectionName: string;
   active: boolean;
 }
+
 @Component({
   selector: 'app-events-tickets',
   standalone: true,
-  imports: [  CommonModule,
+  imports: [  
+    CommonModule,
     MatTabsModule,
     MatIconModule,
     MatButtonModule,
@@ -36,96 +41,91 @@ interface Ticket {
     MatBadgeModule,
     MatChipsModule,
     MatDividerModule,
-    TicketCardComponent],
+    MatProgressSpinnerModule,
+    TicketCardComponent
+  ],
   templateUrl: './events-tickets.component.html',
   styleUrl: './events-tickets.component.css'
 })
 export class EventsTicketsComponent implements OnInit {
-  tickets: Ticket[] = [];
-  activeTickets: Ticket[] = [];
-  historyTickets: Ticket[] = [];
+  purchases: Datum[] = [];
+  activeTickets: TicketModel[] = [];
+  historyTickets: TicketModel[] = [];
   selectedTabIndex = 0;
+  loading = true;
+  error = false;
 
-  constructor(private router: Router) { }
+  constructor(private router: Router, private eventsService: EventsService) { }
 
   ngOnInit(): void {
-    // Datos de ejemplo
-    this.tickets = [
-      {
-        id: 1,
-        eventId: 101,
-        eventName: 'Conferencia de Innovación Tecnológica',
-        location: 'Auditorio Central',
-        date: new Date('2025-05-15T18:00:00'),
-        imageUrl: 'https://picsum.photos/800/400?random=1',
-        quantity: 2,
-        status: 'Pagado',
-        price: 'Bs. 100',
-        active: true
-      },
-      {
-        id: 2,
-        eventId: 102,
-        eventName: 'Feria de Emprendimientos',
-        location: 'Plaza Principal',
-        date: new Date('2025-05-20T10:00:00'),
-        imageUrl: 'https://picsum.photos/800/400?random=2',
-        quantity: 1,
-        status: 'Pagado',
-        price: 'Entrada Libre',
-        active: true
-      },
-      {
-        id: 3,
-        eventId: 103,
-        eventName: 'C.R.O - SONILUM - Santa Cruz',
-        location: 'Santa Cruz',
-        date: new Date('2025-04-10T20:00:00'),
-        imageUrl: 'https://picsum.photos/800/400?random=3',
-        quantity: 1,
-        status: 'Pagado',
-        price: 'Bs. 250',
-        active: true
-      },
-      {
-        id: 4,
-        eventId: 104,
-        eventName: 'Festival Cultural Universitario',
-        location: 'Teatro Municipal',
-        date: new Date('2024-12-10T16:00:00'),
-        imageUrl: 'https://picsum.photos/800/400?random=4',
-        quantity: 3,
-        status: 'Pagado',
-        price: 'Bs. 60',
-        active: false
-      },
-      {
-        id: 5,
-        eventId: 105,
-        eventName: 'Hackathon Universitario',
-        location: 'Laboratorio de Computación',
-        date: new Date('2024-11-15T08:00:00'),
-        imageUrl: 'https://picsum.photos/800/400?random=5',
-        quantity: 1,
-        status: 'Pagado',
-        price: 'Bs. 25',
-        active: false
-      },
-    ];
-
-    // Filtrar tickets activos e historial
-    this.activeTickets = this.tickets.filter(ticket => ticket.active);
-    this.historyTickets = this.tickets.filter(ticket => !ticket.active);
+    this.loadPurchases();
   }
 
-  viewTicketDetails(ticketId: number): void {
+  loadPurchases(): void {
+    this.loading = true;
+    this.eventsService.getPurchaseByUser().subscribe({
+      next: (response) => {
+        this.purchases = response.data;
+        this.purchases= this.purchases.filter(purchase => purchase.status == 'paid');
+        this.processTicketsFromPurchases();
+        this.loading = false;
+      },
+      error: (err) => {
+        console.error('Error al cargar compras:', err);
+        this.error = true;
+        this.loading = false;
+      }
+    });
+  }
+
+  processTicketsFromPurchases(): void {
+    const allTickets: TicketModel[] = [];
+    
+    this.purchases.forEach(purchase => {
+      // Solo procesar compras pagadas
+      if (purchase.status === 'paid') {
+        purchase.ticketPurchases.forEach(ticketPurchase => {
+          const ticket: TicketModel = {
+            id: ticketPurchase.id,
+            eventId: purchase.id,
+            eventName: purchase.tenant.display_name || 'Evento',
+            location: ticketPurchase.ticket.section.description || 'Ubicación no especificada',
+            date: new Date(ticketPurchase.ticket.date),
+            quantity: ticketPurchase.quantity,
+            status: purchase.status as 'paid',
+            price: `Bs/. ${ticketPurchase.price}`,
+            qrCode: ticketPurchase.qrCodeUrl,
+            sectionName: ticketPurchase.ticket.section.name,
+            active: !ticketPurchase.is_used && ticketPurchase.status
+          };
+          
+          allTickets.push(ticket);
+        });
+      }
+    });
+    
+    // Filtrar tickets activos e históricos
+    this.activeTickets = allTickets.filter(ticket => ticket.active);
+    this.historyTickets = allTickets.filter(ticket => !ticket.active);
+  }
+
+  viewTicketDetails(ticketId: string): void {
     console.log(`Navegando a detalles del ticket ${ticketId}`);
-     this.router.navigate(['/MyTickets', ticketId]);
+    this.router.navigate(['/MyTickets', ticketId]);
   }
 
-  downloadTicket(ticketId: number): void {
-    console.log(`Descargando ticket ${ticketId}`);
-    // Lógica para descargar el ticket
+  downloadTicket(ticket: TicketModel): void {
+    if (!ticket.qrCode) {
+      console.error('No hay código QR para descargar');
+      return;
+    }
+  
+    const link = document.createElement('a');
+    link.href = ticket.qrCode;
+    link.download = `ticket-${ticket.eventName}-${ticket.id}.png`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   }
 
   changeTab(index: number): void {

@@ -5,7 +5,12 @@
       (change)="onSelectionChange($event.checked)"
       color="primary"
     ></mat-checkbox>
-    
+    <div class="group-count-badge" *ngIf="ticketGroup._count && ticketGroup._count > 1">
+  <mat-chip color="primary" selected>
+    <mat-icon>group_work</mat-icon>
+    {{ ticketGroup._count }} tickets agrupados
+  </mat-chip>
+</div>
     <div class="promotion-badge" *ngIf="ticketGroup.hasActivePromotion">
       <mat-chip 
         [color]="getPromotionColor()" 

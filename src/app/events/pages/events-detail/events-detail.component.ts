@@ -1,35 +1,14 @@
-import { Component, OnInit, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTabsModule } from '@angular/material/tabs';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 
-interface Event {
-  id: number;
-  title: string;
-  slug: string; // Añadimos slug para las URLs amigables
-  date: Date;
-  location: string;
-  faculty: string;
-  imageUrl: string;
-  price: string;
-  description: string;
-  minPrice?: number;
-  maxPrice?: number;
-  duration?: string;
-  ageRestriction?: string;
-  venueName?: string;
-  venueAddress?: string;
-  venueCity?: string;
-  venueCountry?: string;
-  sku?: string;
-  dates?: {
-    date: string;
-    times: string[];
-  }[];
-}
+import { EventsService } from '../../services/events.service';
+import { DatumEventsAll } from '../../interfaces/events';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { AuthService } from '../../../auth/services/auth.service';
 
 @Component({
   selector: 'app-events-detail',
@@ -39,225 +18,186 @@ interface Event {
     RouterModule,
     MatIconModule,
     MatButtonModule,
-    MatTabsModule,
-    MatSnackBarModule
+    MatTabsModule,    MatSnackBarModule
   ],
   templateUrl: './events-detail.component.html',
   styleUrls: ['./events-detail.component.css']
 })
-export class EventsDetailComponent implements OnInit, AfterViewInit {
-  @ViewChild('continueSection') continueSection!: ElementRef;
+export class EventsDetailComponent implements OnInit {
+    @ViewChild('continueSection') continueSection!: ElementRef; // Añadido nuevamente
+  @ViewChild('ticketsSection') ticketsSection!: ElementRef;
   
-  event: Event | null = null;
+  event: DatumEventsAll | null = null;
   loading = true;
   error = false;
-  selectedDate: string = '';
-  selectedTime: string = '';
-  availableTimes: string[] = [];
+  eventSlug: string = '';
   
-  // Datos de ejemplo para simular la carga de un evento
-  mockEvents: Event[] = [
-    {
-      id: 1,
-      title: 'Conferencia de Innovación Tecnológica',
-      slug: 'conferencia-innovacion-tecnologica',
-      date: new Date('2025-05-15T18:00:00'),
-      location: 'Auditorio Central',
-      faculty: 'Ingeniería',
-      imageUrl: 'https://picsum.photos/800/500?random=1',
-      price: 'Bs. 50',
-      description: 'Conferencia sobre las últimas tendencias en innovación tecnológica con expertos internacionales.',
-      minPrice: 50,
-      maxPrice: 50,
-      duration: '3 horas con 30 minutos',
-      ageRestriction: 'Mayores de 16 años',
-      venueName: 'Auditorio Central',
-      venueAddress: 'Campus Universitario',
-      venueCity: 'La Paz',
-      venueCountry: 'Bolivia',
-      sku: 'CONF-TECH-001',
-      dates: [
-        {
-          date: '2025-05-15',
-          times: ['18:00:00']
-        }
-      ]
-    },
-    {
-      id: 2,
-      title: 'Feria de Emprendimientos',
-      slug: 'feria-emprendimientos',
-      date: new Date('2025-05-20T10:00:00'),
-      location: 'Plaza Principal',
-      faculty: 'Ciencias Económicas',
-      imageUrl: 'https://picsum.photos/800/500?random=2',
-      price: 'Entrada Libre',
-      description: 'Exposición de proyectos de emprendimiento de estudiantes universitarios.',
-      minPrice: 0,
-      maxPrice: 0,
-      duration: '8 horas',
-      ageRestriction: 'Todo público',
-      venueName: 'Plaza Principal',
-      venueAddress: 'Centro de la Ciudad',
-      venueCity: 'La Paz',
-      venueCountry: 'Bolivia',
-      sku: 'FERIA-EMP-001',
-      dates: [
-        {
-          date: '2025-05-20',
-          times: ['10:00:00', '14:00:00']
-        }
-      ]
-    },
-    {
-      id: 3,
-      title: 'C.R.O - Cochabamba',
-      slug: 'cro-cochabamba',
-      date: new Date('2025-04-11T20:00:00'),
-      location: 'Alice Park',
-      faculty: 'Humanidades',
-      imageUrl: 'https://picsum.photos/800/500?random=7',
-      price: 'Bs. 150 - 250',
-      description: 'Concierto del reconocido artista C.R.O en su gira mundial 2025.',
-      minPrice: 150,
-      maxPrice: 250,
-      duration: '3 horas con 59 minutos',
-      ageRestriction: 'Mayores de 18 años',
-      venueName: 'Alice Park',
-      venueAddress: 'Av. Principal #123',
-      venueCity: 'Cochabamba',
-      venueCountry: 'Bolivia',
-      sku: 'CRO-CBBA-001',
-      dates: [
-        {
-          date: '2025-04-11',
-          times: ['20:00:00']
-        }
-      ]
-    }
-  ];
+  // Para controlar las pestañas de información adicional
+  activeTab: 'direccion' | 'informacion' | 'mapa' = 'direccion';
   
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private snackBar: MatSnackBar
+    private eventsService: EventsService, 
+       private snackBar: MatSnackBar, 
+       private authService:AuthService
   ) {}
   
   ngOnInit(): void {
     this.route.params.subscribe(params => {
-      const eventSlug = params['slug']; // Ahora usamos slug en lugar de id
-      this.loadEventDetailsBySlug(eventSlug);
+      this.eventSlug = params['slug'];
+      this.loadEventDetailsBySlug(this.eventSlug);
     });
     
-    // Scroll al inicio de la página cuando se carga el componente
     window.scrollTo(0, 0);
-  }
-  
-  ngAfterViewInit(): void {
-    // Aseguramos que el scroll se realice después de que la vista se haya inicializado
-    setTimeout(() => {
-      window.scrollTo(0, 0);
-    }, 100);
   }
   
   loadEventDetailsBySlug(slug: string): void {
     this.loading = true;
     this.error = false;
     
-    // Simulación de carga de datos
-    setTimeout(() => {
-      const foundEvent = this.mockEvents.find(e => e.slug === slug);
-      
-      if (foundEvent) {
-        this.event = foundEvent;
+    // Convertimos el slug a un formato legible
+    const formattedTitle = this.transformSlugToTitle(slug);
+    
+    this.eventsService.getAllEvents(1, 100).subscribe({
+      next: (res) => {
+        // Buscamos el evento que coincida con el título formateado
+        const foundEvent = res.data.find(e => 
+          e.title.toLowerCase() === formattedTitle.toLowerCase() || 
+          this.slugify(e.title) === slug
+        );
         
-        if (this.event.dates && this.event.dates.length > 0) {
-          this.selectedDate = this.event.dates[0].date;
-          this.updateAvailableTimes();
-          
-          if (this.availableTimes.length > 0) {
-            this.selectedTime = this.availableTimes[0];
-          }
+        if (foundEvent) {
+          this.event = foundEvent;
+          this.loading = false;
+        } else {
+          this.error = true;
+          this.loading = false;
         }
-        
-        this.loading = false;
-      } else {
+      },
+      error: (err) => {
+        console.error('Error al cargar el evento:', err);
         this.error = true;
         this.loading = false;
       }
-    }, 1000);
+    });
   }
-  
-  updateAvailableTimes(): void {
-    if (!this.event || !this.event.dates) {
-      this.availableTimes = [];
-      return;
-    }
-    
-    const dateOption = this.event.dates.find(d => d.date === this.selectedDate);
-    this.availableTimes = dateOption?.times || [];
+   // Restaurado: Método para continuar y hacer scroll
+ buyTickets(): void {
+  // Scroll a la sección de tickets (botón de compra)
+  if (this.ticketsSection) {
+    this.ticketsSection.nativeElement.scrollIntoView({ behavior: 'smooth' });
   }
-  
-  selectDate(date: string): void {
-    this.selectedDate = date;
-    this.updateAvailableTimes();
-    
-    if (this.availableTimes.length > 0) {
-      this.selectedTime = this.availableTimes[0];
-    } else {
-      this.selectedTime = '';
-    }
-  }
-  
-  selectTime(time: string): void {
-    this.selectedTime = time;
-  }
-  
-  buyTickets(): void {
-    if (!this.selectedDate || !this.selectedTime) {
-      this.snackBar.open('Por favor selecciona fecha y horario', 'Cerrar', {
-        duration: 3000
-      });
-      return;
-    }
-    
-    // Scroll a la sección de continuar
-    if (this.continueSection) {
-      this.continueSection.nativeElement.scrollIntoView({ behavior: 'smooth' });
-    }
-  }
-  
+}
+
   continue(): void {
-    if (!this.selectedDate || !this.selectedTime) {
-      this.snackBar.open('Por favor selecciona fecha y horario', 'Cerrar', {
-        duration: 3000
-      });
-      return;
+       console.log(this.authService.isLoggedIn())
+    if(this.authService.isLoggedIn()){
+       if (this.event) {
+      this.router.navigate(['/events', this.eventSlug, 'payment']);
     }
+    }else{
+      this.router.navigate(['/auth/login'])
+    }
+  
+}
+  transformSlugToTitle(slug: string): string {
+    if (!slug) return '';
     
-    // Aquí iría la navegación al proceso de compra
-    this.router.navigate(['/checkout'], {
-      queryParams: { 
-        eventId: this.event?.id,
-        date: this.selectedDate, 
-        time: this.selectedTime 
+    const words = slug.split('-');
+    
+    const formattedWords = words.map((word, index) => {
+      if (word.length === 0) return word;
+      const lowercaseWords = ['de', 'la', 'el', 'los', 'las', 'del', 'y', 'e', 'o', 'u', 'a'];
+      
+      if (lowercaseWords.includes(word) && index !== 0) {
+        return word;
       }
+      
+      return word.charAt(0).toUpperCase() + word.slice(1);
+    });
+    
+    return formattedWords.join(' ');
+  }
+  
+  slugify(text: string): string {
+    return text
+      .toString()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase()
+      .trim()
+      .replace(/\s+/g, '-')
+      .replace(/[^\w-]+/g, '')
+      .replace(/--+/g, '-');
+  }
+  
+  formatDate(date: Date | string | null): string {
+    if (!date) return '';
+    const d = new Date(date);
+    return d.toLocaleDateString('es-ES', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
     });
   }
   
-  getVenueInfo(): string {
+  formatTime(date: Date | string | null): string {
+    if (!date) return '';
+    const d = new Date(date);
+    return d.toLocaleTimeString('es-ES', {
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  }
+  
+  getDuration(): string {
     if (!this.event) return '';
     
-    let info = '';
+    const start = new Date(this.event.start_date);
+    const end = new Date(this.event.end_date);
     
-    if (this.event.venueCity && this.event.venueCountry) {
-      info = `${this.event.venueCity}, ${this.event.venueCountry}`;
-    } else if (this.event.venueCity) {
-      info = this.event.venueCity;
-    } else if (this.event.venueCountry) {
-      info = this.event.venueCountry;
+    const diffMs = end.getTime() - start.getTime();
+    const diffHrs = Math.round(diffMs / (1000 * 60 * 60));
+    
+    if (diffHrs < 24) {
+      return `${diffHrs} hora${diffHrs !== 1 ? 's' : ''}`;
+    } else {
+      const days = Math.floor(diffHrs / 24);
+      const hours = diffHrs % 24;
+      return `${days} día${days !== 1 ? 's' : ''}${hours > 0 ? ` y ${hours} hora${hours !== 1 ? 's' : ''}` : ''}`;
+    }
+  }
+  
+  setPriceRange(): string {
+    if (!this.event || !this.event.sections || this.event.sections.length === 0) {
+      return 'Precio no disponible';
     }
     
-    return info;
+    const prices = this.event.sections.map(section => 
+      parseFloat(section.price.replace(/[^\d.]/g, ''))
+    );
+    
+    const minPrice = Math.min(...prices);
+    const maxPrice = Math.max(...prices);
+    
+    if (minPrice === maxPrice) {
+      return `S/. ${minPrice.toFixed(2)}`;
+    } else {
+      return `Desde S/. ${minPrice.toFixed(2)} - Hasta S/. ${maxPrice.toFixed(2)}`;
+    }
+  }
+  
+  setActiveTab(tab: 'direccion' | 'informacion' | 'mapa'): void {
+    this.activeTab = tab;
+  }
+  
+  
+  goToPayment(): void {
+    
+    
+    if (this.event) {
+      this.router.navigate(['/events', this.eventSlug, 'payment']);
+    }
   }
 }
