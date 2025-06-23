@@ -1,0 +1,443 @@
+<div class="min-h-screen bg-[#f8f9fb] pb-12 pt-8">
+  <div class="container mx-auto px-4">
+    <!-- Header -->
+    <div class="bg-white shadow-md rounded-lg p-4 mb-8">
+      <div class="flex items-center justify-between">
+        <button mat-icon-button (click)="navigateBack()" class="text-gray-500">
+          <mat-icon>arrow_back</mat-icon>
+        </button>
+        <h1 class="text-xl font-semibold text-center flex-grow">Verificación de Identidad</h1>
+        <span class="w-10"></span> <!-- Espacio para balancear -->
+      </div>
+    </div>
+    
+    <!-- Contenido principal -->
+    <div class="bg-white rounded-lg shadow-md p-6 md:p-8 mx-auto max-w-3xl">
+      <!-- Pasos de verificación -->
+      <div class="mb-8">
+        <div class="flex justify-between">
+          <div class="flex flex-col items-center" *ngFor="let step of [1, 2, 3, 4, 5, 6]; let i = index">
+            <div 
+              [ngClass]="{
+                'bg-[#d4a017]': currentStep >= step,
+                'bg-gray-300': currentStep < step
+              }" 
+              class="rounded-full w-8 h-8 flex items-center justify-center text-white font-medium"
+            >
+              <mat-icon *ngIf="currentStep > step && step < 5" class="text-sm">check</mat-icon>
+              <span *ngIf="!(currentStep > step && step < 5)">{{ step }}</span>
+            </div>
+            <span class="text-xs mt-1 text-gray-500 hidden md:inline">
+              {{
+                step === 1 ? 'Inicio' :
+                step === 2 ? 'CI Frontal' :
+                step === 3 ? 'CI Reverso' :
+                step === 4 ? 'Selfie' :
+                step === 5 ? 'Procesando' :
+                'Completado'
+              }}
+            </span>
+          </div>
+        </div>
+        <div class="hidden md:flex justify-between mt-1">
+          <div class="h-0.5 bg-gray-200 flex-1 mt-4"></div>
+        </div>
+      </div>
+
+      <!-- Mensaje de error -->
+      <div *ngIf="error" class="bg-red-50 border-l-4 border-red-500 p-4 mb-6">
+        <div class="flex">
+          <div class="flex-shrink-0">
+            <mat-icon class="text-red-500">error</mat-icon>
+          </div>
+          <div class="ml-3">
+            <p class="text-red-700">{{ errorMessage }}</p>
+            <div class="mt-4">
+              <button 
+                mat-raised-button 
+                color="warn" 
+                (click)="retryVerification()"
+              >
+                Intentar nuevamente
+              </button>
+              <button 
+                mat-button 
+                (click)="navigateBack()"
+                class="ml-2"
+              >
+                Cancelar y volver
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Paso 1: Instrucciones -->
+      <div *ngIf="currentStep === 1 && !error" class="verification-step">
+        <h2 class="text-2xl font-bold text-[#a58d65] mb-6 text-center">Verificación de Identidad</h2>
+        
+        <div class="bg-blue-50 border-l-4 border-blue-500 p-4 mb-6">
+          <div class="flex">
+            <div class="flex-shrink-0">
+              <mat-icon class="text-blue-500">info</mat-icon>
+            </div>
+            <div class="ml-3">
+              <h3 class="text-lg font-medium text-blue-700">¿Por qué necesitamos verificar tu identidad?</h3>
+              <p class="text-blue-700 mt-2">
+                Para compras de {{ quantity }} tickets o más, necesitamos verificar tu identidad para prevenir la reventa no autorizada de boletos.
+              </p>
+            </div>
+          </div>
+        </div>
+        
+        <h3 class="text-lg font-medium mb-4">Para continuar, necesitarás:</h3>
+        
+        <ul class="space-y-4 mb-6">
+          <li class="flex items-start">
+            <div class="flex-shrink-0 mt-1">
+              <div class="rounded-full bg-green-100 p-1">
+                <mat-icon class="text-green-600">check_circle</mat-icon>
+              </div>
+            </div>
+            <div class="ml-3">
+              <p class="text-gray-700"><strong>Tu cédula de identidad</strong> - Necesitamos una foto del frente y reverso de tu documento.</p>
+            </div>
+          </li>
+          <li class="flex items-start">
+            <div class="flex-shrink-0 mt-1">
+              <div class="rounded-full bg-green-100 p-1">
+                <mat-icon class="text-green-600">check_circle</mat-icon>
+              </div>
+            </div>
+            <div class="ml-3">
+              <p class="text-gray-700"><strong>Una selfie con tu rostro visible</strong> - Para verificar que eres el titular del documento.</p>
+            </div>
+          </li>
+        </ul>
+        
+        <div class="flex flex-col md:flex-row md:space-x-4 mb-8">
+          <div class="bg-gray-50 p-4 rounded-lg md:flex-1 mb-4 md:mb-0 border border-gray-200">
+            <div class="text-center">
+              <mat-icon class="text-[#d4a017] text-4xl mb-2">photo_camera</mat-icon>
+              <h3 class="font-medium mb-2">Usar la cámara</h3>
+              <p class="text-sm text-gray-600 mb-4">Toma fotos directamente con la cámara de tu dispositivo.</p>
+              <button
+                mat-stroked-button
+                color="primary"
+                class="w-full"
+                [ngClass]="{'border-[#d4a017] text-[#d4a017]': selectedOption === 'camera'}"
+                (click)="changeOption('camera')"
+              >
+                Usar cámara
+              </button>
+            </div>
+          </div>
+          
+          <div class="bg-gray-50 p-4 rounded-lg md:flex-1 border border-gray-200">
+            <div class="text-center">
+              <mat-icon class="text-[#d4a017] text-4xl mb-2">upload_file</mat-icon>
+              <h3 class="font-medium mb-2">Subir fotos</h3>
+              <p class="text-sm text-gray-600 mb-4">Sube imágenes existentes desde tu dispositivo.</p>
+              <button
+                mat-stroked-button
+                color="primary"
+                class="w-full"
+                [ngClass]="{'border-[#d4a017] text-[#d4a017]': selectedOption === 'upload'}"
+                (click)="changeOption('upload')"
+              >
+                Subir fotos
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <div class="bg-yellow-50 border-l-4 border-yellow-500 p-4 mb-8">
+          <div class="flex">
+            <div class="flex-shrink-0">
+              <mat-icon class="text-yellow-600">privacy_tip</mat-icon>
+            </div>
+            <div class="ml-3">
+              <h3 class="text-md font-medium text-yellow-800">Privacidad y Seguridad</h3>
+              <p class="text-yellow-700 text-sm mt-1">
+                Tus documentos se envían de forma segura. Solo se utilizan para verificar tu identidad y no se compartirán con terceros.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pasos 2-3-4: Captura de documentos y selfie -->
+      <div *ngIf="(currentStep === 2 || currentStep === 3 || currentStep === 4) && !error" class="verification-step">
+        <h2 class="text-2xl font-bold text-[#a58d65] mb-4 text-center">
+          {{ getCurrentStepText() }}
+        </h2>
+        
+        <!-- Pestañas para elegir método de captura -->
+        <div class="mb-6">
+          <mat-tab-group [selectedIndex]="selectedOption === 'camera' ? 0 : 1" (selectedIndexChange)="changeOption($event === 0 ? 'camera' : 'upload')">
+            <mat-tab>
+              <ng-template mat-tab-label>
+                <div class="flex items-center">
+                  <mat-icon class="mr-2">photo_camera</mat-icon>
+                  <span>Usar cámara</span>
+                </div>
+              </ng-template>
+              
+              <div class="p-2">
+                <!-- Vista de cámara -->
+                <div *ngIf="selectedOption === 'camera'" class="camera-container">
+                  <!-- Error de cámara -->
+                  <div *ngIf="cameraError" class="bg-red-50 border border-red-200 rounded-lg p-4 mb-4 text-center">
+                    <mat-icon class="text-red-500">error</mat-icon>
+                    <p class="text-red-700 mt-2">{{ cameraError }}</p>
+                    <button
+                      mat-stroked-button
+                      color="warn"
+                      class="mt-2"
+                      (click)="changeOption('upload')"
+                    >
+                      Usar subida de archivos
+                    </button>
+                  </div>
+                  
+                  <!-- Vista previa de imagen ya capturada -->
+                  <ng-container *ngIf="getCurrentImagePreview()">
+                    <div class="relative mb-4">
+                      <div class="text-center mb-4">
+                        <img 
+                          [src]="getCurrentImagePreview()" 
+                          alt="Imagen capturada" 
+                          class="max-h-64 mx-auto rounded border border-gray-300"
+                        >
+                      </div>
+                      
+                      <div class="flex justify-center mt-2">
+                        <button
+                          mat-stroked-button
+                          color="warn"
+                          (click)="resetCurrentImage()"
+                          class="mr-2"
+                        >
+                          <mat-icon>delete</mat-icon>
+                          Eliminar
+                        </button>
+                        
+                        <button
+                          mat-raised-button
+                          color="primary"
+                          class="bg-[#d4a017]"
+                          (click)="startCamera()"
+                        >
+                          <mat-icon>photo_camera</mat-icon>
+                          Tomar otra
+                        </button>
+                      </div>
+                    </div>
+                  </ng-container>
+                  
+                  <!-- Vista de cámara activa -->
+                  <ng-container *ngIf="!getCurrentImagePreview()">
+                    <div class="camera-view-container relative mb-4">
+                      <!-- Indicaciones visuales según tipo de documento -->
+                      <div *ngIf="isCameraOpen" class="camera-guide-overlay">
+                        <div 
+                          class="camera-document-outline"
+                          [ngClass]="{
+                            'document-ci': currentStep === 2 || currentStep === 3,
+                            'face-outline': currentStep === 4
+                          }"
+                        ></div>
+                      </div>
+                      
+                      <!-- Video elemento para mostrar cámara en vivo -->
+                      <video #videoElement autoplay playsinline class="w-full rounded-lg"></video>
+                      
+                      <!-- Canvas para capturar la foto (oculto) -->
+                      <canvas #canvas class="hidden"></canvas>
+                      
+                      <!-- Contador para la foto -->
+                      <div *ngIf="captureCountdown > 0" class="countdown-overlay">
+                        <div class="countdown">{{ captureCountdown }}</div>
+                      </div>
+                      
+                      <!-- Controles de cámara -->
+                      <div class="camera-controls">
+                        <button
+                          *ngIf="!isCameraOpen"
+                          mat-raised-button
+                          color="primary"
+                          (click)="startCamera()"
+                          class="bg-[#d4a017]"
+                        >
+                          <mat-icon>photo_camera</mat-icon>
+                          Iniciar cámara
+                        </button>
+                        
+                        <div *ngIf="isCameraOpen" class="flex justify-center space-x-3">
+                          <button
+                            mat-mini-fab
+                            color="warn"
+                            (click)="switchCamera()"
+                            matTooltip="Cambiar cámara"
+                          >
+                            <mat-icon>flip_camera_ios</mat-icon>
+                          </button>
+                          
+                          <button
+                            mat-fab
+                            color="primary"
+                            (click)="capturePhoto()"
+                            class="bg-[#d4a017]"
+                          >
+                            <mat-icon>camera</mat-icon>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </ng-container>
+                </div>
+              </div>
+            </mat-tab>
+            
+            <mat-tab>
+              <ng-template mat-tab-label>
+                <div class="flex items-center">
+                  <mat-icon class="mr-2">upload_file</mat-icon>
+                  <span>Subir archivo</span>
+                </div>
+              </ng-template>
+              
+              <div class="p-2">
+                <!-- Vista de subida de archivos -->
+                <div class="bg-gray-50 border border-dashed border-gray-300 rounded-lg p-8 mb-6 text-center">
+                  <input
+                    #ciFrontalInput
+                    type="file"
+                    accept="image/*"
+                    class="hidden"
+                    (change)="handleFileChange($event, 'ciFrontal')"
+                  >
+                  <input
+                    #ciBackInput
+                    type="file"
+                    accept="image/*"
+                    class="hidden"
+                    (change)="handleFileChange($event, 'ciBack')"
+                  >
+                  <input
+                    #selfieInput
+                    type="file"
+                    accept="image/*"
+                    class="hidden"
+                    (change)="handleFileChange($event, 'selfie')"
+                  >
+                  
+                  <!-- Vista previa de imagen ya subida -->
+                  <ng-container *ngIf="getCurrentImagePreview()">
+                    <div class="text-center mb-4">
+                      <img 
+                        [src]="getCurrentImagePreview()" 
+                        alt="Imagen subida" 
+                        class="max-h-64 mx-auto rounded border border-gray-300"
+                      >
+                    </div>
+                    
+                    <button
+                      mat-stroked-button
+                      color="warn"
+                      (click)="resetCurrentImage()"
+                    >
+                      <mat-icon>delete</mat-icon>
+                      Cambiar imagen
+                    </button>
+                  </ng-container>
+                  
+                  <!-- Área para subir nuevo archivo -->
+                  <div *ngIf="!getCurrentImagePreview()" class="space-y-4">
+                    <mat-icon class="text-gray-400 text-6xl">add_photo_alternate</mat-icon>
+                    <p class="text-gray-500">Haz clic para subir una imagen</p>
+                    <button
+                      mat-raised-button
+                      color="primary"
+                      (click)="openCurrentFileSelector()"
+                      class="bg-[#d4a017]"
+                    >
+                      Seleccionar imagen
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </mat-tab>
+          </mat-tab-group>
+        </div>
+        
+        <!-- Recomendaciones -->
+        <div class="bg-gray-50 p-4 rounded-lg mb-6">
+          <h3 class="font-medium mb-2">Recomendaciones:</h3>
+          <ul class="list-disc pl-5 text-sm text-gray-600 space-y-1">
+            <li *ngFor="let tip of getCurrentRecommendations()">{{ tip }}</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Paso 5: Procesando -->
+      <div *ngIf="currentStep === 5 && !error" class="verification-step">
+        <div class="flex flex-col items-center justify-center py-12">
+          <div class="mb-8">
+            <div class="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-[#d4a017]"></div>
+          </div>
+          <h2 class="text-2xl font-bold text-[#a58d65] mb-4 text-center">Verificando tu identidad</h2>
+          <p class="text-gray-600 text-center">
+            Estamos procesando tus documentos. Esto puede tomar unos momentos. Por favor, no cierres esta ventana.
+          </p>
+        </div>
+      </div>
+
+      <!-- Paso 6: Completado -->
+      <div *ngIf="currentStep === 6 && verificationSuccess && !error" class="verification-step">
+        <div class="flex flex-col items-center justify-center py-12">
+          <div class="rounded-full bg-green-100 p-6 mb-6">
+            <mat-icon class="text-green-600 text-5xl">check_circle</mat-icon>
+          </div>
+          <h2 class="text-2xl font-bold text-[#a58d65] mb-4 text-center">¡Verificación exitosa!</h2>
+          <p class="text-gray-600 text-center mb-6">
+            Tu identidad ha sido verificada correctamente. Ahora puedes continuar con tu compra.
+          </p>
+          <p class="text-gray-500 text-sm mb-6 text-center">
+            Serás redirigido automáticamente en unos segundos...
+          </p>
+          <button 
+            mat-raised-button 
+            color="primary" 
+            (click)="navigateBack()"
+            class="bg-[#d4a017]"
+          >
+            Continuar con mi compra
+          </button>
+        </div>
+      </div>
+
+      <!-- Botones de navegación -->
+      <div *ngIf="currentStep < 5 && !error" class="flex justify-between mt-8">
+        <button 
+          mat-stroked-button 
+          (click)="currentStep === 1 ? navigateBack() : prevStep()" 
+          class="px-6 py-2"
+        >
+          <span *ngIf="currentStep === 1">Cancelar</span>
+          <span *ngIf="currentStep > 1">Atrás</span>
+        </button>
+        <button 
+          mat-raised-button 
+          color="primary"
+          [disabled]="isCurrentStepImageMissing()"
+          (click)="nextStep()" 
+          class="bg-[#d4a017] hover:bg-[#a58d65] px-6 py-2"
+        >
+          <span *ngIf="currentStep < 4">Continuar</span>
+          <span *ngIf="currentStep === 4">Verificar</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

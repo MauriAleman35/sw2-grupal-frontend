@@ -10,6 +10,8 @@ import { MatBadgeModule } from '@angular/material/badge';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { switchMap, catchError } from 'rxjs/operators';
+import { of } from 'rxjs';
 
 import { EventsService } from '../../services/events.service';
 import { DatumEventsAll, Section } from '../../interfaces/events';
@@ -69,6 +71,7 @@ export class EventsPaymentComponent implements OnInit, OnDestroy {
   error = false;
   eventSlug: string = '';
   currentStep = 1; // 1: selección, 2: datos, 3: pago
+  needsIdentityVerification = false;
   
   // Variables para el procesamiento del pago
   processingPayment = false;
@@ -85,6 +88,9 @@ export class EventsPaymentComponent implements OnInit, OnDestroy {
   private verificationInterval: any;
   private verificationAttempts = 0;
   private maxVerificationAttempts = 30; // 5 segundos x 30 = 2.5 minutos de tiempo máximo de espera
+  
+  // Flag para verificar si venimos desde el componente de verificación
+  fromVerification = false;
   
   constructor(
     private route: ActivatedRoute,
@@ -104,26 +110,46 @@ export class EventsPaymentComponent implements OnInit, OnDestroy {
   }
   
   ngOnInit(): void {
+    console.log("Inicializando componente EventsPaymentComponent");
+    
+    // Primero cargamos los detalles del evento según el slug
     this.route.params.subscribe(params => {
       this.eventSlug = params['slug'];
+      console.log("Slug del evento:", this.eventSlug);
       this.loadEventDetailsBySlug(this.eventSlug);
     });
     
-    // Verificar si hay parámetros de pago en los queryParams
+    // Verificar los queryParams para identificar distintos escenarios
     this.route.queryParams.subscribe(queryParams => {
-      const { status, purchase_id, payment_id, session_id } = queryParams;
+      console.log("Query params recibidos:", queryParams);
       
-      if (status === 'success' && payment_id) {
-        // Si regresa con el ID del pago en los parámetros
+      const { 
+        status, purchase_id, payment_id, session_id,
+        verification_complete, fromVerification, eventId
+      } = queryParams;
+      
+      // Escenario 1: Regresando de verificación de identidad
+      if (verification_complete === 'true' && fromVerification === 'true') {
+        console.log("Detectada redirección desde verificación exitosa");
+        this.fromVerification = true;
+        
+        // Restaurar el estado y avanzar al paso 2 una vez que el evento esté cargado
+        this.loadSavedState(eventId);
+      }
+      // Escenario 2: Regresando de procesamiento de pago exitoso
+      else if (status === 'success' && payment_id) {
         this.paymentId = payment_id;
         this.currentStep = 3;
         this.verifyPaymentById();
-      } else if (status === 'success' && purchase_id) {
-        // Si solo tenemos el ID de compra
+      } 
+      // Escenario 3: Regresando con ID de compra
+      else if (status === 'success' && purchase_id) {
         this.purchaseId = purchase_id;
         this.currentStep = 3;
         this.verifyPurchaseStatus();
-      } else if (session_id) {
+      } 
+      // Escenario 4: Regresando con session_id
+      else if (session_id) {
         this.snackBar.open('Verificando el estado del pago...', 'Cerrar', { duration: 3000 });
       }
       
@@ -136,6 +162,24 @@ export class EventsPaymentComponent implements OnInit, OnDestroy {
   
   ngOnDestroy(): void {
     this.stopPaymentVerification();
+  }
+  
+  // Método para cargar el estado guardado antes de la verificación
+  loadSavedState(eventId?: string): void {
+    console.log("Intentando cargar estado guardado...");
+    
+    // Esperar a que el evento se cargue antes de restaurar el estado
+    const checkEventLoaded = setInterval(() => {
+      if (!this.loading && this.event) {
+        clearInterval(checkEventLoaded);
+        
+        // Ahora podemos restaurar el estado con seguridad
+        this.restoreStateAfterVerification();
+      }
+    }, 100);
+    
+    // Establecer un timeout para evitar un bucle infinito
+    setTimeout(() => clearInterval(checkEventLoaded), 10000);
   }
   
   // Cargar información de pago desde localStorage
@@ -176,6 +220,80 @@ export class EventsPaymentComponent implements OnInit, OnDestroy {
   clearPaymentInfoFromStorage(): void {
     localStorage.removeItem('currentPaymentInfo');
   }
+  
+  // Guardar el estado actual antes de redirigir a verificación
+  saveStateBeforeVerification(): void {
+    console.log("Guardando estado antes de verificación");
+    
+    const verificationState = {
+      selectedTickets: this.selectedTickets,
+      eventId: this.event?.id,
+      eventSlug: this.eventSlug,
+      timestamp: new Date().toISOString()
+    };
+    
+    localStorage.setItem('verificationPendingState', JSON.stringify(verificationState));
+  }
+  
+  // Restaurar el estado después de la verificación
+  restoreStateAfterVerification(): void {
+    console.log("Restaurando estado después de verificación");
+    
+    const savedStateStr = localStorage.getItem('verificationPendingState');
+    if (!savedStateStr) {
+      console.log("No se encontró estado guardado");
+      return;
+    }
+    
+    try {
+      const savedState = JSON.parse(savedStateStr);
+      console.log("Estado encontrado:", savedState);
+      
+      // Verificar que el estado corresponda al evento actual
+      if (savedState.eventSlug === this.eventSlug || savedState.eventId === this.event?.id) {
+        // Restaurar selección de tickets
+        this.selectedTickets = savedState.selectedTickets || [];
+        this.calculateTotal();
+        
+        console.log("Tickets restaurados:", this.selectedTickets);
+        
+        // Avanzar al paso 2 (datos personales)
+        setTimeout(() => {
+          this.currentStep = 2;
+          console.log("Avanzando al paso 2");
+          window.scrollTo(0, 0);
+        }, 500);
+      } else {
+        console.log("El estado guardado no corresponde a este evento");
+      }
+    } catch (e) {
+      console.error("Error al restaurar estado:", e);
+    }
+  }
+  
+  // Limpiar todos los datos de verificación
+  clearVerificationData(): void {
+    console.log("Limpiando datos de verificación");
+    
+    // Eliminar todos los datos relacionados con verificación
+    localStorage.removeItem('verificationPendingState');
+    localStorage.removeItem('verification_complete');
+    
+    // Eliminar cualquier verificación específica de eventos
+    const keysToRemove: string[] = [];
+    
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && key.startsWith('verified_event_')) {
+        keysToRemove.push(key);
+      }
+    }
+    
+    keysToRemove.forEach(key => {
+      localStorage.removeItem(key);
+      console.log(`Eliminada verificación: ${key}`);
+    });
+  }
 
   getCurrentFormattedDate(): string {
     const now = new Date();
@@ -200,6 +318,13 @@ export class EventsPaymentComponent implements OnInit, OnDestroy {
         if (foundEvent) {
           this.event = foundEvent;
           this.loading = false;
+          
+          console.log("Evento cargado:", this.event.title);
+          
+          // Si venimos de verificación, restaurar el estado automáticamente
+          if (this.fromVerification) {
+            this.restoreStateAfterVerification();
+          }
         } else {
           this.error = true;
           this.loading = false;
@@ -273,6 +398,7 @@ export class EventsPaymentComponent implements OnInit, OnDestroy {
     );
   }
   
+  // MÉTODO CLAVE: Avanzar al siguiente paso con verificación si es necesario
   nextStep(): void {
     if (this.currentStep === 1 && this.selectedTickets.length === 0) {
       this.snackBar.open('Por favor selecciona al menos una entrada', 'Cerrar', {
@@ -282,9 +408,71 @@ export class EventsPaymentComponent implements OnInit, OnDestroy {
     }
     
     if (this.currentStep === 1) {
-      // Avanzamos al paso 2 - datos personales
-      this.currentStep++;
-      window.scrollTo(0, 0);
+      // Calcular la cantidad total de tickets seleccionados
+      const totalTicketsSelected = this.selectedTickets.reduce((total, ticket) => total + ticket.quantity, 0);
+      
+      // Verificar si se necesita verificación de identidad (6 o más tickets)
+      if (totalTicketsSelected >= 6 && this.event) {
+        // Siempre requerimos verificación para compras grandes
+        this.processingPayment = true; // Mostrar indicador de carga
+        
+        // Verificación de límite
+        this.eventsService.identityVerification(this.event.id, totalTicketsSelected)
+          .pipe(
+            catchError(error => {
+              console.error('Error al verificar límite de tickets:', error);
+              return of({ 
+                statusCode: 200, 
+                data: { isAllowed: true, currentCount: 0, maxAllowed: 5 },
+                message: 'Fallback',
+                metadata: { timestamp: new Date().toISOString(), version: '1.0' }
+              });
+            })
+          )
+          .subscribe({
+            next: (response) => {
+              this.processingPayment = false;
+              
+              if (response.data && !response.data.isAllowed) {
+                // El usuario necesita verificación
+                this.needsIdentityVerification = true;
+                
+                // Construir URL de retorno
+                const returnUrl = window.location.pathname;
+                
+                // Guardar el estado actual para recuperarlo después
+                this.saveStateBeforeVerification();
+                
+                console.log(`Redirigiendo a verificación para evento ${this.event!.id}`);
+                
+                // Redirigir a la página de verificación con parámetros
+                this.router.navigate(['/verification'], { 
+                  queryParams: { 
+                    eventId: this.event?.id,
+                    quantity: totalTicketsSelected,
+                    returnUrl: returnUrl
+                  }
+                });
+              } else {
+                // No necesita verificación, continuar normalmente
+                this.currentStep++;
+                window.scrollTo(0, 0);
+              }
+            },
+            error: (error) => {
+              console.error('Error al verificar límite:', error);
+              this.processingPayment = false;
+              
+              // Por seguridad, continuamos con el flujo normal
+              this.currentStep++;
+              window.scrollTo(0, 0);
+            }
+          });
+      } else {
+        // Menos de 6 tickets, continuar normalmente
+        this.currentStep++;
+        window.scrollTo(0, 0);
+      }
     } 
     else if (this.currentStep === 2) {
       // Validar formulario antes de proceder
@@ -499,6 +687,9 @@ export class EventsPaymentComponent implements OnInit, OnDestroy {
       // Limpiar información de pago almacenada
       this.clearPaymentInfoFromStorage();
       
+      // IMPORTANTE: Limpiar datos de verificación al completar la compra
+      this.clearVerificationData();
+      
       // Mostrar mensaje de éxito
       this.snackBar.open('¡Pago completado con éxito!', 'Cerrar', { duration: 3000 });
     }
@@ -527,6 +718,13 @@ export class EventsPaymentComponent implements OnInit, OnDestroy {
       this.processingPayment = false;
       this.snackBar.open('No se pudo verificar el pago: información insuficiente', 'Cerrar', { duration: 3000 });
     }
+  }
+  
+  // Cancelar compra y limpiar datos
+  cancelPurchase(): void {
+    // Limpiar datos de verificación
+    this.clearVerificationData();
+    this.goToEventDetail();
   }
   
   goToEventDetail(): void {

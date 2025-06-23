@@ -104,6 +104,13 @@
           Volver
         </button>
         <button 
+    mat-stroked-button 
+    (click)="cancelPurchase()" 
+    class="px-6 py-2">
+    <mat-icon class="mr-1">close</mat-icon>
+    Cancelar
+  </button>
+        <button 
           mat-raised-button 
           color="primary"
           [disabled]="selectedTickets.length === 0" 

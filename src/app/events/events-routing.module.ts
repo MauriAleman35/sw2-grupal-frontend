@@ -11,6 +11,10 @@ import { SubscriptionSuccessComponent } from "../../public/pages/subscription.su
 import { SubscriptionErrorComponent } from "../../public/pages/subscription.error/subscription-error.component";
 import { EventsMyTenantsComponent } from "./pages/events-my-tenants/events-my-tenants.component";
 import { EventsPaymentComponent } from "./pages/events-payment/events-payment.component";
+import { EventsVerificationComponent } from "./pages/events-verification/events-verification.component";
+import { EventsLandingComponent } from "./pages/events-landing/events-landing.component";
+import { EventsPrivacyPolicyComponent } from "./pages/events-privacy-policiy/events-privacy-policy.component";
+import { EventsTermsConditionsComponent } from "./pages/events-terms-conditions/events-terms-conditions.component";
 
 const routes: Routes = [
   // Rutas con layout principal
@@ -18,15 +22,19 @@ const routes: Routes = [
     path: '', 
     component: MainLayoutEventComponent,
     children: [
-      { path: '', component: HomeComponent },
+      {path: '',component:EventsLandingComponent },
+      { path: 'payment', component: HomeComponent },
       { path: 'events/:slug', component: EventsDetailComponent },
         {path:'events/:slug/payment', component:EventsPaymentComponent},
       { path: 'MyTickets', component: EventsTicketsComponent },
       { path: 'MyTickets/:id', component: EventsTicketsDetailsComponent },
       { path: 'Create-Event', component: EventsCreateComponent },
-    
+    {path:'privacy-policy',component:EventsPrivacyPolicyComponent},
+    {path:'terms-conditions',component:EventsTermsConditionsComponent},
       { path: 'Account', component: EventsAccountComponent },
-      {path:'MyUnit',component:EventsMyTenantsComponent}
+      {path:'MyUnit',component:EventsMyTenantsComponent},{
+        path:'verification',component:EventsVerificationComponent
+      }
     ]
   },
 

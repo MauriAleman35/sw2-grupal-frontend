@@ -1,0 +1,157 @@
+<div class="bg-gray-50 min-h-screen py-10">
+  <div class="container mx-auto px-4 max-w-4xl">
+    <!-- Botón de regreso -->
+    <div class="mb-8">
+      <button mat-button routerLink="/" class="flex items-center text-blue-700">
+        <mat-icon>arrow_back</mat-icon>
+        <span class="ml-2">Volver al Inicio</span>
+      </button>
+    </div>
+    
+    <!-- Header -->
+    <div class="bg-white rounded-lg shadow-md p-8 mb-6">
+      <h1 class="text-3xl font-bold mb-2 text-gray-800">Política de Privacidad</h1>
+      <p class="text-gray-600">Última actualización: {{ lastUpdated }}</p>
+      <mat-divider class="my-4"></mat-divider>
+      
+      <p class="mb-6 text-gray-700">
+        En la Dirección de Tecnología de la Información y Comunicación (DTIC) de la Universidad Autónoma Gabriel René Moreno, nos comprometemos a proteger la privacidad de los usuarios del sistema EventBlock UAGRM. Esta política de privacidad explica cómo recopilamos, utilizamos y protegemos la información personal proporcionada por los usuarios.
+      </p>
+      
+      <!-- Documento completo -->
+      <div class="space-y-8">
+        <!-- Sección 1 -->
+        <section>
+          <h2 class="text-xl font-semibold mb-3 text-gray-800">1. Información que recopilamos</h2>
+          <div class="pl-4 space-y-4 text-gray-700">
+            <p>
+              Recopilamos la siguiente información cuando utiliza nuestro sistema de gestión de eventos:
+            </p>
+            <ul class="list-disc pl-5 space-y-2">
+              <li><strong>Información personal:</strong> Nombre completo, dirección de correo electrónico, número de teléfono, número de documento de identidad (CI).</li>
+              <li><strong>Información académica:</strong> Facultad, carrera, código de estudiante (para estudiantes), cargo (para personal universitario).</li>
+              <li><strong>Para verificación de identidad:</strong> Imágenes de documento de identidad y fotografía facial (selfie) cuando se realizan compras de 6 o más entradas.</li>
+              <li><strong>Información de transacciones:</strong> Detalles de compras de entradas, historial de eventos asistidos.</li>
+              <li><strong>Información técnica:</strong> Dirección IP, tipo de navegador, dispositivo utilizado, datos de uso del sistema.</li>
+            </ul>
+          </div>
+        </section>
+        
+        <!-- Sección 2 -->
+        <section>
+          <h2 class="text-xl font-semibold mb-3 text-gray-800">2. Cómo utilizamos la información</h2>
+          <div class="pl-4 space-y-4 text-gray-700">
+            <p>
+              Utilizamos la información recopilada para los siguientes propósitos:
+            </p>
+            <ul class="list-disc pl-5 space-y-2">
+              <li>Gestionar y procesar las compras de entradas para eventos universitarios.</li>
+              <li>Verificar la identidad de los compradores para prevenir la reventa no autorizada de entradas.</li>
+              <li>Generar y validar las entradas digitales utilizando tecnología blockchain.</li>
+              <li>Enviar notificaciones importantes sobre los eventos adquiridos (cambios, cancelaciones, etc.).</li>
+              <li>Generar estadísticas y análisis para mejorar el sistema y los eventos universitarios.</li>
+              <li>Prevenir fraudes y garantizar la seguridad del sistema.</li>
+            </ul>
+          </div>
+        </section>
+
+        <!-- Sección 3 -->
+        <section>
+          <h2 class="text-xl font-semibold mb-3 text-gray-800">3. Verificación de identidad y tecnología blockchain</h2>
+          <div class="pl-4 space-y-4 text-gray-700">
+            <h3 class="font-medium">3.1 Verificación de identidad con IA</h3>
+            <p>
+              Para compras de 6 o más entradas, solicitamos una verificación de identidad que incluye:
+            </p>
+            <ul class="list-disc pl-5 space-y-2">
+              <li>Fotografías del documento de identidad (anverso y reverso).</li>
+              <li>Una selfie del usuario para comparación biométrica.</li>
+            </ul>
+            <p>
+              Este proceso utiliza tecnología de inteligencia artificial para comparar la fotografía del documento con la selfie proporcionada. Las imágenes se procesan en servidores seguros y se almacenan de forma encriptada.
+            </p>
+            
+            <h3 class="font-medium mt-4">3.2 Uso de blockchain</h3>
+            <p>
+              Utilizamos tecnología blockchain para garantizar la autenticidad de las entradas. Los datos personales no se almacenan en la cadena de bloques; únicamente se registra un hash criptográfico que vincula la entrada con la información de compra almacenada en nuestros servidores seguros.
+            </p>
+          </div>
+        </section>
+
+        <!-- Sección 4 -->
+        <section>
+          <h2 class="text-xl font-semibold mb-3 text-gray-800">4. Almacenamiento y seguridad</h2>
+          <div class="pl-4 space-y-4 text-gray-700">
+            <p>
+              Implementamos medidas técnicas y organizativas adecuadas para proteger los datos personales contra el acceso no autorizado, la modificación, divulgación o destrucción accidental. Estas medidas incluyen:
+            </p>
+            <ul class="list-disc pl-5 space-y-2">
+              <li>Encriptación de datos sensibles.</li>
+              <li>Acceso restringido a la información personal.</li>
+              <li>Monitoreo regular de nuestros sistemas para detectar vulnerabilidades.</li>
+              <li>Evaluaciones periódicas de seguridad.</li>
+            </ul>
+            <p>
+              Los datos se almacenan en servidores ubicados en instalaciones seguras de la universidad y se mantienen solo durante el tiempo necesario para los fines para los que fueron recopilados o según lo requiera la ley.
+            </p>
+          </div>
+        </section>
+
+        <!-- Sección 5 -->
+        <section>
+          <h2 class="text-xl font-semibold mb-3 text-gray-800">5. Compartir información</h2>
+          <div class="pl-4 space-y-4 text-gray-700">
+            <p>
+              No compartimos información personal con terceros excepto en las siguientes circunstancias:
+            </p>
+            <ul class="list-disc pl-5 space-y-2">
+              <li>Con las facultades y organizadores de eventos dentro de la UAGRM, únicamente para los fines de gestión del evento específico.</li>
+              <li>Cuando sea requerido por ley o en respuesta a solicitudes legales de autoridades públicas.</li>
+              <li>Para proteger los derechos, la propiedad o la seguridad de la UAGRM, nuestros usuarios u otros.</li>
+            </ul>
+          </div>
+        </section>
+
+        <!-- Sección 6 -->
+        <section>
+          <h2 class="text-xl font-semibold mb-3 text-gray-800">6. Derechos de los usuarios</h2>
+          <div class="pl-4 space-y-4 text-gray-700">
+            <p>
+              Los usuarios tienen derecho a:
+            </p>
+            <ul class="list-disc pl-5 space-y-2">
+              <li>Acceder a sus datos personales.</li>
+              <li>Solicitar la rectificación de datos inexactos.</li>
+              <li>Solicitar la eliminación de sus datos (con algunas excepciones).</li>
+              <li>Oponerse al procesamiento de sus datos en determinadas circunstancias.</li>
+              <li>Solicitar la limitación del procesamiento de sus datos.</li>
+            </ul>
+            <p>
+              Para ejercer estos derechos, los usuarios pueden contactar a la DTIC a través del correo electrónico dtic.soporte.uagrm.edu.bo o visitando nuestras oficinas.
+            </p>
+          </div>
+        </section>
+
+        <!-- Sección 7 -->
+        <section>
+          <h2 class="text-xl font-semibold mb-3 text-gray-800">7. Cookies y tecnologías similares</h2>
+          <div class="pl-4 space-y-4 text-gray-700">
+            <p>
+              Utilizamos cookies y tecnologías similares para mejorar la experiencia del usuario y analizar el uso del sistema. Los usuarios pueden configurar sus navegadores para rechazar todas las cookies o para recibir una notificación cuando se envíe una cookie. Sin embargo, algunas funcionalidades del sistema pueden no funcionar correctamente si se deshabilitan las cookies.
+            </p>
+          </div>
+        </section>
+
+        <!-- Sección 8 -->
+        <section>
+          <h2 class="text-xl font-semibold mb-3 text-gray-800">8. Cambios a esta política</h2>
+          <div class="pl-4 space-y-4 text-gray-700">
+            <p>
+              Podemos actualizar esta política de privacidad periódicamente. La versión más reciente estará disponible en nuestro sitio web con la fecha de la última actualización. Se recomienda revisar esta política regularmente.
+            </p>
+          </div>
+        </section>
+
+        <!-- Sección 9 -->
+        <section>
+          <h2 class="text-xl font-semibold mb-3 text-gray-800">9. Contacto</h2>

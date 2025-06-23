@@ -1,0 +1,150 @@
+/* Estilos generales */
+:host {
+  display: block;
+}
+
+/* Animación para botones */
+button {
+  transition: all 0.2s ease-in-out;
+}
+
+button:hover:not([disabled]) {
+  transform: translateY(-2px);
+}
+
+/* Efectos para imágenes */
+img.object-cover {
+  transition: transform 0.8s ease;
+}
+
+.group:hover img.object-cover {
+  transform: scale(1.05);
+}
+
+/* Efecto para tarjetas */
+.bg-white {
+  transition: box-shadow 0.3s ease;
+}
+
+.bg-white:hover {
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+/* Estilo para el QR code */
+.qr-container {
+  position: relative;
+  padding: 1rem;
+  background: white;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(165, 141, 101, 0.2);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.qr-container:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+/* Estilo para la sección de instrucciones */
+.instructions {
+  background-color: #f8f9fb;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  border: 1px solid rgba(165, 141, 101, 0.1);
+}
+
+.instructions h3 {
+  color: #a58d65;
+  font-size: 1.125rem;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  text-align: center;
+}
+
+.instructions ol {
+  padding-left: 1.25rem;
+  list-style-type: decimal;
+  color: #4b5563;
+  font-size: 0.875rem;
+}
+
+.instructions ol li {
+  margin-bottom: 0.5rem;
+}
+
+/* Estilos para status chips */
+.status-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+/* Efecto para botones de compartir */
+button.share-button {
+  border-color: #a58d65;
+  color: #a58d65;
+}
+
+button.share-button:hover {
+  background-color: rgba(212, 160, 23, 0.1);
+}
+
+/* Estilizar scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #d4a017;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a58d65;
+}
+
+/* Efecto para sello "Utilizado" */
+@keyframes pulseRed {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+.bg-red-500 {
+  animation: pulseRed 2s infinite;
+}
+
+/* Estilos para los snackbars */
+::ng-deep .success-snackbar {
+  background: #4CAF50;
+  color: white;
+}
+
+::ng-deep .error-snackbar {
+  background: #F44336;
+  color: white;
+}
+
+/* Estilos responsive */
+@media (max-width: 640px) {
+  .grid-cols-1 {
+    grid-template-columns: 1fr;
+  }
+  
+  .flex-col-reverse {
+    flex-direction: column-reverse;
+  }
+}

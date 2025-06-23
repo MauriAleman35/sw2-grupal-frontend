@@ -26,8 +26,8 @@ export class HeaderComponent implements OnInit {
     this.authService.getUser().subscribe((user) => {
       // Re-armar tabs cada vez que cambie el usuario (login/logout)
       this.tabs = [
-        { label: 'Comprar', route: '' },
-        { label: 'Mis Tickets', route: 'MyTickets' },
+        { label: 'Comprar', route: 'payment' },
+
         { label: 'Crear Evento', route: 'Create-Event' },
         { label: 'Cuenta', route: 'Account' },
       ];
@@ -39,6 +39,7 @@ export class HeaderComponent implements OnInit {
   
           if (this.tenants.length > 0) {
             this.tabs.push({ label: 'Mis Organizaciones', route: 'MyUnit' });
+            this.tabs.push({label:'Mis tickets', route:'MyTickets'})
           }
         });
       }

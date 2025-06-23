@@ -1,0 +1,222 @@
+<div class="bg-[#fff8ec] min-h-screen py-10">
+  <div class="container mx-auto px-4 max-w-4xl">
+    <!-- Botón de regreso -->
+    <div class="mb-8">
+      <button mat-button routerLink="/" class="flex items-center text-[#d4a017]">
+        <mat-icon>arrow_back</mat-icon>
+        <span class="ml-2">Volver al Inicio</span>
+      </button>
+    </div>
+    
+    <!-- Header -->
+    <div class="bg-white rounded-lg shadow-md p-8 mb-6">
+      <h1 class="text-3xl font-bold mb-2 text-[#a58d65]">Términos y Condiciones</h1>
+      <p class="text-gray-600">Última actualización: {{ lastUpdated }}</p>
+      <mat-divider class="my-4"></mat-divider>
+      
+      <p class="mb-6 text-gray-700">
+        Por favor, lee detenidamente estos términos y condiciones antes de utilizar el sistema de gestión de eventos EventBlock UAGRM, desarrollado y administrado por la Dirección de Tecnología de Información y Comunicación (DTIC) de la Universidad Autónoma Gabriel René Moreno.
+      </p>
+      
+      <!-- Documento completo -->
+      <div class="space-y-8">
+        <!-- Sección 1 -->
+        <section>
+          <h2 class="text-xl font-semibold mb-3 text-[#d4a017]">1. Aceptación de términos</h2>
+          <div class="pl-4 space-y-4 text-gray-700">
+            <p>
+              Al acceder, registrarse o utilizar el sistema EventBlock UAGRM ("el Sistema"), usted acepta estar legalmente obligado por estos términos y condiciones, así como por nuestra política de privacidad. Si no está de acuerdo con alguno de estos términos, por favor, no utilice el Sistema.
+            </p>
+            <p>
+              Nos reservamos el derecho de modificar estos términos en cualquier momento. Las modificaciones entrarán en vigor inmediatamente después de su publicación en el Sistema. Su uso continuado del Sistema después de la publicación de los cambios constituirá su aceptación de dichos cambios.
+            </p>
+          </div>
+        </section>
+        
+        <!-- Sección 2 -->
+        <section>
+          <h2 class="text-xl font-semibold mb-3 text-[#d4a017]">2. Descripción del servicio</h2>
+          <div class="pl-4 space-y-4 text-gray-700">
+            <p>
+              EventBlock UAGRM es un sistema de gestión de eventos universitarios que permite:
+            </p>
+            <ul class="list-disc pl-5 space-y-2">
+              <li>Creación y gestión de eventos universitarios por parte de las facultades autorizadas.</li>
+              <li>Venta y distribución de entradas para eventos utilizando tecnología blockchain.</li>
+              <li>Verificación de identidad mediante reconocimiento facial para compras masivas.</li>
+              <li>Validación de entradas mediante códigos QR dinámicos.</li>
+              <li>Generación de informes y estadísticas relacionados con los eventos.</li>
+            </ul>
+            <p>
+              El acceso al panel de administración está limitado al personal autorizado de cada facultad, previa solicitud formal a la DTIC.
+            </p>
+          </div>
+        </section>
+
+        <!-- Sección 3 -->
+        <section>
+          <h2 class="text-xl font-semibold mb-3 text-[#d4a017]">3. Requisitos para uso institucional</h2>
+          <div class="pl-4 space-y-4 text-gray-700">
+            <p>
+              Para que una facultad o unidad académica pueda utilizar el Sistema, se requiere:
+            </p>
+            <ul class="list-disc pl-5 space-y-2">
+              <li>Solicitud formal del decano o director de la facultad dirigida a la DTIC.</li>
+              <li>Designación de al menos un administrador responsable del uso del Sistema.</li>
+              <li>Aceptación de las políticas de uso y obligaciones descritas en este documento.</li>
+              <li>Asistencia a la capacitación proporcionada por la DTIC.</li>
+            </ul>
+            <p>
+              La DTIC se reserva el derecho de aprobar o rechazar las solicitudes según la disponibilidad de recursos y otros criterios técnicos.
+            </p>
+          </div>
+        </section>
+
+        <!-- Sección 4 -->
+        <section>
+          <h2 class="text-xl font-semibold mb-3 text-[#d4a017]">4. Registro de usuarios y cuentas</h2>
+          <div class="pl-4 space-y-4 text-gray-700">
+            <p>
+              Los usuarios del Sistema se clasifican en:
+            </p>
+            <ul class="list-disc pl-5 space-y-2">
+              <li><strong>Administradores DTIC:</strong> Personal de la DTIC con acceso completo al sistema.</li>
+              <li><strong>Administradores de Facultad:</strong> Personal designado por cada facultad para gestionar sus eventos.</li>
+              <li><strong>Usuarios finales:</strong> Miembros de la comunidad universitaria y público general que asisten a eventos.</li>
+            </ul>
+            <p>
+              Todos los usuarios son responsables de mantener la confidencialidad de sus credenciales de acceso y de todas las actividades que ocurran bajo su cuenta.
+            </p>
+          </div>
+        </section>
+
+        <!-- Sección 5 -->
+        <section>
+          <h2 class="text-xl font-semibold mb-3 text-[#d4a017]">5. Tecnología blockchain y verificación de identidad</h2>
+          <div class="pl-4 space-y-4 text-gray-700">
+            <h3 class="font-medium">5.1 Uso de blockchain</h3>
+            <p>
+              El Sistema utiliza tecnología blockchain para garantizar la autenticidad e integridad de las entradas. Esta tecnología crea un registro inmutable de cada entrada emitida, lo que previene la falsificación y duplicación no autorizada. Al utilizar el Sistema, usted acepta que la información de la transacción (excluyendo datos personales) sea registrada en la blockchain.
+            </p>
+            
+            <h3 class="font-medium mt-4">5.2 Verificación de identidad</h3>
+            <p>
+              Para compras de 6 o más entradas, el Sistema requiere un proceso de verificación de identidad que incluye:
+            </p>
+            <ul class="list-disc pl-5 space-y-2">
+              <li>Captura de imágenes del documento de identidad (anverso y reverso).</li>
+              <li>Captura de una fotografía facial (selfie) del usuario.</li>
+              <li>Comparación biométrica mediante algoritmos de IA.</li>
+            </ul>
+            <p>
+              Al utilizar esta función, usted autoriza expresamente el procesamiento de estos datos con el único fin de verificar su identidad y prevenir la reventa no autorizada de entradas. Para más detalles sobre el tratamiento de estos datos, consulte nuestra Política de Privacidad.
+            </p>
+          </div>
+        </section>
+
+        <!-- Sección 6 -->
+        <section>
+          <h2 class="text-xl font-semibold mb-3 text-[#d4a017]">6. Responsabilidades de los administradores de facultad</h2>
+          <div class="pl-4 space-y-4 text-gray-700">
+            <p>
+              Los administradores designados por cada facultad tienen las siguientes responsabilidades:
+            </p>
+            <ul class="list-disc pl-5 space-y-2">
+              <li>Garantizar la exactitud y veracidad de la información de los eventos creados.</li>
+              <li>Establecer precios razonables y acordes con la naturaleza de los eventos.</li>
+              <li>Respetar los derechos de autor y propiedad intelectual en todo el contenido publicado.</li>
+              <li>Mantener la confidencialidad de sus credenciales de acceso.</li>
+              <li>Informar inmediatamente a la DTIC sobre cualquier uso no autorizado de su cuenta.</li>
+              <li>Cumplir con todas las políticas universitarias aplicables.</li>
+            </ul>
+          </div>
+        </section>
+
+        <!-- Sección 7 -->
+        <section>
+          <h2 class="text-xl font-semibold mb-3 text-[#d4a017]">7. Derechos y restricciones de uso</h2>
+          <div class="pl-4 space-y-4 text-gray-700">
+            <p>
+              Los usuarios no deben:
+            </p>
+            <ul class="list-disc pl-5 space-y-2">
+              <li>Intentar acceder a partes del Sistema para las que no están autorizados.</li>
+              <li>Utilizar el Sistema para actividades fraudulentas o engañosas.</li>
+              <li>Interferir con el funcionamiento normal del Sistema.</li>
+              <li>Revender entradas obtenidas a través del Sistema sin autorización expresa.</li>
+              <li>Utilizar sistemas automatizados para acceder, recopilar datos o interactuar con el Sistema.</li>
+              <li>Compartir credenciales de acceso con terceros.</li>
+            </ul>
+            <p>
+              La DTIC se reserva el derecho de suspender o cancelar el acceso de cualquier usuario que viole estas restricciones.
+            </p>
+          </div>
+        </section>
+
+        <!-- Sección 8 -->
+        <section>
+          <h2 class="text-xl font-semibold mb-3 text-[#d4a017]">8. Política de cancelación y reembolsos</h2>
+          <div class="pl-4 space-y-4 text-gray-700">
+            <p>
+              La política de cancelación y reembolsos para eventos específicos será establecida por cada facultad organizadora. Sin embargo, como regla general:
+            </p>
+            <ul class="list-disc pl-5 space-y-2">
+              <li>Si un evento es cancelado por los organizadores, los asistentes tendrán derecho a un reembolso completo.</li>
+              <li>Si un evento es reprogramado, las entradas seguirán siendo válidas para la nueva fecha o se ofrecerá la opción de reembolso.</li>
+              <li>Los reembolsos por cancelación voluntaria del asistente estarán sujetos a la política específica del evento.</li>
+            </ul>
+            <p>
+              Todas las solicitudes de reembolso deben ser dirigidas directamente a la facultad organizadora del evento.
+            </p>
+          </div>
+        </section>
+
+        <!-- Sección 9 -->
+        <section>
+          <h2 class="text-xl font-semibold mb-3 text-[#d4a017]">9. Limitación de responsabilidad</h2>
+          <div class="pl-4 space-y-4 text-gray-700">
+            <p>
+              La DTIC se esfuerza por mantener el Sistema operativo y seguro, pero no puede garantizar su disponibilidad ininterrumpida. No seremos responsables por:
+            </p>
+            <ul class="list-disc pl-5 space-y-2">
+              <li>Interrupciones temporales del servicio debido a mantenimiento o problemas técnicos.</li>
+              <li>Pérdidas o daños indirectos derivados del uso o imposibilidad de uso del Sistema.</li>
+              <li>Contenido o información proporcionada por las facultades organizadoras de eventos.</li>
+              <li>La calidad o satisfacción de los eventos gestionados a través del Sistema.</li>
+            </ul>
+          </div>
+        </section>
+
+        <!-- Sección 10 -->
+        <section>
+          <h2 class="text-xl font-semibold mb-3 text-[#d4a017]">10. Contacto</h2>
+          <div class="pl-4 space-y-4 text-gray-700">
+            <p>
+              Si tiene preguntas sobre estos términos y condiciones, puede contactar a la DTIC a través de:
+            </p>
+            <ul class="list-disc pl-5 space-y-2">
+              <li>Correo electrónico: dtic.soporteuagrm.edu.bo</li>
+              <li>Teléfono: +591 3 333-9500 Int. 235</li>
+              <li>Presencialmente: Módulo 235, Campus Universitario UAGRM, Santa Cruz de la Sierra, Bolivia</li>
+            </ul>
+            <p>
+              Horario de atención: Lunes a Viernes de 8:00 AM a 4:00 PM.
+            </p>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <!-- Navegación inferior -->
+    <div class="flex justify-between mt-8">
+      <button mat-button routerLink="/" class="text-[#d4a017]">
+        <mat-icon class="mr-2">home</mat-icon>
+        Volver al inicio
+      </button>
+      <button mat-button routerLink="/privacy-policy" class="text-[#d4a017]">
+        <span class="mr-2">Ver política de privacidad</span>
+        <mat-icon>chevron_right</mat-icon>
+      </button>
+    </div>
+  </div>
+</div>
