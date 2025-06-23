@@ -34,12 +34,13 @@ export class HeaderComponent implements OnInit {
   
       // Solo si hay un usuario logeado, buscar tenants
       if (user) {
+                    this.tabs.push({label:'Mis tickets', route:'MyTickets'})
         this.eventsService.getAllTenants().subscribe((res) => {
           this.tenants = res.data.tenants;
   
           if (this.tenants.length > 0) {
             this.tabs.push({ label: 'Mis Organizaciones', route: 'MyUnit' });
-            this.tabs.push({label:'Mis tickets', route:'MyTickets'})
+
           }
         });
       }
