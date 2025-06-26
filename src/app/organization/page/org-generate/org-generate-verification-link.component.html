@@ -1,0 +1,18 @@
+<div class="generate-link-container">
+  <h2>Generar link de verificación QR</h2>
+  <p>
+    Crea un link seguro para que el personal autorizado pueda escanear y validar tickets de este tenant desde su dispositivo móvil.
+  </p>
+  <button mat-raised-button color="primary" (click)="generateLink()">Generar Link</button>
+
+  <div *ngIf="verificationLink" class="mt-4">
+    <label>Link para escanear QRs:</label>
+    <mat-form-field appearance="outline" class="w-100">
+<input matInput [value]="verificationLink" readonly (click)="selectInput($event)" />
+    </mat-form-field>
+    <div class="info-text">
+      <span class="material-icons">info</span>
+      Copia y comparte este link sólo con la persona encargada de verificación.
+    </div>
+  </div>
+</div>

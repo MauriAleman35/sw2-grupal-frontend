@@ -21,6 +21,7 @@
     "@angular/platform-browser-dynamic": "^18.2.0",
     "@angular/router": "^18.2.0",
     "@dhutaryan/ngx-mat-timepicker": "^18.0.4",
+    "@zxing/ngx-scanner": "^20.0.0",
     "date-fns": "^4.1.0",
     "jwt-decode": "^4.0.0",
     "leaflet": "^1.9.4",
