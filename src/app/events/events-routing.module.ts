@@ -22,7 +22,7 @@ const routes: Routes = [
     path: '', 
     component: MainLayoutEventComponent,
     children: [
-      {path: '',component:EventsLandingComponent },
+      {path: '',component:HomeComponent  },
       { path: 'payment', component: HomeComponent },
       { path: 'events/:slug', component: EventsDetailComponent },
         {path:'events/:slug/payment', component:EventsPaymentComponent},

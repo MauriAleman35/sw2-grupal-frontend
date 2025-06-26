@@ -15,6 +15,7 @@ import { TicketCardComponent } from '../../components/ticket-card/ticket-card.co
 import { EventsService } from '../../services/events.service';
 import { Datum, TicketPurchase } from '../../interfaces/mi-tickets';
 import { DatePipe } from '@angular/common';
+import { AuthService } from '../../../auth/services/auth.service';
 
 // Modelo mejorado para la UI
 interface TicketModel {
@@ -75,14 +76,21 @@ export class EventsTicketsComponent implements OnInit {
 
   constructor(
     private router: Router, 
+    private authService:AuthService,
     private eventsService: EventsService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
   ) { }
 
   ngOnInit(): void {
     this.loadPurchases();
+    // this.verifySession();
   }
+  verifySession(){
+    if(!this.authService.isLoggedIn()){
+      this.router.navigate(['login'])
 
+    }
+  }
   loadPurchases(): void {
     this.loading = true;
     this.error = false;

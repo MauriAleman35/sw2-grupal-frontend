@@ -29,12 +29,12 @@ export class HeaderComponent implements OnInit {
         { label: 'Comprar', route: 'payment' },
 
         { label: 'Crear Evento', route: 'Create-Event' },
-        { label: 'Cuenta', route: 'Account' },
+        {label:'Mis tickets', route:'MyTickets'},
       ];
   
       // Solo si hay un usuario logeado, buscar tenants
       if (user) {
-                    this.tabs.push({label:'Mis tickets', route:'MyTickets'})
+                   // this.tabs.push({ label: 'Cuenta', route: 'Account' },)
         this.eventsService.getAllTenants().subscribe((res) => {
           this.tenants = res.data.tenants;
   
@@ -46,7 +46,17 @@ export class HeaderComponent implements OnInit {
       }
     });
   }
-  
+  onTabClick(route: string) {
+  if (route === 'MyTickets') {
+    if (this.authService.isLoggedIn()) {
+      this.router.navigate(['/MyTickets']);
+    } else {
+      this.router.navigate(['/auth/login']);
+    }
+  } else {
+    this.router.navigate([`/${route}`]);
+  }
+}
  // Cambia eslto según el estado de autenticación del usuario
   isMobileMenuOpen = false;
 

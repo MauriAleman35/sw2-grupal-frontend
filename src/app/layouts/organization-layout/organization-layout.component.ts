@@ -127,7 +127,7 @@ export class OrganizationLayoutComponent implements OnInit {
 
   switchTenant(): void {
     console.log('Cambiando de organización...');
-    window.location.href = '/organizations';
+    window.location.href = '/MyUnit';
   }
 
   getInitials(name: string): string {

@@ -10,14 +10,14 @@
     <!-- Navegación centrada (para desktop) -->
     <nav class="hidden md:flex flex-grow justify-center">
       <div class="flex flex-row space-x-8">
-        <a 
-          *ngFor="let tab of tabs" 
-          [routerLink]="tab.route" 
-          routerLinkActive="text-[#d4a017]" 
-          class="text-[#a58d65] font-medium"
-        >
-          {{ tab.label }}
-        </a>
+      <a 
+  *ngFor="let tab of tabs" 
+  [class.tab-active]="router.isActive('/' + tab.route, false)"
+  class="tab-link text-[#a58d65] font-medium"
+  (click)="onTabClick(tab.route)"
+>
+  {{ tab.label }}
+</a>
       </div>
     </nav>
 
