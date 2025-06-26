@@ -4,26 +4,23 @@
     <div class="md:max-w-2xl">
       <h1 class="text-4xl md:text-6xl font-bold mb-6 animate-on-scroll text-white">Sistema de Eventos Universitarios DTIC</h1>
       <p class="text-xl mb-8 text-gray-100 animate-on-scroll" style="animation-delay: 0.3s">
-        La plataforma integral basada en blockchain para la gestión de eventos universitarios de la UAGRM, con verificación de identidad avanzada y seguridad inigualable.
+        Software dirigido para la DTIC basada en blockchain para la gestión de eventos universitarios de la UAGRM, con verificación de identidad avanzada y seguridad inigualable.
       </p>
       <div class="flex flex-col md:flex-row gap-4 animate-on-scroll" style="animation-delay: 0.6s">
-        <button mat-raised-button class="primary-btn px-8 py-3 rounded-full text-lg shadow-lg hover:shadow-xl transition-all">
-          Solicitar Demo
+        <button (click)="onEvent()" class="primary-btn px-8 py-1 rounded-full text-lg shadow-lg hover:shadow-xl transition-all">
+          Ver Eventos
         </button>
-        <button mat-stroked-button class="outline-btn px-8 py-3 rounded-full text-lg transition-colors">
-          Ver Tutorial
+        <button (click)="onTenant()" mat-stroked-button class="outline-btn px-8 py-3 rounded-full text-lg transition-colors">
+          Solicitar un Tenant
         </button>
       </div>
     </div>
   </div>
-  
   <!-- Decorative elements at the bottom -->
   <div class="absolute bottom-0 left-0 right-0">
-    <!-- Minimalist geometric decoration -->
     <div class="relative h-20 overflow-hidden">
       <div class="absolute inset-0 bg-gradient-to-r from-yellow-50 via-white to-yellow-50 transform rotate-1 origin-bottom-left"></div>
       <div class="absolute bottom-0 left-0 right-0 h-12 bg-white"></div>
-      <!-- Subtle floating dots -->
       <div class="absolute bottom-10 left-1/4 w-2 h-2 bg-yellow-300 rounded-full opacity-40 animate-pulse"></div>
       <div class="absolute bottom-14 right-1/3 w-1.5 h-1.5 bg-slate-400 rounded-full opacity-30 animate-pulse" style="animation-delay: 0.5s"></div>
       <div class="absolute bottom-8 right-1/4 w-2.5 h-2.5 bg-yellow-200 rounded-full opacity-50 animate-pulse" style="animation-delay: 1s"></div>
@@ -39,12 +36,10 @@
         <div class="text-4xl font-bold text-gray-800 mb-3">+100</div>
         <p class="text-slate-600 font-medium">Eventos gestionados exitosamente</p>
       </div>
-      
       <div class="bg-gradient-to-br from-slate-50 to-slate-100 p-8 rounded-2xl shadow-sm animate-on-scroll border border-slate-200 hover:shadow-md transition-all duration-300" style="animation-delay: 0.2s">
         <div class="text-4xl font-bold text-gray-800 mb-3">12</div>
         <p class="text-slate-600 font-medium">Facultades utilizando el sistema</p>
       </div>
-      
       <div class="bg-gradient-to-br from-yellow-50 to-slate-50 p-8 rounded-2xl shadow-sm animate-on-scroll border border-yellow-200 hover:shadow-md transition-all duration-300" style="animation-delay: 0.4s">
         <div class="text-4xl font-bold text-gray-800 mb-3">+50,000</div>
         <p class="text-slate-600 font-medium">Entradas verificadas con blockchain</p>
@@ -57,7 +52,6 @@
 <section class="section bg-slate-50" id="features">
   <div class="container mx-auto px-4">
     <h2 class="section-title mb-16">Características Principales</h2>
-    
     <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
       <!-- Feature 1 -->
       <div class="feature-card p-8 rounded-2xl shadow-sm animate-on-scroll border border-slate-200 hover:shadow-lg transition-all duration-300">
@@ -69,7 +63,6 @@
           Todas las entradas están respaldadas por tecnología blockchain, garantizando su autenticidad y evitando falsificaciones mediante un registro inmutable.
         </p>
       </div>
-      
       <!-- Feature 2 -->
       <div class="feature-card p-8 rounded-2xl shadow-sm animate-on-scroll border border-slate-200 hover:shadow-lg transition-all duration-300" style="animation-delay: 0.2s">
         <div class="feature-icon">
@@ -80,7 +73,6 @@
           Sistema avanzado de IA para verificar la identidad del comprador, previniendo la reventa masiva de entradas y asegurando la transparencia.
         </p>
       </div>
-      
       <!-- Feature 3 -->
       <div class="feature-card p-8 rounded-2xl shadow-sm animate-on-scroll border border-slate-200 hover:shadow-lg transition-all duration-300" style="animation-delay: 0.4s">
         <div class="feature-icon">
@@ -91,7 +83,6 @@
           Códigos QR dinámicos para cada entrada que se actualizan periódicamente, añadiendo una capa adicional de seguridad contra la duplicación.
         </p>
       </div>
-      
       <!-- Feature 4 -->
       <div class="feature-card p-8 rounded-2xl shadow-sm animate-on-scroll border border-slate-200 hover:shadow-lg transition-all duration-300" style="animation-delay: 0.1s">
         <div class="feature-icon">
@@ -102,7 +93,6 @@
           Cada facultad puede gestionar sus propios eventos de forma independiente con su propio panel de administración personalizable.
         </p>
       </div>
-      
       <!-- Feature 5 -->
       <div class="feature-card p-8 rounded-2xl shadow-sm animate-on-scroll border border-slate-200 hover:shadow-lg transition-all duration-300" style="animation-delay: 0.3s">
         <div class="feature-icon">
@@ -113,7 +103,6 @@
           Estadísticas detalladas en tiempo real sobre ventas, asistencia y rendimiento de eventos para una mejor toma de decisiones.
         </p>
       </div>
-      
       <!-- Feature 6 -->
       <div class="feature-card p-8 rounded-2xl shadow-sm animate-on-scroll border border-slate-200 hover:shadow-lg transition-all duration-300" style="animation-delay: 0.5s">
         <div class="feature-icon">
@@ -132,15 +121,12 @@
 <section class="section blockchain-section bg-white" id="blockchain">
   <div class="container mx-auto px-4 blockchain-content">
     <h2 class="section-title mb-16">Seguridad Blockchain</h2>
-    
     <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
       <div class="animate-on-scroll">
-        <img src="assets/images/blockchain-illustration.svg" alt="Blockchain Technology" class="w-full max-w-md mx-auto">
+        
       </div>
-      
       <div class="animate-on-scroll" style="animation-delay: 0.3s">
         <h3 class="text-2xl font-semibold mb-6 text-gray-800">Tecnología inmutable para total confianza</h3>
-        
         <div class="mb-6 flex items-start">
           <div class="mr-4 mt-1 p-3 bg-yellow-100 rounded-full">
             <mat-icon class="text-gray-700">verified</mat-icon>
@@ -150,7 +136,6 @@
             <p class="text-slate-600 leading-relaxed">Cada entrada tiene un registro único en blockchain que garantiza su autenticidad y previene la falsificación.</p>
           </div>
         </div>
-        
         <div class="mb-6 flex items-start">
           <div class="mr-4 mt-1 p-3 bg-slate-100 rounded-full">
             <mat-icon class="text-gray-700">history</mat-icon>
@@ -160,7 +145,6 @@
             <p class="text-slate-600 leading-relaxed">Seguimiento del ciclo de vida completo de cada entrada, desde su emisión hasta su uso en el evento.</p>
           </div>
         </div>
-        
         <div class="mb-6 flex items-start">
           <div class="mr-4 mt-1 p-3 bg-yellow-100 rounded-full">
             <mat-icon class="text-gray-700">gpp_good</mat-icon>
@@ -170,7 +154,6 @@
             <p class="text-slate-600 leading-relaxed">Validación en tiempo real de las entradas mediante escaneo de QR con confirmación inmediata de autenticidad.</p>
           </div>
         </div>
-        
         <div class="flex items-start">
           <div class="mr-4 mt-1 p-3 bg-slate-100 rounded-full">
             <mat-icon class="text-gray-700">receipt_long</mat-icon>
@@ -180,7 +163,6 @@
             <p class="text-slate-600 leading-relaxed">Las transacciones quedan registradas de forma permanente y verificable para futuras auditorías y análisis.</p>
           </div>
         </div>
-        
         <button mat-raised-button class="mt-8 primary-btn px-6 py-3 rounded-lg">
           Ver Detalles Técnicos
         </button>
@@ -193,39 +175,32 @@
 <section class="section id-verification-section bg-slate-50" id="ai-verification">
   <div class="container mx-auto px-4">
     <h2 class="section-title mb-16">Verificación de Identidad con IA</h2>
-    
     <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
       <div class="animate-on-scroll order-2 md:order-1">
         <h3 class="text-2xl font-semibold mb-6 text-gray-800">Prevención efectiva de reventa</h3>
-        
         <p class="text-slate-700 mb-8 leading-relaxed">
           Nuestro sistema de verificación de identidad basado en IA es un componente clave para asegurar que los eventos universitarios sean accesibles para toda la comunidad estudiantil y prevenir la reventa no autorizada de entradas.
         </p>
-        
         <div class="mb-6 border-l-4 border-yellow-400 pl-6 bg-yellow-50 p-4 rounded-r-xl">
           <h4 class="font-semibold mb-2 text-gray-800">Verificación para compras masivas</h4>
           <p class="text-slate-600">Para compras de 6 o más entradas, se activa automáticamente la verificación de identidad para prevenir la acumulación y reventa.</p>
         </div>
-        
         <div class="mb-6 border-l-4 border-slate-400 pl-6 bg-slate-50 p-4 rounded-r-xl">
           <h4 class="font-semibold mb-2 text-gray-800">Reconocimiento facial</h4>
           <p class="text-slate-600">Comparación de la selfie del usuario con su documento de identidad para confirmar que es la misma persona.</p>
         </div>
-        
         <div class="mb-6 border-l-4 border-yellow-400 pl-6 bg-yellow-50 p-4 rounded-r-xl">
           <h4 class="font-semibold mb-2 text-gray-800">Proceso rápido y seguro</h4>
           <p class="text-slate-600">La verificación toma menos de un minuto y los datos se procesan con los más altos estándares de privacidad y seguridad.</p>
         </div>
-        
         <div class="border-l-4 border-slate-400 pl-6 bg-slate-50 p-4 rounded-r-xl">
           <h4 class="font-semibold mb-2 text-gray-800">Verificación única por evento</h4>
           <p class="text-slate-600">Una vez verificado para un evento, el usuario puede comprar las entradas sin necesidad de repetir el proceso.</p>
         </div>
       </div>
-      
       <div class="animate-on-scroll order-1 md:order-2" style="animation-delay: 0.3s">
         <div class="bg-white rounded-2xl overflow-hidden shadow-lg p-6 border border-slate-200">
-          <img src="assets/images/id-verification-flow.png" alt="Verificación de Identidad" class="w-full rounded-lg mb-6">
+         
           <div class="flex justify-center space-x-6">
             <div class="flex flex-col items-center">
               <div class="h-3 w-3 bg-yellow-400 rounded-full mb-2"></div>
@@ -258,41 +233,31 @@
 <section class="section bg-white" id="process">
   <div class="container mx-auto px-4">
     <h2 class="section-title mb-16">Proceso para Facultades</h2>
-    
     <div class="timeline-container animate-on-scroll">
-      <!-- Step 1 -->
       <div class="timeline-item left">
         <div class="timeline-content">
           <h3 class="text-xl font-semibold text-gray-800 mb-3">Solicitud Formal</h3>
           <p class="text-slate-600">El decano o director de la facultad envía una carta formal a la DTIC solicitando acceso al sistema de eventos.</p>
         </div>
       </div>
-      
-      <!-- Step 2 -->
       <div class="timeline-item right">
         <div class="timeline-content">
           <h3 class="text-xl font-semibold text-gray-800 mb-3">Evaluación y Aprobación</h3>
           <p class="text-slate-600">La DTIC evalúa la solicitud y aprueba la creación del tenant para la facultad en el sistema.</p>
         </div>
       </div>
-      
-      <!-- Step 3 -->
       <div class="timeline-item left">
         <div class="timeline-content">
           <h3 class="text-xl font-semibold text-gray-800 mb-3">Configuración Inicial</h3>
           <p class="text-slate-600">El equipo técnico configura el tenant con los parámetros específicos para la facultad y crea las cuentas de administrador.</p>
         </div>
       </div>
-      
-      <!-- Step 4 -->
       <div class="timeline-item right">
         <div class="timeline-content">
           <h3 class="text-xl font-semibold text-gray-800 mb-3">Capacitación</h3>
           <p class="text-slate-600">Se realiza una sesión de capacitación para el personal designado sobre cómo utilizar todas las funcionalidades del sistema.</p>
         </div>
       </div>
-      
-      <!-- Step 5 -->
       <div class="timeline-item left">
         <div class="timeline-content">
           <h3 class="text-xl font-semibold text-gray-800 mb-3">Implementación</h3>
@@ -300,11 +265,8 @@
         </div>
       </div>
     </div>
-    
-    <!-- Administrative Requirements -->
     <div class="mt-16 bg-slate-50 p-8 rounded-2xl shadow-sm animate-on-scroll border border-slate-200">
       <h3 class="text-2xl font-semibold text-center mb-8 text-gray-800">Requisitos Administrativos</h3>
-      
       <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
         <div class="flex items-start">
           <mat-icon class="text-yellow-500 mr-4 mt-1">description</mat-icon>
@@ -313,7 +275,6 @@
             <p class="text-slate-600">Dirigida al Director de la DTIC, detallando el tipo de eventos a gestionar.</p>
           </div>
         </div>
-        
         <div class="flex items-start">
           <mat-icon class="text-slate-500 mr-4 mt-1">person</mat-icon>
           <div>
@@ -321,7 +282,6 @@
             <p class="text-slate-600">Nombrar al responsable principal que administrará el sistema.</p>
           </div>
         </div>
-        
         <div class="flex items-start">
           <mat-icon class="text-yellow-500 mr-4 mt-1">event</mat-icon>
           <div>
@@ -329,7 +289,6 @@
             <p class="text-slate-600">Calendario tentativo de eventos para el semestre.</p>
           </div>
         </div>
-        
         <div class="flex items-start">
           <mat-icon class="text-slate-500 mr-4 mt-1">published_with_changes</mat-icon>
           <div>
@@ -338,7 +297,6 @@
           </div>
         </div>
       </div>
-      
       <div class="text-center mt-8">
         <button mat-raised-button class="primary-btn px-8 py-3 rounded-lg">
           Descargar Plantilla de Solicitud
@@ -352,7 +310,6 @@
 <section class="section faq-section bg-slate-50" id="faq">
   <div class="container mx-auto px-4">
     <h2 class="section-title mb-16">Preguntas Frecuentes</h2>
-    
     <div class="max-w-3xl mx-auto animate-on-scroll">
       <mat-accordion>
         <mat-expansion-panel *ngFor="let faq of faqs; let i = index" [expanded]="i === 0" hideToggle>
@@ -368,75 +325,78 @@
   </div>
 </section>
 
-<!-- Contact Section -->
+<!-- Contact Section - Mejorada -->
 <section class="section bg-white" id="contact">
   <div class="container mx-auto px-4">
     <h2 class="section-title mb-16">Contáctanos</h2>
-    
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-12 items-start">
+    <div class="grid grid-cols-1 lg:grid-cols-5 gap-12 items-start max-w-7xl mx-auto">
       <!-- Contact Info -->
-      <div class="lg:col-span-1 animate-on-scroll">
-        <div class="bg-gradient-to-br from-gray-800 to-slate-700 p-8 rounded-2xl text-white shadow-lg">
-          <h3 class="text-2xl font-semibold mb-6">Información de Contacto</h3>
-          
-          <div class="space-y-6">
+      <div class="lg:col-span-2 animate-on-scroll">
+        <div class="bg-gradient-to-br from-gray-800 to-slate-700 p-10 rounded-2xl text-white shadow-lg h-full">
+          <h3 class="text-2xl font-semibold mb-8">Información de Contacto</h3>
+          <div class="space-y-8">
             <div class="flex items-start">
-              <mat-icon class="mr-4 mt-1">location_on</mat-icon>
-              <p>DTIC, Módulo 235, Campus Universitario UAGRM, Santa Cruz de la Sierra, Bolivia</p>
+              <mat-icon class="mr-6 mt-1 text-yellow-300 text-2xl">location_on</mat-icon>
+              <div class="flex-1">
+                <h4 class="font-semibold mb-2 text-lg">Dirección</h4>
+                <p class="text-gray-200 leading-relaxed">DTIC, Módulo 235, Campus Universitario UAGRM, Santa Cruz de la Sierra, Bolivia</p>
+              </div>
             </div>
-            
             <div class="flex items-start">
-              <mat-icon class="mr-4 mt-1">email</mat-icon>
-              <p>dtic.soporteuagrm.edu.bo</p>
+              <mat-icon class="mr-6 mt-1 text-yellow-300 text-2xl">email</mat-icon>
+              <div class="flex-1">
+                <h4 class="font-semibold mb-2 text-lg">Email</h4>
+                <p class="text-gray-200">evently&#64;gmail.com</p>
+              </div>
             </div>
-            
             <div class="flex items-start">
-              <mat-icon class="mr-4 mt-1">phone</mat-icon>
-              <p>+591 3 333-9500 Int. 235</p>
+              <mat-icon class="mr-6 mt-1 text-yellow-300 text-2xl">phone</mat-icon>
+              <div class="flex-1">
+                <h4 class="font-semibold mb-2 text-lg">Teléfono</h4>
+                <p class="text-gray-200">+591 67674256</p>
+              </div>
             </div>
-            
             <div class="flex items-start">
-              <mat-icon class="mr-4 mt-1">schedule</mat-icon>
-              <p>Lunes a Viernes: 8:00 AM - 4:00 PM</p>
+              <mat-icon class="mr-6 mt-1 text-yellow-300 text-2xl">schedule</mat-icon>
+              <div class="flex-1">
+                <h4 class="font-semibold mb-2 text-lg">Horarios</h4>
+                <p class="text-gray-200">Lunes a Viernes: 8:00 AM - 4:00 PM</p>
+              </div>
             </div>
           </div>
-          
-          <div class="mt-8">
-            <h4 class="text-lg font-semibold mb-4">Síguenos</h4>
-            <div class="flex space-x-4">
-              <a href="#" class="hover:text-yellow-300 transition-colors">
-                <mat-icon class="social-icon">facebook</mat-icon>
+          <div class="mt-10 pt-8 border-t border-gray-600">
+            <h4 class="text-lg font-semibold mb-6">Síguenos</h4>
+            <div class="flex space-x-6">
+              <a href="#" class="hover:text-yellow-300 transition-colors transform hover:scale-110">
+                <mat-icon class="social-icon text-2xl">facebook</mat-icon>
               </a>
-              <a href="#" class="hover:text-yellow-300 transition-colors">
-                <mat-icon class="social-icon">twitter</mat-icon>
+              <a href="#" class="hover:text-yellow-300 transition-colors transform hover:scale-110">
+                <mat-icon class="social-icon text-2xl">twitter</mat-icon>
               </a>
-              <a href="#" class="hover:text-yellow-300 transition-colors">
-                <mat-icon class="social-icon">youtube_searched_for</mat-icon>
+              <a href="#" class="hover:text-yellow-300 transition-colors transform hover:scale-110">
+                <mat-icon class="social-icon text-2xl">youtube_searched_for</mat-icon>
               </a>
-              <a href="#" class="hover:text-yellow-300 transition-colors">
-                <mat-icon class="social-icon">language</mat-icon>
+              <a href="#" class="hover:text-yellow-300 transition-colors transform hover:scale-110">
+                <mat-icon class="social-icon text-2xl">language</mat-icon>
               </a>
             </div>
           </div>
         </div>
       </div>
-      
       <!-- Contact Form -->
-      <div class="lg:col-span-2 animate-on-scroll" style="animation-delay: 0.3s">
-        <div class="contact-form">
-          <h3 class="text-2xl font-semibold mb-6 text-gray-800">Envíanos un mensaje</h3>
-          
+      <div class="lg:col-span-3 animate-on-scroll" style="animation-delay: 0.3s">
+        <div class="contact-form-improved">
+          <h3 class="text-2xl font-semibold mb-8 text-gray-800">Envíanos un mensaje</h3>
           <form [formGroup]="contactForm" (ngSubmit)="submitContactForm()">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-              <mat-form-field appearance="outline" class="w-full">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+              <mat-form-field appearance="outline" class="w-full contact-field">
                 <mat-label>Nombre Completo</mat-label>
-                <input matInput formControlName="name" placeholder="Tu nombre">
+                <input matInput formControlName="name" placeholder="Tu nombre completo">
                 <mat-error *ngIf="contactForm.get('name')?.hasError('required') && contactForm.get('name')?.touched">
                   Nombre es requerido
                 </mat-error>
               </mat-form-field>
-              
-              <mat-form-field appearance="outline" class="w-full">
+              <mat-form-field appearance="outline" class="w-full contact-field">
                 <mat-label>Correo Electrónico</mat-label>
                 <input matInput formControlName="email" placeholder="tu@email.com" type="email">
                 <mat-error *ngIf="contactForm.get('email')?.hasError('required') && contactForm.get('email')?.touched">
@@ -447,9 +407,8 @@
                 </mat-error>
               </mat-form-field>
             </div>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-              <mat-form-field appearance="outline" class="w-full">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+              <mat-form-field appearance="outline" class="w-full contact-field">
                 <mat-label>Facultad</mat-label>
                 <mat-select formControlName="faculty">
                   <mat-option value="fich">Facultad de Ingeniería en Ciencias de la Computación y Telecomunicaciones</mat-option>
@@ -463,8 +422,7 @@
                   Facultad es requerida
                 </mat-error>
               </mat-form-field>
-              
-              <mat-form-field appearance="outline" class="w-full">
+              <mat-form-field appearance="outline" class="w-full contact-field">
                 <mat-label>Teléfono (opcional)</mat-label>
                 <input matInput formControlName="phone" placeholder="Tu número de teléfono">
                 <mat-error *ngIf="contactForm.get('phone')?.hasError('pattern') && contactForm.get('phone')?.touched">
@@ -472,26 +430,27 @@
                 </mat-error>
               </mat-form-field>
             </div>
-            
-            <mat-form-field appearance="outline" class="w-full mb-6">
+            <mat-form-field appearance="outline" class="w-full mb-8 contact-field">
               <mat-label>Mensaje</mat-label>
-              <textarea matInput formControlName="message" placeholder="¿Cómo podemos ayudarte?" rows="5"></textarea>
+              <textarea matInput formControlName="message" placeholder="¿Cómo podemos ayudarte? Describe tu consulta o solicitud..." rows="6"></textarea>
               <mat-error *ngIf="contactForm.get('message')?.hasError('required') && contactForm.get('message')?.touched">
                 Mensaje es requerido
               </mat-error>
             </mat-form-field>
-            
             <div class="text-center">
               <button 
                 mat-raised-button 
-                class="primary-btn px-8 py-3 rounded-lg"
+                class="primary-btn px-12 py-4 rounded-lg text-lg"
                 [disabled]="contactForm.invalid || isSubmitting"
               >
                 <div *ngIf="isSubmitting" class="flex items-center justify-center">
-                  <mat-spinner diameter="20" class="mr-2"></mat-spinner>
+                  <mat-spinner diameter="20" class="mr-3"></mat-spinner>
                   Enviando...
                 </div>
-                <span *ngIf="!isSubmitting">Enviar Mensaje</span>
+                <span *ngIf="!isSubmitting" class="flex items-center">
+                  <mat-icon class="mr-2">send</mat-icon>
+                  Enviar Mensaje
+                </span>
               </button>
             </div>
           </form>
@@ -501,12 +460,69 @@
   </div>
 </section>
 
-<!-- Botón flotante de contacto -->
+<!-- ÚNICO BOTÓN flotante de chat -->
 <button 
-  mat-fab 
-  class="floating-contact-btn"
-  (click)="scrollToSection('contact')"
-  matTooltip="Contáctanos ahora"
+  mat-fab
+  class="fixed bottom-8 right-8 z-50 bg-yellow-400 hover:bg-yellow-500 shadow-lg"
+  (click)="openChatBot()"
+  aria-label="Ayuda"
+  *ngIf="!chatOpen"
 >
-  <mat-icon>message</mat-icon>
+  <mat-icon>chat</mat-icon>
 </button>
+
+<!-- Ventana de Chatbot flotante -->
+<div 
+  class="chatbot-modal fixed bottom-24 right-8 z-50 w-full max-w-xs md:max-w-md bg-white shadow-2xl rounded-xl transition-all border border-slate-200"
+  *ngIf="chatOpen"
+>
+  <div class="flex items-center justify-between px-4 py-3 border-b border-slate-100 rounded-t-xl bg-slate-50">
+    <div class="flex items-center gap-2">
+      <mat-icon class="text-yellow-500">chat</mat-icon>
+      <span class="font-semibold text-gray-800">Asistente EventLy</span>
+    </div>
+    <button mat-icon-button (click)="closeChatBot()" aria-label="Cerrar chat">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+  <div #chatbotWindow class="chatbot-window overflow-y-auto px-4 py-4 h-72 md:h-80 transition-all">
+    <div *ngFor="let msg of chatMessages" [ngClass]="{'text-right': msg.from === 'user', 'text-left': msg.from === 'bot'}" class="mb-2">
+      <div 
+        [ngClass]="{
+          'inline-block px-4 py-2 rounded-2xl max-w-[80%] shadow text-sm break-words': true,
+          'bg-yellow-50 text-gray-900 ml-auto': msg.from === 'user',
+          'bg-slate-100 text-gray-800': msg.from === 'bot'
+        }"
+      >
+        <span *ngIf="msg.from === 'bot'" class="mr-2"><mat-icon class="text-yellow-400" style="font-size: 1rem;">smart_toy</mat-icon></span>
+        {{msg.text}}
+      </div>
+    </div>
+    <div *ngIf="chatLoading" class="flex items-center mt-2 gap-2">
+      <mat-spinner diameter="20"></mat-spinner>
+      <span class="text-xs text-slate-400">EventLy está escribiendo...</span>
+    </div>
+  </div>
+  <form class="flex items-center gap-2 px-3 pb-3 pt-1" (submit)="sendMessage()">
+    <mat-form-field appearance="outline" class="flex-1 mb-0">
+      <input 
+        matInput 
+        [(ngModel)]="chatInput"
+        name="chatInput"
+        placeholder="Escribe tu mensaje..."
+        [disabled]="chatLoading"
+        (keydown)="onChatInputKeydown($event)"
+        autocomplete="off"
+      >
+    </mat-form-field>
+    <button 
+      mat-icon-button 
+      type="submit"
+      [disabled]="!chatInput.trim() || chatLoading"
+      class="bg-yellow-400 hover:bg-yellow-500 text-white"
+      aria-label="Enviar"
+    >
+      <mat-icon>send</mat-icon>
+    </button>
+  </form>
+</div>

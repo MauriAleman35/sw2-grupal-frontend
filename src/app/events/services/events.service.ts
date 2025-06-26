@@ -128,5 +128,7 @@ identityVerification(eventId: string, quantity: number): Observable<GetIdentityV
     }
   )
 }
-
+sendChatBotMessage(mensaje: string): Observable<any> {
+  return this.Http.post<any>(`${this.ApiUrl}/chatbot`, { mensaje }); // <--- aquí
+}
 }

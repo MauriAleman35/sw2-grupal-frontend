@@ -1,0 +1,74 @@
+<div class="verif-container">
+  <h2 class="title">Validar entrada al evento</h2>
+
+  <!-- Selector de cámara -->
+  <div *ngIf="hasDevices && !result && !loading" class="camera-select">
+    <mat-form-field appearance="outline">
+      <mat-label>Cámara a usar</mat-label>
+      <mat-select [value]="selectedDevice?.deviceId" (selectionChange)="onDeviceSelectChange($event)">
+        <mat-option *ngFor="let device of availableDevices" [value]="device.deviceId">
+          {{ device.label || 'Cámara ' + device.deviceId }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+  <div *ngIf="!result && !loading">
+    <zxing-scanner
+      [device]="selectedDevice"
+      (scanSuccess)="onCodeResult($event)"
+      [torch]="true"
+      [formats]="formats"
+      [tryHarder]="true"
+      (camerasFound)="onCamerasFound($event)"
+      (permissionResponse)="onHasPermission($event)"
+      (scanError)="onScanError($event)"
+      style="width:100%;max-width:400px;height:auto;"
+    ></zxing-scanner>
+    <p class="text-center subtitle">
+      Coloca el QR dentro del recuadro para escanear
+    </p>
+    <div *ngIf="!hasPermission" class="text-center error" style="color:#ef4444;">
+      Debes conceder permiso a la cámara para escanear.
+    </div>
+  </div>
+
+  <div *ngIf="loading" class="loading-box">
+    <mat-spinner diameter="48" color="primary"></mat-spinner>
+    <p>Validando ticket...</p>
+  </div>
+
+  <div *ngIf="verifyResponse && !loading" class="result-card" [ngClass]="verifyResponse.data.isValid ? 'success' : 'error'">
+    <mat-icon class="result-icon" *ngIf="verifyResponse.data.isValid" color="primary">check_circle</mat-icon>
+    <mat-icon class="result-icon" *ngIf="!verifyResponse.data.isValid" color="warn">cancel</mat-icon>
+    <h4 *ngIf="verifyResponse.data.isValid">¡Acceso permitido!</h4>
+    <h4 *ngIf="!verifyResponse.data.isValid">Acceso denegado</h4>
+    <div class="result-message">
+      <p>{{ verifyResponse.data.message || verifyResponse.data.error }}</p>
+      <ng-container *ngIf="verifyResponse.data.isValid">
+        <mat-card class="ticket-info">
+          <mat-card-title>Ticket validado</mat-card-title>
+          <mat-card-content>
+            <div><b>Evento:</b> {{ verifyResponse.data.ticketData.event.address }}</div>
+            <div><b>Sección:</b> {{ verifyResponse.data.ticketData.section.name }}</div>
+            <div><b>Fecha:</b> {{ verifyResponse.data.ticketData.event.date | date:'medium' }}</div>
+            <div><b>Validado a las:</b> {{ verifyResponse.data.ticketData.validatedAt | date:'mediumTime' }}</div>
+          </mat-card-content>
+        </mat-card>
+      </ng-container>
+    </div>
+    <button mat-raised-button color="primary" (click)="clearResult()">Escanear otro</button>
+  </div>
+
+  <div *ngIf="error && !loading" class="result-card error">
+    <mat-icon class="result-icon" color="warn">error</mat-icon>
+    <h4>Error</h4>
+    <div class="result-message">
+      <p>{{ error }}</p>
+    </div>
+    <div *ngIf="error" class="error" style="color:#ef4444;">
+      {{ error }}
+    </div>
+    <button mat-raised-button color="primary" (click)="clearResult()">Intentar de nuevo</button>
+  </div>
+</div>

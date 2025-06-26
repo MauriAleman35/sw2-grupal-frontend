@@ -113,7 +113,7 @@ export class OrganizationLayoutComponent implements OnInit {
       { icon:'school',label:'Facultades',route:`${base}/faculty`},
       { icon: 'event', label: 'Eventos', route: `${base}/events`, badge: 3 },
       { icon: 'view_module', label: 'Secciones', route: `${base}/section` },
-      { icon: 'settings', label: 'Configuración', route: `${base}/settings` }
+      { icon: 'bookmark_added', label: 'Verificar Tickets', route: `${base}/generate` }
     ];
   }
   logout(): void {

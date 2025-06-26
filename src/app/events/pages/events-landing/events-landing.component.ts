@@ -1,7 +1,8 @@
-import { Component, OnInit, AfterViewInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+
+import { Component, OnInit, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
+import { CommonModule, NgOptimizedImage } from '@angular/common';
+import { Router, RouterModule } from '@angular/router';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
@@ -13,6 +14,14 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import { EventsService } from '../../services/events.service';
+import { Observable } from 'rxjs';
+
+interface ChatMessage {
+  from: 'user' | 'bot';
+  text: string;
+  loading?: boolean;
+}
 
 @Component({
   selector: 'app-landing-page',
@@ -28,9 +37,11 @@ import { MatProgressSpinner } from '@angular/material/progress-spinner';
     MatFormFieldModule,
     MatSelectModule,
     MatSnackBarModule,
+    FormsModule,
     MatDividerModule,
     MatExpansionModule,
-    MatTooltipModule,MatProgressSpinner
+    MatTooltipModule,
+    MatProgressSpinner
   ],
   templateUrl: './events-landing.component.html',
   styleUrls: ['./events-landing.component.css']
@@ -38,98 +49,177 @@ import { MatProgressSpinner } from '@angular/material/progress-spinner';
 export class EventsLandingComponent implements OnInit, AfterViewInit {
   contactForm: FormGroup;
   isSubmitting = false;
-  
-  // Para animaciones al hacer scroll
-  observerOptions = {
-    root: null,
-    rootMargin: '0px',
-    threshold: 0.1
-  };
-  
-  // Preguntas frecuentes
+  fabExpanded = false;
+  chatOpen = false;
+  chatMessages: ChatMessage[] = [
+    { from: 'bot', text: '¡Hola! 👋 Soy el asistente virtual de EventLy. ¿En qué puedo ayudarte?' }
+  ];
+  chatInput = '';
+  chatLoading = false;
+  identity = "../../../assets/images/identity.png";
   faqs = [
     {
-      question: '¿Cómo puede mi facultad solicitar acceso al sistema?',
-      answer: 'Para solicitar acceso, el decano o director de su facultad debe enviar una carta formal dirigida a la DTIC, detallando el tipo de eventos que realizan y la persona designada como administrador del sistema.'
+      question: "¿Cómo puede mi facultad acceder al sistema?",
+      answer:
+        "El proceso es simple: el decano o director debe enviar una carta formal a la DTIC solicitando acceso. Después de la evaluación y aprobación, configuramos el tenant específico para su facultad.",
     },
     {
-      question: '¿Qué beneficios tiene el uso de blockchain en las entradas?',
-      answer: 'El blockchain garantiza la inmutabilidad y trazabilidad de cada ticket, evitando la falsificación y permitiendo verificar en tiempo real la autenticidad de cada entrada, además de mantener un registro permanente de todas las transacciones.'
+      question: "¿Qué garantías de seguridad ofrece el blockchain?",
+      answer:
+        "Cada entrada tiene un registro único e inmutable en blockchain que garantiza su autenticidad. Es imposible falsificar o duplicar entradas, y todas las transacciones quedan registradas permanentemente.",
     },
     {
-      question: '¿Cómo funciona la verificación de identidad para evitar reventas?',
-      answer: 'Para compras de 6 o más entradas, nuestro sistema solicita una verificación de identidad mediante reconocimiento facial del comprador junto con su documento de identidad, creando así una asociación entre el comprador y sus tickets.'
+      question: "¿Cómo funciona la verificación de identidad?",
+      answer:
+        "Para compras de 6 o más entradas, se activa automáticamente un sistema de IA que compara la selfie del usuario con su documento de identidad, previniendo la reventa masiva.",
     },
     {
-      question: '¿Qué información técnica necesito para implementar el sistema?',
-      answer: 'La DTIC proporcionará todos los requisitos técnicos, incluido acceso a la API, documentación y soporte técnico para la integración. El sistema está diseñado para funcionar en la infraestructura existente de la universidad.'
+      question: "¿Hay costos asociados al uso del sistema?",
+      answer:
+        "El sistema es gratuito para todas las facultades de la UAGRM. Solo se requiere cumplir con los requisitos administrativos y el compromiso de uso responsable.",
     },
     {
-      question: '¿Puedo personalizar el sistema para los eventos de mi facultad?',
-      answer: 'Sí, el sistema multi-tenant permite que cada facultad personalice la apariencia de sus eventos, gestione sus propias categorías, precios y configuraciones, manteniendo la autonomía de gestión.'
-    }
+      question: "¿Qué soporte técnico se proporciona?",
+      answer:
+        "Ofrecemos capacitación inicial, soporte técnico continuo durante horarios de oficina, y documentación completa para administradores del sistema.",
+    },
   ];
+
+  @ViewChild('chatbotWindow') chatbotWindow?: ElementRef<HTMLDivElement>;
 
   constructor(
     private fb: FormBuilder,
+    private eventsService: EventsService,
     private snackBar: MatSnackBar
   ) {
     this.contactForm = this.fb.group({
-      name: ['', [Validators.required]],
-      email: ['', [Validators.required, Validators.email]],
-      faculty: ['', [Validators.required]],
-      message: ['', [Validators.required]],
-      phone: ['', [Validators.pattern('^[0-9]{7,15}$')]]
+      name: ["", Validators.required],
+      email: ["", [Validators.required, Validators.email]],
+      faculty: ["", Validators.required],
+      phone: ["", [Validators.pattern(/^[0-9+\-\s()]+$/)]],
+      message: ["", Validators.required],
     });
   }
 
   ngOnInit(): void {
-    // Inicializar cualquier dato necesario
+    this.setupScrollAnimations();
   }
 
   ngAfterViewInit(): void {
-    this.setupIntersectionObserver();
+    // Por si se necesita scroll automático, se podría mejorar aquí
   }
 
-  setupIntersectionObserver(): void {
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('animate-in');
-          observer.unobserve(entry.target);
-        }
-      });
-    }, this.observerOptions);
+  setupScrollAnimations(): void {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("animate-in");
+          }
+        });
+      },
+      { threshold: 0.1 }
+    );
 
-    // Observar todos los elementos con la clase animate-on-scroll
-    document.querySelectorAll('.animate-on-scroll').forEach(el => {
-      observer.observe(el);
-    });
+    setTimeout(() => {
+      const animatedElements = document.querySelectorAll(".animate-on-scroll");
+      animatedElements.forEach((el) => observer.observe(el));
+    }, 100);
+  }
+
+  onEvent(): void {
+  
+    window.location.href = '/eventos';
+  }
+
+  onTenant(): void {
+
+    window.location.href = '/solicitar-tenant';
   }
 
   submitContactForm(): void {
-    if (this.contactForm.invalid) {
-      this.contactForm.markAllAsTouched();
-      return;
+    if (this.contactForm.valid) {
+      this.isSubmitting = true;
+
+      // Simular envío del formulario
+      setTimeout(() => {
+        this.isSubmitting = false;
+        this.snackBar.open('Mensaje enviado con éxito. Nos pondremos en contacto contigo pronto.', 'Cerrar', {
+          duration: 5000,
+          panelClass: ['success-snackbar']
+        });
+        this.contactForm.reset();
+      }, 2000);
     }
-
-    this.isSubmitting = true;
-
-    // Simulación de envío del formulario
-    setTimeout(() => {
-      this.isSubmitting = false;
-      this.snackBar.open('Mensaje enviado con éxito. Nos pondremos en contacto contigo pronto.', 'Cerrar', {
-        duration: 5000,
-        panelClass: ['success-snackbar']
-      });
-      this.contactForm.reset();
-    }, 1500);
   }
 
   scrollToSection(sectionId: string): void {
     const element = document.getElementById(sectionId);
     if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
+      element.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }
+    this.closeFab();
+  }
+
+  // Métodos para el FAB expandible
+  toggleFab(): void {
+    this.fabExpanded = !this.fabExpanded;
+  }
+
+  closeFab(): void {
+    this.fabExpanded = false;
+  }
+
+  openChatBot(): void {
+    this.chatOpen = true;
+    this.closeFab();
+    setTimeout(() => this.scrollChatToBottom(), 200);
+  }
+
+  closeChatBot(): void {
+    this.chatOpen = false;
+    this.chatInput = '';
+    setTimeout(() => this.scrollChatToBottom(), 200);
+  }
+
+  sendMessage(): void {
+    const message = this.chatInput.trim();
+    if (!message || this.chatLoading) return;
+
+    this.chatMessages.push({ from: 'user', text: message });
+    this.chatInput = '';
+    this.chatLoading = true;
+    setTimeout(() => this.scrollChatToBottom(), 100);
+
+    this.eventsService.sendChatBotMessage(message).subscribe({
+      next: (res) => {
+        this.chatMessages.push({ from: 'bot', text: res.respuesta || 'Lo siento, no puedo responder en este momento.' });
+        this.chatLoading = false;
+        setTimeout(() => this.scrollChatToBottom(), 100);
+      },
+      error: () => {
+        this.chatMessages.push({ from: 'bot', text: 'Lo siento, ocurrió un error. Intenta nuevamente más tarde.' });
+        this.chatLoading = false;
+        setTimeout(() => this.scrollChatToBottom(), 100);
+      }
+    });
+  }
+
+  onChatInputKeydown(event: KeyboardEvent): void {
+    if (event.key === 'Enter' && !event.shiftKey) {
+      event.preventDefault();
+      this.sendMessage();
+    }
+  }
+
+  scrollChatToBottom(): void {
+    if (this.chatbotWindow) {
+      try {
+        this.chatbotWindow.nativeElement.scrollTop = this.chatbotWindow.nativeElement.scrollHeight;
+      } catch {}
     }
   }
 }
